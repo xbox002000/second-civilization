@@ -12,6 +12,9 @@ Review Report
 - `../../docs/EDITORIAL_POLICY.md`
 - `../../docs/CANON.md`
 - `../../docs/FAN_LI_PERSONA.md`
+- `../../docs/research/FAN_LI_EVIDENCE.md`
+- `../../docs/research/FAN_LI_SOURCE_COMPARISON.md`
+- `../../docs/FAN_LI_VOICE_GUIDE.md`
 - 本任務指定的模板與事件資料。
 
 ## 執行步驟
