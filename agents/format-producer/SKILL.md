@@ -1,30 +1,32 @@
-# 內容轉製｜Agent Skill
+# 內容轉製｜Format Producer Agent Skill
 
-## 角色任務
-把核准內容轉成短影音、圖文、長文或小說章節格式。
+## 任務
+把已核准的核心內容轉成不同平台可使用的文字、圖文、短影音發布包；確保同一角色、同一主張在不同平台不互相矛盾。
 
-## 主要交付物
-Format Package
-
-## 開始前必讀
+## 必讀
 - `../../docs/WORKFLOW.md`
-- `../../docs/AGENT_CONTRACT.md`
+- `../../docs/MEDIA_IP_ARCHITECTURE.md`
+- `../../docs/CONTENT_FORMATS.md`
+- `../../docs/PUBLIC_CHARACTER_ACCOUNT.md`
+- `../../docs/SHORT_DRAMA_PIPELINE.md`
 - `../../docs/EDITORIAL_POLICY.md`
 - `../../docs/CANON.md`
-- 本任務指定的模板與事件資料。
 
 ## 執行步驟
-1. 確認 task_id、目標、輸入、輸出位置、資料截止時間與驗收條件。
-2. 不得擅自改變核心主張或刪除重要不確定性；每個平台版本都要對應同一個 content_id。
-3. 清楚標記 FACT、INFERENCE、HYPOTHESIS、FICTION。
-4. 保留來源 URL、發布時間、擷取時間與不確定性。
-5. 完成自我檢查；有阻塞就回報 `BLOCKED`，不得猜測補齊。
-6. 依 `templates/agent-handoff.md` 交接給下一個角色。
+1. 確認 content_id、內容來源、平台目標、Canon 狀態、審稿狀態與人工核准狀態。
+2. 同一內容的各平台版本共用 content_id；保留來源與資料截止時間。
+3. 依平台調整長度、字幕、封面、標題、段落和 CTA，但不可改變核心主張或刪除重要不確定性。
+4. 短劇由 Short Drama Director 提供已審核劇本與分鏡；Format Producer 負責平台發布包，不得擅自改寫故事。
+5. 明確區分現實評論、假設推演、非 Canon 虛構與主線 Canon。
+6. 產出平台文案、字幕、封面需求、素材清單、發布檢查表。
+7. 所有平台版本仍需 Reviewer 檢查及 Creator 核准後才能發布。
+8. 發布後保存 URL、時間、素材版本與數據來源。
 
-## 輸出清單
-平台版本文案、短影音節拍／分鏡、字幕與素材需求。
+## 交付
+Platform Package、Caption、Subtitle、Cover Brief、Asset Manifest、Publish Checklist。
 
-## 禁止事項
-- 不得把未查證內容當成事實。
-- 不得擅自修改 Canon 或跳過人工發布核准。
-- 不得只回傳空泛摘要代替指定交付物。
+## 禁止
+- 不得以剪輯／標題包裝改變事實或故事含義。
+- 不得把 Event Fiction 說成真實新聞。
+- 不得把 AI 生成角色假裝成真實人物。
+- 未取得人工核准不得發布。
