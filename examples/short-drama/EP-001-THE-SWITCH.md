@@ -7,7 +7,7 @@
 - series_id：SECOND-CIVILIZATION-SHORTS
 - 來源類型：EVENT_FICTION
 - Canon 狀態：NON_CANON
-- 時長目標：80–95 秒
+- 時長目標：95–100 秒
 - 畫幅：9:16
 - 視覺形式：AI 真人電影感
 - 靈感事件：EVT-20261127-001
