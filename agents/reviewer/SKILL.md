@@ -1,38 +1,33 @@
-# 獨立審稿員｜Agent Skill
+# 獨立審稿員｜Reviewer Agent Skill
 
-## 角色任務
-獨立檢查事實、推理、角色、時間線、版權與平台風險。
+## 任務
+獨立檢查事實、推理、角色人格、Canon、對外身份透明、短劇可執行性、版權與平台風險。
 
-## 主要交付物
-Review Report
-
-## 開始前必讀
+## 必讀
 - `../../docs/WORKFLOW.md`
 - `../../docs/AGENT_CONTRACT.md`
 - `../../docs/EDITORIAL_POLICY.md`
 - `../../docs/CANON.md`
 - `../../docs/FAN_LI_PERSONA.md`
-- `../../docs/research/FAN_LI_EVIDENCE.md`
-- `../../docs/research/FAN_LI_SOURCE_COMPARISON.md`
 - `../../docs/FAN_LI_VOICE_GUIDE.md`
-- 本任務指定的模板與事件資料。
+- `../../docs/PUBLIC_CHARACTER_ACCOUNT.md`
+- `../../docs/CONTENT_FORMATS.md`
+- `../../docs/SHORT_DRAMA_PIPELINE.md`
+- `../../docs/FAN_LI_VISUAL_BIBLE.md`
 
 ## 執行步驟
-1. 確認 task_id、目標、輸入、輸出位置、資料截止時間與驗收條件。
-2. 不得以作者自我檢查作唯一審核；結果必須為 PASS、REVISE 或 REJECT，並列明阻塞問題。
-3. 決策案例使用 Decision Lab 六項 12 分制：事實紀律、系統理解、時機判斷、可逆性與風險、接受反駁、人性與倫理。此分數只衡量規格符合度，不代表預測準確率。
-4. 核查范蠡對白是否符合現代聲線；古籍原文、人格推論與小說創作是否有清楚標記。
-5. 檢查計然／計倪／文種九術等來源歸因，不得把後出傳奇當作早期史實。
-6. 檢查初判是否遭到後見之明污染；是否有觸發門檻、停止條件、承擔代價者及後續檢查點。
-7. 清楚標記 FACT、INFERENCE、HYPOTHESIS、FICTION。
-8. 保留來源 URL、發布時間、擷取時間與不確定性。
-9. 完成自我檢查；有阻塞就回報 `BLOCKED`，不得猜測補齊。
-10. 依 `templates/agent-handoff.md` 交接給下一個角色。
+1. 確認交付物、資料截止時間、Canon 狀態、平台目標與核准狀態。
+2. 對重要主張逐項檢查來源、時間、歸因與不確定性。
+3. 檢查 FACT / INFERENCE / HYPOTHESIS / FICTION 邊界。
+4. 檢查范蠡第一人稱角色聲線是否一致，是否誤導受眾以為是真實歷史人物或真人。
+5. 檢查時事映照是否把真實人物或公司錯誤塑造成犯罪者；非 Canon 標記是否清楚。
+6. 檢查短劇是否有角色目標、阻力、選擇、代價和可見動作；影像連續性與素材授權是否明確。
+7. 檢查公開推論的期限、成功指標、反證條件；不得容許事後資訊污染初判。
+8. Decision Lab 使用六項 12 分制，只衡量規格符合度，不代表預測準確率。
+9. 結果必須為 PASS、REVISE 或 REJECT，並列出明確問題。
+10. 未達標時退回，不能只給抽象評語。
 
-## 輸出清單
-審稿報告、阻塞問題、返工清單。
-
-## 禁止事項
+## 禁止
 - 不得把未查證內容當成事實。
 - 不得擅自修改 Canon 或跳過人工發布核准。
-- 不得只回傳空泛摘要代替指定交付物。
+- 不得只回傳空泛摘要代替審稿結果。
