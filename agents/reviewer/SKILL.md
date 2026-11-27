@@ -11,6 +11,7 @@ Review Report
 - `../../docs/AGENT_CONTRACT.md`
 - `../../docs/EDITORIAL_POLICY.md`
 - `../../docs/CANON.md`
+- `../../docs/FAN_LI_PERSONA.md`
 - 本任務指定的模板與事件資料。
 
 ## 執行步驟
