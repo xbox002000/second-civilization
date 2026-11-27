@@ -1,0 +1,22 @@
+# 公開推論／預測紀錄
+
+- prediction_id:
+- linked_content_id:
+- title:
+- created_at:
+- data_cutoff_at:
+- deadline:
+- proposition:
+- observable_success_criteria:
+- confidence: LOW / MEDIUM / HIGH / NUMERIC_WITH_BASIS
+- probability_and_method_if_used:
+- assumptions:
+- alternative_scenarios:
+- disconfirming_signals:
+- status: OPEN / CONFIRMED / PARTIAL / FAILED / EXPIRED_UNRESOLVED
+- outcome_sources:
+- evaluated_at:
+- what_was_right:
+- what_was_wrong:
+- responsibility_or_consequence:
+- public_correction_url:
