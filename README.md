@@ -44,6 +44,12 @@ GitHub 是版本來源；AFFiNE 不取代正式規格；Paperclip 不取代內�
 6. 一份短影音或圖文草稿。
 7. 審稿結果與人工核准紀錄。
 
+## 人格與研究文件
+
+- 范蠡人格聖經：docs/FAN_LI_PERSONA.md
+- 范蠡史料證據卡：docs/research/FAN_LI_EVIDENCE.md
+- 人格一致性測試：tests/persona/TEST_CASES.md
+
 ## 專案目錄
 
 - `docs/`：專案規格、流程與決策紀錄。
