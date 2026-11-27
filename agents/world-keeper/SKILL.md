@@ -12,7 +12,7 @@ Continuity Brief
 - `../../docs/EDITORIAL_POLICY.md`
 - `../../docs/CANON.md`
 - `../../docs/FAN_LI_PERSONA.md`
-- `../../docs/research/FAN_LI_EVIDENCE.md`
+- `../../docs/research/FAN_LI_EVIDENCE.md`\n- `../../docs/research/FAN_LI_SOURCE_COMPARISON.md`
 - 本任務指定的模板與事件資料。
 
 ## 執行步驟
