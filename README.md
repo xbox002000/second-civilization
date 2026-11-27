@@ -49,6 +49,7 @@
 - [首批事件資料包](examples/public-content/EVT-20261127-REMOTE-COMPUTE-CONTROL.md)
 - [第一項公開推論紀錄](examples/public-content/PRED-20261127-001.md)
 - [第一支短劇《開關》](examples/short-drama/EP-001-THE-SWITCH.md)
+- [第一批內容預審報告](tests/public-content/LAUNCH-BATCH-001-PREFLIGHT.md)
 
 ## 核心工作流
 事件／觀眾問題 → 研究 → 事實查核 → 系統分析 → 范蠡獨立初判 → AI Red Team → 編輯分流 → 公眾評論／推演 + 故事提案 → 短篇／主線／短劇 → 獨立審稿 → 人工核准 → 發布 → 社群回饋與預測稽核 → 記憶與 Canon 更新。
