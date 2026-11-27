@@ -9,6 +9,8 @@
 - `../../docs/CANON.md`
 - `../../docs/FAN_LI_PERSONA.md`
 - `../../docs/FAN_LI_VOICE_GUIDE.md`
+- `../../docs/FAN_LI_DRAMATIC_PRESENCE.md`
+- `../../docs/FAN_LI_SCENE_RULES.md`
 - `../../docs/EDITORIAL_POLICY.md`
 - `../../templates/short-drama-script.md`
 
