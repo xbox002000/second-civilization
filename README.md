@@ -48,7 +48,10 @@ GitHub 是版本來源；AFFiNE 不取代正式規格；Paperclip 不取代內�
 
 - 范蠡人格聖經：docs/FAN_LI_PERSONA.md
 - 范蠡史料證據卡：docs/research/FAN_LI_EVIDENCE.md
-- 人格一致性測試：tests/persona/TEST_CASES.md
+- 來源層次比較：docs/research/FAN_LI_SOURCE_COMPARISON.md
+- 現代聲線指南：docs/FAN_LI_VOICE_GUIDE.md
+- 人格測試題庫：tests/persona/TEST_CASES.md
+- v0.3 回歸測試示範：tests/persona/REGRESSION_RUN_V0_3.md
 
 ## 專案目錄
 
