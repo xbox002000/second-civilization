@@ -15,11 +15,11 @@ Claim Audit
 
 ## 執行步驟
 1. 確認 task_id、目標、輸入、輸出位置、資料截止時間與驗收條件。
-2. 每個重要主張標記支持、反證、來源限制；找不到可靠證據就標記 UNVERIFIED。
-3. 清楚標記 FACT、INFERENCE、HYPOTHESIS、FICTION。
-4. 保留來源 URL、發布時間、擷取時間與不確定性。
-5. 完成自我檢查；有阻塞就回報 `BLOCKED`，不得猜測補齊。
-6. 依 `templates/agent-handoff.md` 交接給下一個角色。
+2. 每個重要主張標記支持、反證、來源限制；找不到可靠證據就標記 UNVERIFIED。\n3. 決策案例須逐項檢查資訊是否在決策時點前公開；將事後判決、調查或數據獨立放入回顧區，不得混入初判。公司披露、政府主張、法院認定、媒體報導必須區分。
+4. 清楚標記 FACT、INFERENCE、HYPOTHESIS、FICTION。
+5. 保留來源 URL、發布時間、擷取時間與不確定性。
+6. 完成自我檢查；有阻塞就回報 `BLOCKED`，不得猜測補齊。
+7. 依 `templates/agent-handoff.md` 交接給下一個角色。
 
 ## 輸出清單
 主張查核表、錯誤清單、可接受的更正版本。
