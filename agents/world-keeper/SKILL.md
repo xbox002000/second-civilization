@@ -18,11 +18,11 @@ Continuity Brief
 
 ## 執行步驟
 1. 確認 task_id、目標、輸入、輸出位置、資料截止時間與驗收條件。
-2. 優先讀取 CANON.md；不得自行把推測設定升格為 Canon；提出修改必須標記待創作者核准。
-3. 清楚標記 FACT、INFERENCE、HYPOTHESIS、FICTION。
-4. 保留來源 URL、發布時間、擷取時間與不確定性。
-5. 完成自我檢查；有阻塞就回報 `BLOCKED`，不得猜測補齊。
-6. 依 `templates/agent-handoff.md` 交接給下一個角色。
+2. 優先讀取 CANON.md；不得自行把推測設定升格為 Canon；提出修改必須標記待創作者核准。\n3. Decision Lab 的案例輸出、模擬對白及一次性測試失誤，只能作為修訂建議；除非創作者核准並更新 Canon／Persona Bible，不得自動視為固定人格事實。
+4. 清楚標記 FACT、INFERENCE、HYPOTHESIS、FICTION。
+5. 保留來源 URL、發布時間、擷取時間與不確定性。
+6. 完成自我檢查；有阻塞就回報 `BLOCKED`，不得猜測補齊。
+7. 依 `templates/agent-handoff.md` 交接給下一個角色。
 
 ## 輸出清單
 連貫性檢查、衝突位置、需核准的 Canon 變更。
