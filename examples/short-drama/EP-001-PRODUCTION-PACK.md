@@ -2,7 +2,7 @@
 
 - episode_id：EP-001
 - 對應劇本：EP-001-THE-SWITCH.md v0.3（本文件取代舊 v0.1 鏡頭表）
-- 目標成片：80–95 秒
+- 目標成片：95–100 秒
 - 畫幅：9:16
 - 視覺形式：AI 真人電影感
 - Canon：EVENT_FICTION / NON_CANON
@@ -89,7 +89,7 @@ The technical lead points to three separate fallback plans represented by simple
 The founder asks the investor whether he will provide additional capital. Fan Li pauses, then calmly states conditions. Keep Fan Li's expression restrained, eyes steady, no smile. Cut to the founder realizing the funding comes with governance changes; cut to the engineer listening. The negotiation must feel real, not like a heroic ultimatum.
 
 ### SHOT 07 — No Victory
-Early dawn in the same office. The engineer tests the fallback system; the founder rewrites the delivery scope; Fan Li puts the deleted appendix into a folder. He speaks without looking for approval. Slow pull-back, natural dawn light, subdued ending. No heroic pose or triumphant score.
+Early dawn in the same office. The engineer tests the fallback system; the founder rewrites the delivery scope; Fan Li puts the deleted appendix into a folder. A close insert reveals the appendix date from two months earlier and an old risk memo with Fan Li's handwriting, both added as post-production props. The female engineer challenges him about why he did not stop the founder. He admits that he knew the risk but allowed the founder to choose, then realizes he cannot outsource his own responsibility. Slow pull-back, natural dawn light, subdued ending. No heroic pose or triumphant score.
 
 ## 7. 聲音與剪輯
 
@@ -98,7 +98,7 @@ Early dawn in the same office. The engineer tests the fallback system; the found
 - 小夏：清楚、專業，語氣平穩，對阿呈保留不滿。
 - 重要台詞先錄乾淨對白，再做嘴型匹配；必要時使用反應鏡頭避免長時間嘴型生成。
 - 音效：伺服器風扇低頻、紙張翻動、文件滑過桌面、鍵盤、手機震動、清晨城市環境音。
-- 音樂不做英雄式高潮；「你把退路賣掉了」後留白。
+- 音樂不做英雄式高潮；「你把退路賣掉了」後留白；片尾對話再留一次空白，讓范蠡的自我追問成立。
 
 ## 8. 生成順序
 1. 核准范蠡、阿呈、小夏三張單人角色參照圖。
