@@ -51,7 +51,7 @@ GitHub 是版本來源；AFFiNE 不取代正式規格；Paperclip 不取代內�
 - 來源層次比較：docs/research/FAN_LI_SOURCE_COMPARISON.md
 - 現代聲線指南：docs/FAN_LI_VOICE_GUIDE.md
 - 人格測試題庫：tests/persona/TEST_CASES.md
-- v0.3 回歸測試示範：tests/persona/REGRESSION_RUN_V0_3.md
+- v0.3 回歸測試示範：tests/persona/REGRESSION_RUN_V0_3.md\n\n## 決策壓力測試\n\n- Decision Lab 流程：docs/decision-lab/README.md\n- 六個案例：examples/decision-cases/\n- DeepSeek 完整演練：tests/decision-lab/CASE-001-DEEPSEEK-RUN.md\n- 統一案例模板：templates/decision-case.md
 
 ## 專案目錄
 
