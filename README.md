@@ -50,6 +50,7 @@
 - [高位感回歸測試](tests/persona/DRAMATIC_PRESENCE_TESTS.md)
 - [EP-001 高位感預審](tests/persona/EP-001-DP-PRECHECK.md)
 - [第一卷故事引擎](docs/SEASON_1_STORY_ENGINE.md)
+- [主線示範場景：入場條款](examples/story-scenes/SCENE-001-ENTRY-TERMS.md)
 - [首次公開內容包](examples/public-content/LAUNCH-BATCH-001.md)
 - [首批事件資料包](examples/public-content/EVT-20261127-REMOTE-COMPUTE-CONTROL.md)
 - [第一項公開推論紀錄](examples/public-content/PRED-20261127-001.md)
