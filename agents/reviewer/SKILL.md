@@ -14,12 +14,15 @@
 - `../../docs/CONTENT_FORMATS.md`
 - `../../docs/SHORT_DRAMA_PIPELINE.md`
 - `../../docs/FAN_LI_VISUAL_BIBLE.md`
+- `../../docs/FAN_LI_DRAMATIC_PRESENCE.md`
+- `../../docs/FAN_LI_SCENE_RULES.md`
+- `../../docs/SEASON_1_STORY_ENGINE.md`
 
 ## 執行步驟
 1. 確認交付物、資料截止時間、Canon 狀態、平台目標與核准狀態。
 2. 對重要主張逐項檢查來源、時間、歸因與不確定性。
 3. 檢查 FACT / INFERENCE / HYPOTHESIS / FICTION 邊界。
-4. 檢查范蠡第一人稱角色聲線是否一致，是否誤導受眾以為是真實歷史人物或真人。
+4. 檢查范蠡第一人稱角色聲線和高位感是否一致；高位感須來自可追溯的依據、真實籌碼與策略行動，不可只靠其他人物讚嘆；同時檢查是否誤導受眾以為是真實歷史人物或真人。
 5. 檢查時事映照是否把真實人物或公司錯誤塑造成犯罪者；非 Canon 標記是否清楚。
 6. 檢查短劇是否有角色目標、阻力、選擇、代價和可見動作；影像連續性與素材授權是否明確。
 7. 檢查公開推論的期限、成功指標、反證條件；不得容許事後資訊污染初判。
