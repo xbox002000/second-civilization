@@ -47,6 +47,7 @@
 - [范蠡視覺聖經](docs/FAN_LI_VISUAL_BIBLE.md)
 - [范蠡高位感與戲劇存在](docs/FAN_LI_DRAMATIC_PRESENCE.md)
 - [范蠡場景寫作規則](docs/FAN_LI_SCENE_RULES.md)
+- [高位感回歸測試](tests/persona/DRAMATIC_PRESENCE_TESTS.md)
 - [第一卷故事引擎](docs/SEASON_1_STORY_ENGINE.md)
 - [首次公開內容包](examples/public-content/LAUNCH-BATCH-001.md)
 - [首批事件資料包](examples/public-content/EVT-20261127-REMOTE-COMPUTE-CONTROL.md)
