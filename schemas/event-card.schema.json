@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/xbox002000/second-civilization/schemas/event-card.schema.json",
+  "title": "Event Research Card",
+  "type": "object",
+  "required": ["event_id", "title", "status", "captured_at", "data_cutoff_at", "claims", "sources"],
+  "properties": {
+    "event_id": {"type": "string", "pattern": "^EVT-[0-9]{8}-[0-9]{3}$"},
+    "title": {"type": "string", "minLength": 1},
+    "status": {"enum": ["INBOX", "RESEARCHING", "FACT_CHECK", "VERIFIED", "NEEDS_SOURCES", "REJECTED"]},
+    "event_time": {"type": ["string", "null"], "format": "date-time"},
+    "published_at": {"type": ["string", "null"], "format": "date-time"},
+    "captured_at": {"type": "string", "format": "date-time"},
+    "data_cutoff_at": {"type": "string", "format": "date-time"},
+    "summary": {"type": "string"},
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim_id", "statement", "classification", "sources"],
+        "properties": {
+          "claim_id": {"type": "string"},
+          "statement": {"type": "string"},
+          "classification": {"enum": ["FACT", "INFERENCE", "HYPOTHESIS"]},
+          "sources": {"type": "array", "items": {"type": "string"}},
+          "confidence": {"enum": ["low", "medium", "high"]},
+          "caveats": {"type": "string"}
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "title", "url", "source_type"],
+        "properties": {
+          "source_id": {"type": "string"},
+          "title": {"type": "string"},
+          "publisher": {"type": "string"},
+          "url": {"type": "string", "format": "uri"},
+          "source_type": {"enum": ["primary", "official", "research", "news", "commentary", "social"]},
+          "published_at": {"type": ["string", "null"], "format": "date-time"},
+          "accessed_at": {"type": "string", "format": "date-time"},
+          "supports": {"type": "array", "items": {"type": "string"}},
+          "limitations": {"type": "string"}
+        }
+      }
+    },
+    "known_unknowns": {"type": "array", "items": {"type": "string"}},
+    "alternative_explanations": {"type": "array", "items": {"type": "string"}},
+    "disconfirming_evidence_to_watch": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}
