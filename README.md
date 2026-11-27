@@ -45,6 +45,9 @@
 ## 品牌與第一批內容
 - [品牌識別](docs/BRAND_IDENTITY.md)
 - [范蠡視覺聖經](docs/FAN_LI_VISUAL_BIBLE.md)
+- [范蠡高位感與戲劇存在](docs/FAN_LI_DRAMATIC_PRESENCE.md)
+- [范蠡場景寫作規則](docs/FAN_LI_SCENE_RULES.md)
+- [第一卷故事引擎](docs/SEASON_1_STORY_ENGINE.md)
 - [首次公開內容包](examples/public-content/LAUNCH-BATCH-001.md)
 - [首批事件資料包](examples/public-content/EVT-20261127-REMOTE-COMPUTE-CONTROL.md)
 - [第一項公開推論紀錄](examples/public-content/PRED-20261127-001.md)
