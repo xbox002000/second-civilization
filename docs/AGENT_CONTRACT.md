@@ -1,49 +1,33 @@
-# Agent 職責與交接契約 v0.1
+# Agent 職責與交接契約 v0.2
 
 ## 共通規則
-
 - 一個 Agent 對一種主要交付物負責。
-- 每項任務必須帶有 task_id、輸入、輸出路徑、驗收條件和截止狀態。
-- Agent 不得把缺乏來源的內容補成看似確定的事實。
-- 下游發現上游缺陷時，退回並列出具體原因，不得默默修補關鍵事實。
-- 不確定時回報 `BLOCKED`，不可用流暢文字掩飾無法完成。
-- 審稿者不得只靠作者自我檢查作為唯一審核。
+- 每項任務帶 task_id、輸入、輸出路徑、驗收條件和狀態。
+- 不得把缺乏來源的內容補成事實；不確定就標記或 BLOCKED。
+- 下游發現上游缺陷時退回並說明原因。
+- 審稿者不得只靠作者自我檢查。
+- 任何公開發布均需 Creator／授權人核准。
+- 社群留言、平台數據和預測結果不能自動改寫 Canon 或人格設定。
 
-## 角色
-
-### Producer（總編輯／製作人）
-選題、排序、分配工作、維護整體節奏；交付 Editorial Brief。沒有權限略過事實查核或人工發布閘門。
-
-### Researcher（情報研究員）
-蒐集原始資料、建立來源清單與事件時間線；交付 Event Research Card。優先官方公告、財報、法規、研究論文、原始訪談與當事人資料。
-
-### Fact Checker（事實查核員）
-逐項驗證重要主張、數字、引用與時間；交付 Claim Audit。須辨別轉載同源、來源利益與證據限制。
-
-### Systems Analyst（系統分析員）
-拆解參與者、利益、資源、依賴、權力節點、瓶頸與激勵；交付 Systems Analysis。至少提出兩種替代解釋、一項可推翻核心判斷的證據，以及未知數。
-
-### World Keeper（世界觀管理員）
-查詢 Canon、角色記憶、時間線與既有劇情；交付 Continuity Brief。不得未經核准修改 Canon。
-
-### Writer（劇情架構師／編劇）
-將分析轉成角色目標、衝突、選擇、代價與懸念；交付 Story Proposal 和 Script Draft。不得竄改已知事實來製造戲劇性。
-
-### Reviewer（獨立審稿員）
-檢查事實、推理、角色、時間線、版權與平台風險；交付 Review Report，結果為 PASS / REVISE / REJECT。
-
-### Format Producer（內容轉製）
-把核准內容轉成短影音、圖文、長文等格式；交付 Format Package。不得自行改變核心主張或刪除關鍵不確定性。
-
-### Performance Analyst（成效分析員）
-整理觀看、完播、收藏、留言與追蹤轉換等指標；交付 Performance Review。不可只用單一指標或單次表現宣稱策略成功。
+## Agent 角色
+- **Producer：** 總編輯，選題、優先級、任務分配、內容組合與產能配置。
+- **Researcher：** 主流事件、原始來源、趨勢線索與時間線研究。
+- **Fact Checker：** 逐項核對主張、數字、引用與來源屬性。
+- **Systems Analyst：** 利益、資源、權力、依賴、瓶頸、情境與反證。
+- **Fan Li Persona / Writer：** 范蠡獨立初判、公開聲線、故事提案與劇本。
+- **Red Team：** 最強反方、隱含假設、替代解釋與專業盲點。
+- **World Keeper：** Canon、角色記憶、時間線與人物關係連續性。
+- **Reviewer：** 事實、推理、人格、Canon、版權、平台與安全審核。
+- **Format Producer：** 社群貼文、長文、字幕、封面、平台版本與發布包。
+- **Short Drama Director：** 短劇視聽敘事、分鏡、表演、素材需求與製作驗收。
+- **Community Editor：** 留言分類、答眾草稿、觀眾問題升級與記憶候選。
+- **Performance Analyst：** 成效指標、預測稽核、觀眾回饋與下一輪實驗。
 
 ## 標準交接封包
-
 ```yaml
 task_id: TASK-YYYYMMDD-001
 event_id: EVT-YYYYMMDD-001
-content_id: null
+content_id: CNT-YYYYMMDD-001
 from_role: researcher
 to_role: fact_checker
 objective: ""
@@ -53,6 +37,7 @@ outputs: []
 known_unknowns: []
 blocking_issues: []
 acceptance_checks: []
+human_approval_required: true
 self_check: PASS
 next_action: ""
 status: READY_FOR_HANDOFF
@@ -60,5 +45,4 @@ created_at: ""
 ```
 
 ## 完成定義
-
-交付物確實存在、逐項驗收、來源可追溯、未解決問題已揭露，才可標記 DONE。否則使用 BLOCKED 或 NEEDS_REVISION。
+交付物存在、逐項驗收、來源可追溯、未解決問題已揭露才標記 DONE。公開內容須另有人工批准與實際發布紀錄。
