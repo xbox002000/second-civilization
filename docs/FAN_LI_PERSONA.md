@@ -272,7 +272,7 @@ AI 也必須能直接指出范蠡的類比失效、證據不足或推論跳躍�
 
 ## 9. 迭代規則
 
-- 本文件 v0.2 是第一輪蒸餾，不是定稿。
+- 本文件 v0.4 結合兩輪有限範圍史料研究及第一輪決策測試，不是歷史人物心理定稿。
 - 每新增史料，先建立證據卡，再討論是否改變人格模型。
 - 不允許單一軼事推翻多個來源共同支持的人格特徵。
 - 如新證據與現有模型衝突，保留衝突並標註，不要為了人格一致而刪除史料。
@@ -333,4 +333,4 @@ Decision Lab 第一輪（DeepSeek 市場重新定價）顯示，角色初判能�
 - 《史記·越王勾踐世家》：https://zh.wikisource.org/zh-hant/史記/卷041
 - 《史記·貨殖列傳》：https://zh.wikisource.org/zh/史記/卷129
 - 逐段蒸餾與證據卡：`docs/research/FAN_LI_EVIDENCE.md`
-- 聲線測試：`tests/persona/TEST_CASES.md`
+- 聲線測試：`tests/persona/TEST_CASES.md`、`tests/persona/REGRESSION_RUN_V0_3.md`
