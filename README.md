@@ -50,6 +50,8 @@
 - [高位感回歸測試](tests/persona/DRAMATIC_PRESENCE_TESTS.md)
 - [EP-001 高位感預審](tests/persona/EP-001-DP-PRECHECK.md)
 - [第一卷故事引擎](docs/SEASON_1_STORY_ENGINE.md)
+- [AI 系統設定：故事中的系統就是 AI](docs/AI_SYSTEM_DESIGN.md)
+- [第一章：醒來的人](examples/story-scenes/CHAPTER-001-AWAKENING.md)
 - [主線示範場景：入場條款](examples/story-scenes/SCENE-001-ENTRY-TERMS.md)
 - [入場條款高位感預審](tests/persona/SCENE-001-DP-PRECHECK.md)
 - [首次公開內容包](examples/public-content/LAUNCH-BATCH-001.md)
