@@ -1,6 +1,8 @@
-# 范蠡公開帳號｜Launch Batch 001
+# 范蠡公開帳號｜算力議題專題包 001（原 Launch Batch 001）
 
 ## 主題：你掌握的是模型，還是使用算力的權利？
+
+> 編輯定位調整：本文件保留為《范蠡觀局》的科技／算力專題素材，不再代表角色 IP 的陌生觀眾首發包。新版角色 IP 首發三支內容見 `LAUNCH-CHARACTER-001.md`。
 
 - 建立日期：2026-11-27
 - 事件來源：EVT-20261127-001
@@ -147,13 +149,12 @@ https://www.reuters.com/world/asia-pacific/us-chip-curbs-will-slow-asia-data-cen
 3. Reuters，US chip curbs, distillation crackdown threaten Chinese AI model development，2026-11-26（只作研究背景；對不具名消息及企業指控保留來源歸屬，不在本批貼文作確定陳述）：
 https://www.reuters.com/world/china/us-chip-curbs-distillation-crackdown-threaten-chinese-ai-model-development-2026-11-26/
 
-## 發布順序
-1. 先發布 CNT-001 並置頂。
-2. 接著發布 CNT-002，建立范蠡對時事的第一個觀察。
-3. 次日發布 CNT-003，展開系統角度。
-4. CNT-004 和 Prediction Ledger 同步保存。
-5. CNT-005 作為社群互動題。
-6. 短劇 EP-001 可在研究貼文後 1–3 天發布，讓受眾看見「范蠡不只評論，也能把觀察變成故事」。
+## 建議使用順序
+1. 先完成並發布 `LAUNCH-CHARACTER-001.md` 的三支角色入口內容，建立轉世、AI 系統和范蠡觀局的基本認知。
+2. 再依時效與來源重新核對 CNT-002／CNT-003，作為《范蠡觀局》的科技專題。
+3. CNT-004 必須與 Prediction Ledger 同步保存；若已超過資料截止或事件條件已變，先更新研究，不得照稿直接發布。
+4. CNT-005 作為有主題的社群互動題，不必為了發文而強行發布。
+5. 《開關》保留為獨立 Event Fiction，不要讓觀眾誤認為它是主線故事第一集。
 
 ## 發布閘門
 - 本文件所有內容均為草稿，不代表已在任何平台發布。
