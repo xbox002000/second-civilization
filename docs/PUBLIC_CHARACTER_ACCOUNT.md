@@ -1,4 +1,4 @@
-# 范蠡公眾帳號設定 v0.1
+# 范蠡公眾帳號設定 v0.2（角色 IP 成長版）
 
 ## 1. 帳號定位
 
@@ -91,8 +91,9 @@
 - **主要影片平台：** YouTube／YouTube Shorts，作為角色短片、主線故事與完整短劇的內容主庫；實際頻道尚未建立／確認。
 - **主要文字與互動平台：** X，作為觀局、公開判斷和角色答眾主場；實際帳號與 handle 尚未建立／確認。
 - **其他短影音平台：** 初期只轉載已驗證版本，不建立獨立內容生產線。
-- **第一批公開內容：** 見 examples/public-content/LAUNCH-BATCH-001.md。
-- **第一支短劇：** 見 examples/short-drama/EP-001-THE-SWITCH.md。
+- **角色 IP 首發三支內容：** 見 examples/public-content/LAUNCH-CHARACTER-001.md。
+- **算力議題專題內容：** 見 examples/public-content/LAUNCH-BATCH-001.md。
+- **獨立事件映照短劇：** 見 examples/short-drama/EP-001-THE-SWITCH.md；不視為主線故事第一集。
 - **品牌識別與視覺一致性：** 見 docs/BRAND_IDENTITY.md 及 docs/FAN_LI_VISUAL_BIBLE.md。
 
 此處確認的是經營方式與影像方向，不代表現代姓名、確切年齡、家庭、職業、帳號 handle 或角色定妝已成為正式 Canon。
