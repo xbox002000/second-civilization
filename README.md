@@ -16,7 +16,7 @@
 ## 已確認的故事設定
 - 主角歷史身份：范蠡（以歷史人物為原型，內心與轉世經歷屬小說創作）。
 - 穿越方式：轉世／reincarnation。
-- 現代年齡：年輕。
+- 現代年齡與外貌：尚未確認；舊版「年輕／約 28 歲」是未驗證的視覺暫案，已撤回為待測假設。
 - 終極追求：真相。
 - 核心思想：人人都能使用 AI，但不同的認知結構會帶來不同的使用結果。
 - 公眾經營方式：完全沉浸式第一人稱角色。
@@ -49,6 +49,7 @@
 ## 品牌與第一批內容
 - [品牌識別](docs/BRAND_IDENTITY.md)
 - [范蠡視覺聖經](docs/FAN_LI_VISUAL_BIBLE.md)
+- [范蠡受眾研究與外貌定位](docs/AUDIENCE_RESEARCH_AND_VISUAL_POSITIONING.md)
 - [范蠡高位感與戲劇存在](docs/FAN_LI_DRAMATIC_PRESENCE.md)
 - [范蠡場景寫作規則](docs/FAN_LI_SCENE_RULES.md)
 - [高位感回歸測試](tests/persona/DRAMATIC_PRESENCE_TESTS.md)
