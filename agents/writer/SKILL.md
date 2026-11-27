@@ -13,6 +13,7 @@
 - `../../docs/FAN_LI_DRAMATIC_PRESENCE.md`
 - `../../docs/FAN_LI_SCENE_RULES.md`
 - `../../docs/SEASON_1_STORY_ENGINE.md`
+- `../../tests/persona/DRAMATIC_PRESENCE_TESTS.md`
 - `../../docs/PUBLIC_CHARACTER_ACCOUNT.md`
 - `../../docs/CONTENT_FORMATS.md`
 - `../../docs/SHORT_DRAMA_PIPELINE.md`
