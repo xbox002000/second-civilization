@@ -7,6 +7,7 @@ WORKFLOW_V2_AMENDMENT_AGY_MEMO.md.
 Modes:
   1. Generate QC-1 or QC-2 diff sheet + gate JSON skeleton:
      python3 diff_sheet_gen.py --shots shot_list.json --mode qc1 \
+       --anchors-dir bible/anchors/ \
        --out-image qc1_diff_sheet.jpg --out-gate qc1_gate.json
 
   2. Verify filled gate JSON (Stage 4 / Stage 6A token-chaining check):
@@ -24,6 +25,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -32,6 +34,11 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageOps
+
+try:
+    import yaml  # type: ignore
+except ImportError:  # pragma: no cover
+    yaml = None
 
 
 # ---------------------------------------------------------------------------
@@ -60,6 +67,228 @@ ACCENT_CYAN = (34, 211, 238)
 ACCENT_AMBER = (251, 191, 36)
 ACCENT_RED = (248, 113, 113)
 ACCENT_GREEN = (74, 222, 128)
+
+
+# ---------------------------------------------------------------------------
+# Identity Anchors Loader & Era/Outfit Resolver (Spec v2.3 §C.2)
+# ---------------------------------------------------------------------------
+
+def _norm_char_key(raw: str) -> str:
+    return re.sub(r"[^A-Z0-9]", "", str(raw or "").strip().upper())
+
+
+def load_anchors_dir(anchors_dir: Optional[Path]) -> Dict[str, Dict[str, Any]]:
+    """Load bible/anchors/*.yaml indexed by canonical uppercase char_id (plus normalized aliases)."""
+    if anchors_dir is None:
+        return {}
+    if yaml is None:
+        raise RuntimeError("PyYAML is required to load --anchors-dir YAML files")
+    if not anchors_dir.is_dir():
+        raise FileNotFoundError(f"Anchors directory not found: {anchors_dir}")
+    db: Dict[str, Dict[str, Any]] = {}
+    for ypath in sorted(list(anchors_dir.glob("*.yaml")) + list(anchors_dir.glob("*.yml"))):
+        with ypath.open("r", encoding="utf-8") as fh:
+            data = yaml.safe_load(fh)
+        if not isinstance(data, dict):
+            continue
+        cid = _norm_char_key(data.get("char_id") or ypath.stem)
+        if cid:
+            db[cid] = data
+    return db
+
+
+def _infer_time_layer(shot: Dict[str, Any], spec: Dict[str, Any]) -> str:
+    tl = str(shot.get("time_layer") or spec.get("time_layer") or "").strip()
+    if tl:
+        return tl
+    oid = str(shot.get("outfit_id") or "").upper()
+    if "OUTFIT-01" in oid:
+        return "2026"
+    if any(tag in oid for tag in ("OUTFIT-02", "OUTFIT-03", "OUTFIT-04")):
+        return "春秋"
+    return ""
+
+
+def _infer_char_ids(shot: Dict[str, Any], anchors_db: Dict[str, Dict[str, Any]]) -> List[str]:
+    """Infer all matching character anchor keys (supports multi-character shots like FANLI + SYS01)."""
+    found: List[str] = []
+
+    def _add(raw_cid: str) -> None:
+        nk = _norm_char_key(raw_cid)
+        if nk and nk in anchors_db and nk not in found:
+            found.append(nk)
+
+    # 1. Explicit char_id / char_ids[]
+    if shot.get("char_id"):
+        _add(str(shot["char_id"]))
+    for c in shot.get("char_ids") or []:
+        _add(str(c))
+
+    # 2. outfit_id prefix (split on '-', try both first token and normalized full prefix)
+    oid = str(shot.get("outfit_id") or "").strip().upper()
+    if oid:
+        if "-" in oid:
+            _add(oid.split("-", 1)[0])
+        _add(oid)
+
+    # 3. sys01_in_frame flag or asset_refs mentioning SYS01 / SYS-01 / FANLI
+    if bool(shot.get("sys01_in_frame", False)) or shot.get("sys01_scale_mode"):
+        _add("SYS01")
+    for ref in shot.get("asset_refs") or []:
+        aid = str(ref.get("asset_id") if isinstance(ref, dict) else ref).upper()
+        for k in anchors_db.keys():
+            if k in _norm_char_key(aid):
+                _add(k)
+    for field in ("master_face_ref", "outfit_ref"):
+        val = str(shot.get(field) or "").upper()
+        for k in anchors_db.keys():
+            if k in _norm_char_key(val):
+                _add(k)
+
+    return found
+
+
+def resolve_shot_anchors(
+    anchors_db: Optional[Dict[str, Dict[str, Any]]],
+    shot: Dict[str, Any],
+    spec: Dict[str, Any],
+) -> Dict[str, Any]:
+    """
+    Resolve era-, outfit-, and sys01_scale_mode-specific required/forbidden anchors from
+    bible/anchors/*.yaml for a single shot (supporting multi-character shots like FANLI + SYS01).
+    """
+    empty = {
+        "char_id": "",
+        "char_ids": [],
+        "time_layer": "",
+        "required_ids": [],
+        "forbidden_ids": [],
+        "required_lines": [],
+        "forbidden_lines": [],
+        "checklist_lines": [],
+    }
+    if not anchors_db:
+        return empty
+
+    cids = _infer_char_ids(shot, anchors_db)
+    if not cids:
+        return empty
+
+    outfit_id = str(shot.get("outfit_id") or "").strip()
+    time_layer = _infer_time_layer(shot, spec)
+    shot_size = str(shot.get("shot_size") or "MS").upper()
+    sys01_scale_mode = str(shot.get("sys01_scale_mode") or "").strip()
+
+    required_ids: List[str] = []
+    forbidden_ids: List[str] = []
+    required_lines: List[str] = []
+    forbidden_lines: List[str] = []
+    checklist_lines: List[str] = []
+
+    for cid in cids:
+        char_doc = anchors_db[cid]
+        anchors = char_doc.get("anchors") or []
+        if not isinstance(anchors, list):
+            continue
+
+        for anc in anchors:
+            if not isinstance(anc, dict):
+                continue
+            aid = str(anc.get("anchor_id") or "").strip()
+            name = str(anc.get("name") or aid).strip()
+            qkey = str(anc.get("qc_gate_key") or "").strip()
+
+            # Case 1: Variant-based anchor (outfit / era / sys01_scale_mode)
+            variants = anc.get("variants")
+            if isinstance(variants, dict):
+                matched_vname = None
+                matched_vdata = None
+                # Priority 0: sys01_scale_mode match (ANC-SYS01-05)
+                if sys01_scale_mode:
+                    for vname, vdata in variants.items():
+                        if isinstance(vdata, dict) and sys01_scale_mode in (vdata.get("applies_to_scale_modes") or []):
+                            matched_vname, matched_vdata = vname, vdata
+                            break
+                # Priority 1: exact outfit match (handles 2022 arrival wearing OUTFIT-02!)
+                if matched_vdata is None and outfit_id:
+                    for vname, vdata in variants.items():
+                        if isinstance(vdata, dict) and outfit_id in (vdata.get("applies_to_outfits") or []):
+                            matched_vname, matched_vdata = vname, vdata
+                            break
+                # Priority 2: era match if outfit did not match
+                if matched_vdata is None and time_layer:
+                    for vname, vdata in variants.items():
+                        if isinstance(vdata, dict) and time_layer in (vdata.get("applies_to_eras") or []):
+                            matched_vname, matched_vdata = vname, vdata
+                            break
+                if matched_vdata is not None:
+                    required_ids.append(aid)
+                    required_lines.append(f"{aid}[{qkey}]: {name} ({matched_vname})")
+                    checklist_lines.append(f"REQ {aid} ({matched_vname}): {name}")
+                    forb_v = matched_vdata.get("forbidden_in_variant") or []
+                    if forb_v:
+                        forb_preview = "/".join(str(x) for x in forb_v[:4])
+                        forbidden_lines.append(f"{aid} BAN: {forb_preview}")
+                        checklist_lines.append(f"BAN {aid}: {forb_preview}")
+                continue
+
+            # Case 2: Era/outfit allowed vs forbidden anchor (e.g., ANC-FANLI-03 coin, ANC-FANLI-04 watch)
+            forb_eras = anc.get("forbidden_eras") or []
+            forb_outfits = anc.get("forbidden_outfits") or []
+            allow_eras = anc.get("allowed_eras") or []
+            allow_outfits = anc.get("allowed_outfits") or []
+
+            is_forbidden = (
+                (outfit_id and outfit_id in forb_outfits)
+                or (time_layer and time_layer in forb_eras)
+            )
+            if is_forbidden:
+                forbidden_ids.append(aid)
+                forbidden_lines.append(f"{aid}[{qkey}]: {name}")
+                checklist_lines.append(f"BAN {aid}: {name}")
+                continue
+
+            if allow_outfits or allow_eras:
+                is_allowed = (
+                    (outfit_id and outfit_id in allow_outfits)
+                    or (not outfit_id and time_layer and time_layer in allow_eras)
+                )
+                if is_allowed:
+                    required_ids.append(aid)
+                    required_lines.append(f"{aid}[{qkey}]: {name}")
+                    checklist_lines.append(f"REQ {aid}: {name}")
+                continue
+
+            # Case 3: Permanent / applies_to anchor (e.g., ANC-FANLI-01 scar, ANC-SYS01-01..04)
+            app_eras = anc.get("applies_to_eras") or []
+            app_outfits = anc.get("applies_to_outfits") or []
+            applies = (
+                (outfit_id and outfit_id in app_outfits)
+                or (time_layer and time_layer in app_eras)
+                or (not app_outfits and not app_eras)
+            )
+            if applies:
+                vis = anc.get("visibility_by_scale") or {}
+                req_scales = set(vis.get("required_visible") or [])
+                vis_tag = "REQ" if (not req_scales or shot_size in req_scales) else "OPT"
+                required_ids.append(aid)
+                required_lines.append(f"{aid}[{qkey}/{vis_tag}]: {name}")
+                checklist_lines.append(f"{vis_tag} {aid}: {name}")
+                forb_a = anc.get("forbidden_in_anchor") or []
+                if forb_a:
+                    forb_preview = "/".join(str(x) for x in forb_a[:3])
+                    forbidden_lines.append(f"{aid} BAN: {forb_preview}")
+
+    return {
+        "char_id": "+".join(cids),
+        "char_ids": cids,
+        "time_layer": time_layer,
+        "required_ids": required_ids,
+        "forbidden_ids": forbidden_ids,
+        "required_lines": required_lines,
+        "forbidden_lines": forbidden_lines,
+        "checklist_lines": checklist_lines,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -566,15 +795,67 @@ def make_outfit_anchor_cell(
             "3. Rough matte linen + belt jade bi",
             "4. ZERO coin/watch/modern hair/text",
         ]
-    f_sm = _load_font(max(15, cell_w // 35), bold=True)
-    line_h = max(21, cell_w // 28)
-    strip_h = line_h * (len(items) + 1) + 16
-    y_start = cell_h - strip_h
+    font_sz = max(14, cell_w // 38)
+    f_hdr = _load_font(font_sz, bold=True)
+    line_h = max(20, int(font_sz * 1.38))
+    max_w = cell_w - 24
+    # Wrap long lines so CJK/English anchor specs never overflow cell width
+    rendered: List[Tuple[str, Tuple[int, int, int]]] = []
+    for item in items:
+        col = TEXT_PRIMARY
+        if item.startswith("BAN "):
+            col = ACCENT_RED
+        elif item.startswith("REQ "):
+            col = ACCENT_GREEN
+        elif item.startswith("OPT "):
+            col = ACCENT_AMBER
+        f_it = _load_font(font_sz, bold=True, cjk=_has_cjk(item))
+        for wl in _wrap_text(draw, item, f_it, max_w):
+            rendered.append((wl, col))
+    max_lines = max(4, (cell_h // 3) // line_h)
+    rendered = rendered[:max_lines]
+    strip_h = line_h * (len(rendered) + 1) + 16
+    y_start = max(0, cell_h - strip_h)
     draw.rectangle([(0, y_start), (cell_w, cell_h)], fill=(12, 16, 22))
-    draw.text((12, y_start + 6), f"OUTFIT ANCHOR: {outfit_id}", font=f_sm, fill=ACCENT_CYAN)
-    for i, item in enumerate(items):
-        draw.text((12, y_start + 6 + (i + 1) * line_h), item, font=f_sm, fill=TEXT_PRIMARY)
+    draw.text((12, y_start + 6), f"OUTFIT ANCHOR: {outfit_id}", font=f_hdr, fill=ACCENT_CYAN)
+    for i, (line_txt, col) in enumerate(rendered):
+        f_it = _load_font(font_sz, bold=True, cjk=_has_cjk(line_txt))
+        draw.text((12, y_start + 6 + (i + 1) * line_h), line_txt, font=f_it, fill=col)
     return out
+
+
+def _draw_anchor_footer_strip(
+    draw: ImageDraw.ImageDraw,
+    x: int,
+    y: int,
+    cell_w: int,
+    cell_h: int,
+    resolved: Dict[str, Any],
+) -> None:
+    """Render compact era-specific required/forbidden anchor footer inside QC-2 Col 2."""
+    lines = resolved.get("checklist_lines") or []
+    if not lines:
+        return
+    font_sz = max(13, cell_w // 42)
+    line_h = max(18, int(font_sz * 1.36))
+    max_w = cell_w - 20
+    rendered: List[Tuple[str, Tuple[int, int, int]]] = []
+    for item in lines:
+        col = ACCENT_RED if item.startswith("BAN ") else (ACCENT_AMBER if item.startswith("OPT ") else ACCENT_GREEN)
+        f_it = _load_font(font_sz, bold=True, cjk=_has_cjk(item))
+        for wl in _wrap_text(draw, item, f_it, max_w):
+            rendered.append((wl, col))
+    max_lines = max(3, (cell_h // 4) // line_h)
+    rendered = rendered[:max_lines]
+    strip_h = line_h * (len(rendered) + 1) + 12
+    y_start = y + max(34, cell_h - strip_h)
+    draw.rectangle([(x + 2, y_start), (x + cell_w - 2, y + cell_h - 2)], fill=(12, 16, 22))
+    f_hdr = _load_font(font_sz, bold=True, cjk=_has_cjk(resolved.get("time_layer", "")))
+    hdr = f"ANCHORS ({resolved.get('char_id', '?')} / {resolved.get('time_layer') or '?'})"
+    draw.text((x + 10, y_start + 5), hdr, font=f_hdr, fill=ACCENT_CYAN)
+    for i, (line_txt, col) in enumerate(rendered):
+        f_it = _load_font(font_sz, bold=True, cjk=_has_cjk(line_txt))
+        draw.text((x + 10, y_start + 5 + (i + 1) * line_h), line_txt, font=f_it, fill=col)
 
 
 def make_dual_anchor_cell(
@@ -711,10 +992,10 @@ def _draw_telemetry_col(
     draw.line([(x + pad, cy), (x + w - pad, cy)], fill=CELL_BORDER, width=2)
     cy += 16
 
-    f_key = _load_font(19, bold=True)
     for k, v, col in kv_lines:
         if cy > y + h - 120:
             break
+        f_key = _load_font(19, bold=True, cjk=_has_cjk(k))
         draw.text((x + pad, cy), k, font=f_key, fill=TEXT_MUTED)
         cy += 24
         f_val = _load_font(20, bold=False, cjk=_has_cjk(v))
@@ -749,6 +1030,7 @@ def generate_qc1(
     out_gate: Path,
     cell_width: int = 0,
     quality: int = 92,
+    anchors_db: Optional[Dict[str, Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     shots = [_normalize_shot_entry(s) for s in spec.get("shots") or []]
     if not shots:
@@ -839,6 +1121,9 @@ def generate_qc1(
         if m["blowout_pct"] > 5.0:
             flags.append(f"BLOWOUT {m['blowout_pct']:.1f}% (>5%)")
 
+        # Resolve era-specific anchors if --anchors-dir provided (Spec v2.3 §C.2)
+        resolved_anc = resolve_shot_anchors(anchors_db, s, spec)
+
         # Col 0: Spec & continuity
         x0 = gap
         kv = [
@@ -851,6 +1136,18 @@ def generate_qc1(
             ("LAB BG (L*, b*)", f"L*={m['bg_L']:.1f} (dL*={dL:+.1f}) | b*={m['bg_b']:.1f} (db*={db:+.1f})", TEXT_PRIMARY),
             ("BLOWOUT (>245)", f"{m['blowout_pct']:.2f}%", ACCENT_RED if m["blowout_pct"] > 5.0 else ACCENT_GREEN),
         ]
+        if resolved_anc["required_lines"]:
+            kv.append((
+                f"ANCHORS REQ ({resolved_anc['time_layer'] or '?'})",
+                "\n".join(resolved_anc["required_lines"]),
+                ACCENT_GREEN,
+            ))
+        if resolved_anc["forbidden_lines"]:
+            kv.append((
+                "ANCHORS FORBIDDEN",
+                "\n".join(resolved_anc["forbidden_lines"]),
+                ACCENT_RED,
+            ))
         _draw_telemetry_col(draw, x0, ry, col0_w, ch, f"{s['shot_id']} [QC-1]", kv, flags)
 
         # Col 1: Master face anchor
@@ -861,12 +1158,13 @@ def generate_qc1(
 
         # Col 2: Outfit card anchor
         x2 = x1 + cw + gap
+        col2_checklist = s.get("outfit_checklist") or (resolved_anc["checklist_lines"] or None)
         c2 = make_outfit_anchor_cell(
             s.get("outfit_ref"),
             cw,
             ch,
             str(s.get("outfit_id") or "OUTFIT"),
-            s.get("outfit_checklist"),
+            col2_checklist,
         )
         canvas.paste(c2, (x2, ry))
         draw.rectangle([(x2, ry), (x2 + cw, ry + ch)], outline=CELL_BORDER, width=2)
@@ -907,7 +1205,7 @@ def generate_qc1(
         if s["first_frame"] and os.path.isfile(s["first_frame"]):
             ff_abs = str(Path(s["first_frame"]).resolve())
             src_files["first_frame"] = {"path": ff_abs, "sha256": sha256_file(ff_abs)}
-        gate_shots.append({
+        shot_rec: Dict[str, Any] = {
             "shot_id": s["shot_id"],
             "shot_size": s["shot_size"],
             "shot_type": s["shot_type"],
@@ -919,7 +1217,15 @@ def generate_qc1(
             "shot_status": "PENDING",
             "override_reason": "",
             "notes": "",
-        })
+        }
+        if resolved_anc["required_ids"] or resolved_anc["forbidden_ids"]:
+            shot_rec["resolved_anchors"] = {
+                "char_id": resolved_anc["char_id"],
+                "time_layer": resolved_anc["time_layer"],
+                "required_ids": resolved_anc["required_ids"],
+                "forbidden_ids": resolved_anc["forbidden_ids"],
+            }
+        gate_shots.append(shot_rec)
 
     out_image.parent.mkdir(parents=True, exist_ok=True)
     out_gate.parent.mkdir(parents=True, exist_ok=True)
@@ -951,6 +1257,7 @@ def generate_qc2(
     out_gate: Path,
     cell_width: int = 0,
     quality: int = 90,
+    anchors_db: Optional[Dict[str, Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     shots = [_normalize_shot_entry(s) for s in spec.get("shots") or []]
     if not shots:
@@ -1075,6 +1382,9 @@ def generate_qc2(
         if vad_delta_ms is not None and abs(float(vad_delta_ms)) > 300.0:
             flags.append(f"LIP_OFFSET {float(vad_delta_ms):+.0f}ms (>300ms)")
 
+        # Resolve era-specific anchors if --anchors-dir provided (Spec v2.3 §C.2)
+        resolved_anc = resolve_shot_anchors(anchors_db, s, spec)
+
         # Col 0: Clip telemetry
         x0 = gap
         kv = [
@@ -1086,6 +1396,18 @@ def generate_qc2(
             ("BLOWOUT PEAK (>245)", f"{peak_blowout:.2f}% (spike {blowout_spike:+.2f}%)", ACCENT_RED if peak_blowout > 5.0 else ACCENT_GREEN),
             ("LIP / VAD OFFSET", f"lip={bool(s.get('lip_sensitive', False))} | delta={vad_delta_ms if vad_delta_ms is not None else 'N/A'} ms", TEXT_PRIMARY),
         ]
+        if resolved_anc["required_lines"]:
+            kv.append((
+                f"ANCHORS REQ ({resolved_anc['time_layer'] or '?'})",
+                "\n".join(resolved_anc["required_lines"]),
+                ACCENT_GREEN,
+            ))
+        if resolved_anc["forbidden_lines"]:
+            kv.append((
+                "ANCHORS FORBIDDEN",
+                "\n".join(resolved_anc["forbidden_lines"]),
+                ACCENT_RED,
+            ))
         _draw_telemetry_col(draw, x0, ry, col0_w, ch, f"{s['shot_id']} [QC-2]", kv, flags)
 
         # Col 1: Master dual anchor
@@ -1100,7 +1422,7 @@ def generate_qc2(
         canvas.paste(c1, (x1, ry))
         draw.rectangle([(x1, ry), (x1 + cw, ry + ch)], outline=CELL_BORDER, width=2)
 
-        # Col 2: Approved QC-1 first frame
+        # Col 2: Approved QC-1 first frame (+ era-specific anchor footer when --anchors-dir active)
         x2 = x1 + cw + gap
         draw.rectangle([(x2, ry), (x2 + cw, ry + ch)], fill=PANEL_BG, outline=CELL_BORDER, width=2)
         ff_path = s["first_frame"]
@@ -1110,6 +1432,7 @@ def generate_qc2(
             f_tag = _load_font(max(16, cw // 36), bold=True)
             draw.rectangle([(x2, ry), (x2 + cw, ry + 32)], fill=(12, 16, 22))
             draw.text((x2 + 10, ry + 6), f"{s['shot_id']} QC-1 FIRST FRAME", font=f_tag, fill=ACCENT_CYAN)
+        _draw_anchor_footer_strip(draw, x2, ry, cw, ch, resolved_anc)
 
         # Col 3 .. Col (2 + max_samples): §5.1 sampled frames
         f_tag = _load_font(max(16, cw // 36), bold=True)
@@ -1159,7 +1482,7 @@ def generate_qc2(
             cp_abs = str(Path(s["clip"]).resolve())
             src_files["clip"] = {"path": cp_abs, "sha256": sha256_file(cp_abs)}
 
-        gate_shots.append({
+        shot_rec2: Dict[str, Any] = {
             "shot_id": s["shot_id"],
             "shot_size": s["shot_size"],
             "shot_type": s["shot_type"],
@@ -1180,7 +1503,15 @@ def generate_qc2(
             "shot_status": "PENDING",
             "override_reason": "",
             "notes": "",
-        })
+        }
+        if resolved_anc["required_ids"] or resolved_anc["forbidden_ids"]:
+            shot_rec2["resolved_anchors"] = {
+                "char_id": resolved_anc["char_id"],
+                "time_layer": resolved_anc["time_layer"],
+                "required_ids": resolved_anc["required_ids"],
+                "forbidden_ids": resolved_anc["forbidden_ids"],
+            }
+        gate_shots.append(shot_rec2)
 
     out_image.parent.mkdir(parents=True, exist_ok=True)
     out_gate.parent.mkdir(parents=True, exist_ok=True)
@@ -1499,6 +1830,97 @@ def run_selftest() -> int:
         ok_sha, sha_msgs = verify_gate_json(qc2_filled)
         check("verify_catches_sha256_tampering", not ok_sha and any("SHA256_MISMATCH" in m for m in sha_msgs))
 
+        # Anchors-dir tests (Spec v2.3 §C.2): synthetic + real bible/anchors if present
+        anc_dir = tdir / "anchors"
+        anc_dir.mkdir(parents=True, exist_ok=True)
+        (anc_dir / "FANLI.yaml").write_text(
+            "char_id: FANLI\n"
+            "status: LOCKED\n"
+            "anchors:\n"
+            "  - anchor_id: ANC-FANLI-01\n"
+            "    name: 左眉眉尾淡舊斜疤\n"
+            "    applies_to_eras: ['春秋', '2022', '2026']\n"
+            "    applies_to_outfits: ['FANLI-OUTFIT-01', 'FANLI-OUTFIT-02']\n"
+            "    visibility_by_scale:\n"
+            "      required_visible: ['CU', 'MCU']\n"
+            "      optional_in: ['MS']\n"
+            "    qc_gate_key: scar_side\n"
+            "  - anchor_id: ANC-FANLI-02\n"
+            "    name: 時代條件髮型剪影\n"
+            "    variants:\n"
+            "      modern:\n"
+            "        applies_to_eras: ['2022', '2026']\n"
+            "        applies_to_outfits: ['FANLI-OUTFIT-01']\n"
+            "        forbidden_in_variant: ['緇布冠', '木笄']\n"
+            "      ancient_outfit02:\n"
+            "        applies_to_eras: ['春秋']\n"
+            "        applies_to_outfits: ['FANLI-OUTFIT-02']\n"
+            "        forbidden_in_variant: ['現代低馬尾', '額前垂絲']\n"
+            "    qc_gate_key: costume_4pt\n"
+            "  - anchor_id: ANC-FANLI-03\n"
+            "    name: 古銅方孔錢\n"
+            "    allowed_eras: ['2022', '2026']\n"
+            "    allowed_outfits: ['FANLI-OUTFIT-01']\n"
+            "    forbidden_eras: ['春秋']\n"
+            "    forbidden_outfits: ['FANLI-OUTFIT-02']\n"
+            "    qc_gate_key: costume_4pt\n"
+            "  - anchor_id: ANC-FANLI-04\n"
+            "    name: 舊銅殼腕錶\n"
+            "    allowed_eras: ['2022', '2026']\n"
+            "    allowed_outfits: ['FANLI-OUTFIT-01']\n"
+            "    forbidden_eras: ['春秋']\n"
+            "    forbidden_outfits: ['FANLI-OUTFIT-02']\n"
+            "    qc_gate_key: costume_4pt\n",
+            encoding="utf-8",
+        )
+        adb = load_anchors_dir(anc_dir)
+        check("anchors_dir_loaded_fanli", "FANLI" in adb)
+
+        # Ancient OUTFIT-02 must require 01/02 and forbid 03/04
+        res_anc = resolve_shot_anchors(adb, {"outfit_id": "FANLI-OUTFIT-02", "time_layer": "春秋", "shot_size": "CU"}, spec)
+        check(
+            "anchors_ancient_forbids_coin_watch",
+            set(res_anc["required_ids"]) == {"ANC-FANLI-01", "ANC-FANLI-02"}
+            and set(res_anc["forbidden_ids"]) == {"ANC-FANLI-03", "ANC-FANLI-04"},
+            f"req={res_anc['required_ids']} forb={res_anc['forbidden_ids']}",
+        )
+
+        # 2022 arrival wearing OUTFIT-02 must STILL forbid 03/04 and use ancient_outfit02 hair variant
+        res_2022_o2 = resolve_shot_anchors(adb, {"outfit_id": "FANLI-OUTFIT-02", "time_layer": "2022", "shot_size": "MS"}, spec)
+        check(
+            "anchors_2022_outfit02_still_forbids_coin_watch",
+            set(res_2022_o2["forbidden_ids"]) == {"ANC-FANLI-03", "ANC-FANLI-04"}
+            and any("ancient_outfit02" in ln for ln in res_2022_o2["required_lines"]),
+            f"req={res_2022_o2['required_lines']} forb={res_2022_o2['forbidden_ids']}",
+        )
+
+        # Modern 2026 OUTFIT-01 must require 01/02/03/04 and forbid none
+        res_mod = resolve_shot_anchors(adb, {"outfit_id": "FANLI-OUTFIT-01", "time_layer": "2026", "shot_size": "MCU"}, spec)
+        check(
+            "anchors_modern_outfit01_requires_all_four",
+            set(res_mod["required_ids"]) == {"ANC-FANLI-01", "ANC-FANLI-02", "ANC-FANLI-03", "ANC-FANLI-04"}
+            and not res_mod["forbidden_ids"],
+            f"req={res_mod['required_ids']} forb={res_mod['forbidden_ids']}",
+        )
+
+        # Re-render QC-1 & QC-2 with anchors_db attached (restore clean ff1 first)
+        _make_synthetic_portrait(ff1)
+        spec_anc = dict(spec)
+        spec_anc["time_layer"] = "春秋"
+        qc1_anc_img = tdir / "qc1_anc.jpg"
+        qc1_anc_gate = tdir / "qc1_anc_gate.json"
+        qc2_anc_img = tdir / "qc2_anc.jpg"
+        qc2_anc_gate = tdir / "qc2_anc_gate.json"
+        g1a = generate_qc1(spec_anc, qc1_anc_img, qc1_anc_gate, quality=92, anchors_db=adb)
+        g2a = generate_qc2(spec_anc, qc2_anc_img, qc2_anc_gate, quality=90, anchors_db=adb)
+        check(
+            "qc1_qc2_render_with_anchors_dir",
+            qc1_anc_img.is_file()
+            and qc2_anc_img.is_file()
+            and set(g1a["shots"][0]["resolved_anchors"]["forbidden_ids"]) == {"ANC-FANLI-03", "ANC-FANLI-04"}
+            and set(g2a["shots"][1]["resolved_anchors"]["forbidden_ids"]) == {"ANC-FANLI-03", "ANC-FANLI-04"},
+        )
+
     print(f"=== SELFTEST {'PASSED' if all_ok else 'FAILED'} ===")
     return 0 if all_ok else 1
 
@@ -1509,6 +1931,7 @@ def main() -> int:
     )
     parser.add_argument("--shots", help="Path to shot_list.json")
     parser.add_argument("--mode", choices=["qc1", "qc2"], help="Diff sheet mode")
+    parser.add_argument("--anchors-dir", help="Directory containing bible/anchors/*.yaml for era-specific anchor overlays (Spec v2.3 §C.2)")
     parser.add_argument("--out-image", help="Output JPEG path (default: qc1_diff_sheet.jpg / qc2_diff_sheet.jpg)")
     parser.add_argument("--out-gate", help="Output gate JSON path (default: qc1_gate.json / qc2_gate.json)")
     parser.add_argument("--cell-width", type=int, default=0, help="Visual cell width in px (0 = native resolution)")
@@ -1534,6 +1957,14 @@ def main() -> int:
         print(f"ERROR: shot list file not found: {shots_path}", file=sys.stderr)
         return 2
 
+    anchors_db: Optional[Dict[str, Dict[str, Any]]] = None
+    if args.anchors_dir:
+        anc_path = Path(args.anchors_dir)
+        if not anc_path.is_dir():
+            print(f"ERROR: anchors directory not found: {anc_path}", file=sys.stderr)
+            return 2
+        anchors_db = load_anchors_dir(anc_path)
+
     with shots_path.open("r", encoding="utf-8") as fh:
         spec = json.load(fh)
 
@@ -1542,9 +1973,23 @@ def main() -> int:
     out_gate = Path(args.out_gate) if args.out_gate else (out_dir / f"{args.mode}_gate.json")
 
     if args.mode == "qc1":
-        gate = generate_qc1(spec, out_img, out_gate, cell_width=args.cell_width, quality=args.quality)
+        gate = generate_qc1(
+            spec,
+            out_img,
+            out_gate,
+            cell_width=args.cell_width,
+            quality=args.quality,
+            anchors_db=anchors_db,
+        )
     else:
-        gate = generate_qc2(spec, out_img, out_gate, cell_width=args.cell_width, quality=args.quality)
+        gate = generate_qc2(
+            spec,
+            out_img,
+            out_gate,
+            cell_width=args.cell_width,
+            quality=args.quality,
+            anchors_db=anchors_db,
+        )
 
     dims = gate["sheet_dimensions"]
     print(

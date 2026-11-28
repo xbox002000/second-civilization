@@ -1,6 +1,6 @@
 # 專案現況總表（PROJECT STATUS）
 
-最後更新：2026-11-28（batch-2 同步）。本頁是全專案的單一現況來源；細節見各規格與備忘錄。
+最後更新：2026-11-28（v2.4＋SM-8 GO＋EP-01 資產批次同步）。本頁是全專案的單一現況來源；細節見各規格與備忘錄。
 
 ## 一句話現況
 
@@ -15,8 +15,8 @@
 | 通路 | 完全獨立新帳號（IG＋Threads＋YT Shorts＋Personal Lab）；不掛 @chao.and.nao、不做 Collab | 2026-11-27 |
 | 入場 Canon | 2022-11-30（ChatGPT 公開日）與系統同日抵達，潛伏觀察近四年；引擎含「前史痕跡」欄 | 2026-11-27 |
 | 影片引擎路由 | 對白特寫＝H3 原生四圖 Ref2VA（SM-7A 定版）；一般鏡＝Flow Omni 1.2 Flash（預設）；白膜 L3 每集 0–2 英雄鏡 | 2026-11-28 |
-| SYS-01 呈現 | 後製四層合成（AMD-05 定案），禁止生成引擎在畫面內畫彈窗 | 2026-11-28 |
-| SYS-01 定妝 | Creator 豆包角色卡為基準（短鮑伯＋黑大衣＋紅圍巾）；專屬聲線未定版 | 2026-11-28 |
+| SYS-01 呈現 | **AMD-05 v3 生成端主導＋後製精修**（2026-11-28 **SM-8 6/6 GO 實證放行**：Carrier A `nano2` 單視角裁切 ref → Flow Omni `i2v_first`，12 pts / 0 CU）；嚴禁浮動面板／HUD 圓環／文字（`SYS01_TEXT_PANEL_BAN`）；`DEMO02_v2` 享祖父條款不回溯 | 2026-11-28 |
+| SYS-01 定妝 | Creator 豆包角色卡為基準（短鮑伯＋黑大衣＋紅圍巾）；9 張單視角無損裁切 PNG 與 `bible/anchors/SYS01.yaml` 已 LOCKED；專屬聲線仍待試聽拍板 | 2026-11-28 |
 | Seedance | 只借鑑方法層，不列入生產存取；主力維持 H3 | 2026-11-28 |
 
 ## 管線實證（DEMO-02 修復版，2026-11-28 全流程託管實跑）
@@ -24,8 +24,8 @@
 - 三閘全過、零豁免：QC-0 preflight 抓到託管者自身 pack 的 2 處違規；QC-2 初檢打回 2 支 Take 1、重拍後簽核。
 - 原 DEMO-02 六類 QC-D 失敗全數修復（臉/年齡漂移、服裝不連戲、傷痕跑邊、S4 青光消失、婦人站位、系統人像 AI 感）；收件方（Muse）抽幀複核屬實。
 - 實測成本：每支 H3 四圖 clip 約 0.13–0.17 CU、Flow 鏡 12–15 點；DEMO-02 修復全程 0.83 CU＋60 Flow 點＋ElevenLabs 0 元、約 87 分鐘。
-- 規格現行版：分鏡規格 **v2.3**（`docs/STORYBOARD_SPEC_V2.md`）；閘門工具在 `tools/`（preflight 自測 32/32）。
-- 已知小缺口（已記錄、EP-01 前修）：diff_sheet_gen 的 `--anchors-dir` 未接線；SYS-01 合成青光遮罩半徑預設待收緊。
+- 規格現行版：分鏡規格 **v2.4 FINAL**（`docs/STORYBOARD_SPEC_V2.md`，含附錄 D V14 覆蓋＋§C.4 AMD-05 v3＋H3 規格對賬＋`INSERT_ECU_DURATION`）；閘門工具在 `tools/`（`preflight_gate.py` 自測 **59/59 PASS**、`diff_sheet_gen.py` 自測 **15/15 PASS** 並已接通多角色 `FANLI+SYS01` 錨點）。
+- 已補齊缺口（2026-11-28）：`diff_sheet_gen.py` 多角色 `--anchors-dir` 與 `SYS01.yaml` 已接通；`casting/master/` 8 項暫存／禁用殘留已 move-only 歸檔；共用 48kHz `audio_lib/`（6 條 roomtone＋S00 出鞘 Foley）已就位；`docs/PROP_REGISTRY.md` 與 `docs/LOCATION_REGISTRY.md` 已建立。
 
 ## 待 Creator 拍板（發布迴路的啟動鑰匙）
 

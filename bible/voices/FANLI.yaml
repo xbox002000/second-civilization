@@ -1,0 +1,30 @@
+char_id: FANLI
+status: LOCKED
+locked_date: "2026-11-27"
+voice_name: FANLI-CAND-F
+voice_id: cRwv4ifxTO090GKMOQ3p
+provider: ElevenLabs
+model_id: eleven_v4
+voice_settings:
+  stability: 0.65
+  similarity_boost: 0.75
+  use_speaker_boost: true
+output_format: mp3_44100_128
+design_prompt: "early-40s Taiwanese Mandarin male, very deep resonant chest voice, calm and inward-looking, restrained emotion, speaks softly but every word lands, minimal inflection, clear diction, natural Taipei accent"
+acceptance:
+  script:
+    four_words: "垃圾分類記得做好，星期三見。企業合作請聯絡我們，危險的動作不要做。"
+    name: "我是范蠡。"
+    emotions: |-
+      合約我看完了。第七條，把我們的退路寫死了。
+
+      [sarcastically] 免費的算力？這世上最貴的東西，從來都標著免費。
+
+      [whispers] 先別簽。倒數還剩七十二小時，簽下去就回不了頭了。
+
+      我說過，這條線不能碰。誰碰，誰出局。
+  history: "第一輪 A–D 經 Creator 試聽全數否決（回饋：不太夠，要更低沉內斂，已自聲音庫刪除）；第二輪 E/F/G 中 Creator 於 2026-11-27 選定 F"
+  pronunciation_notes: "「蠡」讀 ㄌㄧˇ；四詞（垃圾／星期／企業／危險）經 Creator 試聽通過"
+rules:
+  - "模型升級視同換聲，須重跑驗收稿回歸試聽並經 Creator 簽核才可變更 model_id 或參數。"
+  - "同一角色嚴禁混用其他引擎或聲線。"

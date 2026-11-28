@@ -1,26 +1,29 @@
-# 分鏡規格 v2.3（整合定版）
+# 分鏡規格 v2.4（整合定版）
 
-> **版本**：**v2.3 FINAL**（2026-11-28 整合定版）。  
+> **版本**：**v2.4 FINAL**（2026-11-28 整合定版）。  
 > **版本沿革**：
 > - **v2.0**：Muse 起草 → agy 工程討論（`STORYBOARD_SPEC_V2_AGY_MEMO.md`）→ Creator 拍板雙檔原子鏡契約（schema 2.0）。
 > - **v2.0 + 附錄 A**：運鏡控制四級分層與 H3／Flow／Wan 方言（`CAMERA_WORKFLOW_AGY_MEMO.md`）。
 > - **v2.1 + 附錄 B**：導演層、V12 護欄與 QC-D 閘（`DIRECTOR_LAYER_AGY_MEMO.md`、DEMO-02 QC-D 常規五條）。
 > - **v2.2 + 附錄 C + §九**：工作流修訂 AMD-01～07 與 Demo 邊界條款（`WORKFLOW_V2_AMENDMENT_AGY_MEMO.md`）。
-> - **v2.3（本版）**：整合 SM-7A（4 槽 H3 Ref2VA 實測三條件，`sm7a/SM7A_RESULT.md`）、Clay Test（L3 白膜實測四條件，`claytest/CLAY_TEST_RESULT.md`）與 Seedance 生態方法／電影提示詞工藝收斂案（`V23_AMENDMENT_AGY_MEMO.md` Items 1–7，只借方法、引擎維持 H3＋Flow Omni 1.2 Flash＋Wan＋LTX＋ffmpeg_card）。
+> - **v2.3**：整合 SM-7A（4 槽 H3 Ref2VA 實測三條件）、Clay Test（L3 白膜實測四條件）與 Seedance 生態方法／電影提示詞工藝收斂案（Items 1–7）。
+> - **v2.4（本版）**：整合 **附錄 D（導演鏡頭覆蓋與豎屏短劇節奏 V14 閘門，含 Creator `INSERT_ECU_DURATION` 插鏡時長紀律）**、**§C.4 AMD-05 v3（`SYS-01` 生成主導＋後製精修，經 `SM-8` 6/6 GO 實證放行）**、以及 **H3 官方規格對賬修訂**（`H3_MODE_EXCLUSION`、`H3_MIN_DURATION ≥4.0s` 墊幀、`5+17k` 實長進位檢核、產線品質帽措辭校準）。
 >
-> **定位**：定義「一集分鏡包」的資訊結構與驗證契約（`script_pack.json` schema **2.3**，向下相容 2.0–2.2；對齊 `edit_manifest.json` v1.1 與 DESIGN v1.4／待同步 v1.5）。  
+> **定位**：定義「一集分鏡包」的資訊結構與驗證契約（`script_pack.json` schema **2.4**，向下相容 2.0–2.3；對齊 `edit_manifest.json` v1.1 與 DESIGN v1.4／待同步 v1.5）。  
 > **不可動搖紅線**：一切可讀文字後製合成（V9）；事實分層由 beat 繼承（V10）；seed 不入鏡級欄位；H3 端正向編譯／零裸否定靜止詞；全面 ElevenLabs TTS 對白路線。
 
-## 零、受控聖經檔案索引（Bible Index｜v2.3 新增）
+## 零、受控聖經檔案索引（Bible Index｜v2.4 更新）
 
 | 檔案路徑 | 狀態 | 職責 |
 |---|---|---|
 | `bible/anchors/FANLI.yaml` | **LOCKED (v2.3)** | 范蠡跨鏡身分與時代條件錨點唯一準據（眉疤、時代髮型、現代方孔錢、左腕舊銅錶）與 QC 鍵位映射 |
+| `bible/anchors/SYS01.yaml` | **LOCKED (v2.4)** | `SYS-01` 跨鏡身分、黑大衣＋紅圍巾、全息光學五要素、V9 禁面板紅線與 `sys01_scale_mode` 錨點（AMD-05 v3） |
 | `bible/performance/micro_expressions.yaml` | **LOCKED (v2.3)** | 4 分區 × 21 核心微表情有界詞表、L1–L4 強度標尺與反 AI 假臉衛生清單 |
-| `bible/camera/named_shots.yaml` | 規劃／受控 | 8–10 個高頻 9:16 鏡型庫與 `verified_9x16_status` |
-| `voices/FANLI.yaml`（正式集對接 `bible/voices/`） | **LOCKED** | 范蠡 ElevenLabs 聲線單點鎖定（`FANLI-CAND-F`，`eleven_v4`），嚴禁鏡級覆寫 |
+| `bible/camera/named_shots.yaml` | **LOCKED (v2.4)** | 18 個高頻 9:16 受控鏡型庫與 `verified_9x16_status` |
+| `voices/FANLI.yaml`（repo 對齊 `voices/FANLI.yaml`） | **LOCKED** | 范蠡 ElevenLabs 聲線單點鎖定（`FANLI-CAND-F`，`eleven_v4`），嚴禁鏡級覆寫 |
 | `bible/director/playbook.md` | 累積制 | 導演手記（一條裁示一條目，每集闡述前必讀） |
 | `COSTUME_REGISTRY.md` / `MASTER_FACE_DECISION.md` | **LOCKED** | 服裝資產卡（`FANLI-OUTFIT-01..04`）與身分層唯一基準（`fanli-master-B-userface.png`） |
+| `docs/PROP_REGISTRY.md` / `docs/LOCATION_REGISTRY.md` | **ACTIVE (v2.4)** | 一物一 ID 道具卡（`PROP-*`）與場景母圖／光線鎖卡（`LOC-*`）及 QC-1 紀錄 |
 
 ---
 
@@ -61,6 +64,9 @@ episodes/EP{NNN}/
 | `public_exposure` | ○ | `private`／`semi`／`public`（配 V12c） |
 | `anomaly_level` | ○ | `low`／`mid`／`high`（配 V12c） |
 | `audio_groups[]` | ○ | 跨鏡共用 TTS 群組：`{group_id, speaker, delivery_mode, lines[]}`；供畫外音跨鏡與 J/L-cut 對齊字幕（嚴禁內含 `voice_id`/`model_id` 覆寫） |
+| `segment_pacing_profile` | ●（v2.4） | `hook`／`escalation`／`confrontation`／`revelation`／`climax`／`release_bridge`／`chase_tension`（對接附錄 D.2 節奏帶） |
+| `axis_plan` | ◐（v2.4） | `≥2` 人物鏡段必填：`{char_id: {screen_side, default_facing}}`（180° 軸線鎖，配 R9） |
+| `target_shot_density_per_10s` | ○（v2.4） | `[min, max]` 覆寫段級預設節奏帶 |
 
 ### 2.1 段級環境音底床規格 `segments[].ambience`（v2.3 新增）
 
@@ -104,15 +110,22 @@ episodes/EP{NNN}/
 | `dialogue[]` | ◐ | 每句一筆：`{line_id, speaker, line, tts_emotion_tags[], delivery_mode: on_camera/off_camera/voiceover, pause_after_sec, delivery?: {pre_pause_sec?, pace?, volume?}}`。`voiceover` 不驅動口型。**音色單點鎖定（v2.3）**：`speaker` 唯一映射至 `voices/{SPEAKER}.yaml`（`LOCKED`），嚴禁在 `dialogue[]` 覆寫 `voice_id`/`model_id`，且不在影片 `video_prompt` 寫逐句音色綁定（全 TTS 路線下屬 no-op）。`FANLI` 預設 `delivery: {pre_pause_sec: 0.5, pace: "measured", volume: "low"}`。 |
 | `end_state` | ◐ | AI 鏡必填：鏡尾可觀察狀態（人物位置姿勢、道具在誰手裡、門／燈／屏幕狀態）；`cpu_card` 填固定值 `card_hold` |
 
-### B 攝影
+### B 攝影（v2.4 覆蓋欄位升級）
 | 欄位 | 必填 | 規則 |
 |---|---|---|
-| `shot_size` | ● | ELS／LS／MS／MCU／CU／ECU／OTS／2S／INSERT |
+| `shot_size` | ●（v2.4） | 純距離枚舉：`WS`／`MLS`／`MS`／`MCU`／`CU`／`ECU`／`CARD`（向下相容 2.0–2.3：`ELS`/`LS`→`WS`、`2S`→`MS`+`is_two_shot`、`OTS`→`MCU`+`is_ots`、`INSERT`→`ECU`+`is_insert`） |
+| `framing_flags` | ○（v2.4） | `{is_ots, is_reverse, is_two_shot, is_insert}`（未填預設全 `false`） |
 | `angle_v` | ● | eye／low／high／bird／worm |
 | `angle_h` | ● | front／three-quarter／profile／back／OTS／POV／reverse |
-| `movement` | ● | 詳見附錄 A.2 擴充結構（`{type, direction?, speed, amplitude?, end_shot_size?, easing?, named_shot?}`；一鏡一運鏡） |
+| `movement` | ●（v2.4） | 詳見附錄 A.2 擴充結構（`{type, direction?, speed, amplitude?, end_shot_size?, easing?, named_shot?, motivation}`；一鏡一運鏡；v2.4 非 CARD 必填 **`motivation`** 6 枚舉，見附錄 D.1.1） |
 | `control_method` | ● | `L1_prompt`（預設）／`L2_flf`／`L3_clay_ref2v`／`L3_clay_controlnet`／`L4_post_25d`（見附錄 A.3） |
 | `camera_psychology` | ● | `stable_control`／`handheld_anxiety`／`subjective_pov`／`predator_stalk`／`cold_observe`／`intimate_drift`（見附錄 B.2／B.4） |
+| `coverage_role` | ●（v2.4） | `establish`／`action`／`speaker`／`reaction`／`insert_detail`／`turn_jolt`／`peak_hold`／`card_evidence` |
+| `emotional_peak` | ●（v2.4） | bool；標記該段情緒峰值鏡（配 R1b） |
+| `dialogue_mode` | ●（v2.4） | `none`／`on_camera`／`off_camera`／`voiceover`／`l_cut_carry` |
+| `screen_side` / `axis_turn_trigger` | ◐ / ○（v2.4） | `left`／`center`／`right`（人物鏡必填）；同角翻向觸發詞（選填，配 R9） |
+| `internal_event_sec` / `hold_justification` | ○ / ◐（v2.4） | `float[]`（鏡內可觀察事件時碼，配 No-Dead-Air）；`hold_justification`（`dread`/`peak_emotion`/`held_reaction`/`performance_hold`/`voiceover_density`/`final_image`，長鏡與 `>2.0s` 插鏡說明） |
+| `sys01_in_frame` / `sys01_scale_mode` | ◐（v2.4） | 凡 `SYS-01` 入鏡必填：`sys01_in_frame: true`＋`sys01_scale_mode`（`manifestation_hero`／`conversation_eyeline`／`solo_cu`），詳見 §C.4 |
 | `camera_notes` | ○ | 焦段感等僅入 prompt 文字的備註 |
 | `previs_brief` | ◐ | 僅 L3 必填，1–2 句走位與起迄機位要點 |
 
@@ -202,16 +215,16 @@ episodes/EP{NNN}/
 
 ---
 
-## 四、引擎 × 模式相容表（v2.3 實測回填）
+## 四、引擎 × 模式相容表（v2.4 實測回填＋H3 互斥紅線）
 
-| `gen_mode` | `flow`（`omni-1.2-flash` 預設；`veo-fast/quality` 2026-12-05 退役） | `h3`（`minimax-h3-video` on Colab L4 24GB） | `wan`（閘道） | `ltx` | `ffmpeg_card` |
+| `gen_mode` | `flow`（`omni-1.2-flash` 預設；`veo-fast/quality` 2026-12-05 退役） | `h3`（`minimax-h3-video` on Colab L4 24GB；官方原生 9 圖／3 影／3 音／4–15s） | `wan`（閘道） | `ltx` | `ffmpeg_card` |
 |---|---|---|---|---|---|
-| `i2v_first` | ✓（`omni-1.2-flash` 原生最長 15s，V1 穩態上限 7.5s 生成；`veo-lite` 最長 8s） | ✓（Base I2VA） | ✓ | ✓（預演，淨 ≤2.5s） | — |
-| `i2v_first_last` | △ 待驗（SM-5） | △ **end_frame 未驗證（SM-4）** | △ 未驗證 | — | — |
-| `ref2v` | ✓（Omni 1.2 最多 7 ref；R2V 禁與 i2v 混用） | **✓ 已實測鎖定**：4 槽 `max` 對白／反應基線（SM-7A：`544×960` 8-step `4.67m` 0 OOM）；L3 白膜 `ref_video_0 ≤ 0.35 MP`＋3 圖 `match` `≤5s`（Clay Test：`7.18m` 0 OOM） | △ 待驗 | — | — |
-| `cpu_card` | — | — | — | — | ✓（含 `SYS-01` 四層合成） |
+| `i2v_first` | ✓（`omni-1.2-flash` 原生最長 15s，V1 穩態上限 7.5s 生成；`veo-lite` 最長 8s） | ✓（Base `MiniMaxH3ImageToVideo`，**禁與 `ref2v` 混用**） | ✓ | ✓（預演，淨 ≤2.5s） | — |
+| `i2v_first_last` | △ 待驗（SM-5） | △ **end_frame 未驗證（SM-4）；架構級 100% 禁與 `ref2v` 混用（`H3_MODE_EXCLUSION`）** | △ 未驗證 | — | — |
+| `ref2v` | ✓（Omni 1.2 最多 7 ref；R2V 禁與 i2v 混用） | **✓ 已實測鎖定（`MiniMaxH3ReferenceToVideo`，100% 禁接 `last_frame`/`L2_flf`）**：L4 4 槽 `max` 對白／反應基線（SM-7A：`544×960` 8-step `4.67m` 0 OOM）；L3 白膜 `ref_video_0 ≤ 0.35 MP`＋3 圖 `match` `≤5s`（Clay Test：`7.18m` 0 OOM）；**最短生成 `≥4.0s (107f)`、幀數按 `5+17k` 網格實算** | △ 待驗 | — | — |
+| `cpu_card` | — | — | — | — | ✓（圖卡／無框資料側卡） |
 
-`i2v_first_last` 在 SM-4／SM-5 通過前列**例外模式**，僅偽長鏡與 match-cut 得用且須填 `chain_trim_override`。
+`i2v_first_last` 在 SM-4／SM-5 通過前列**例外模式**，僅偽長鏡與 match-cut 得用且須填 `chain_trim_override`。**H3 互斥硬規則（`H3_MODE_EXCLUSION`）**：官方與 ComfyUI 節點層（`MiniMaxH3ImageToVideo` vs `MiniMaxH3ReferenceToVideo`）架構級禁止混用 `last_frame`/`L2_flf` 與 `ref2v`；`<Picture 1>` 首幀屬 Ref2VA 軟參考，不屬 FL2V 混用。
 
 ---
 
@@ -233,19 +246,20 @@ episodes/EP{NNN}/
 
 | 規則 | 內容 | 自動化 |
 |---|---|---|
-| **V1 時長（v2.3 實測細分版）** | 以「生成總長＝淨長＋裁切緩衝」對齊 5–8s 物理穩定窗與 Colab L4 實測記憶體上限（**絕不放寬至 8s 淨長**）：<br>• **`ltx`**：淨長 `≤ 2.5s`<br>• **`h3`（`L3_clay_ref2v` on L4）**：**生成長硬上限 `≤ 5.0s`**（`standard_0.5s` 淨 `≤ 4.0s`／`tail_only` 淨 `≤ 4.5s`；超時須轉 A100/G4，對齊 Clay Test Condition 3）<br>• **`h3`（4 槽 `max` 對白 CU on L4）**：建議淨長 `≤ 4.5s`（生成 `≤ 5.5s`，超標發 `WARN`）、**硬上限生成 `≤ 6.5s`**（淨 `≤ 5.5s`；長台詞走 §B.7 拆鏡＋L-cut）<br>• **`wan`**：硬上限生成 `≤ 6.0s`（淨 `≤ 5.0s`）<br>• **`flow`（Omni 1.2 Flash）**：硬上限生成 `≤ 7.5s`（淨 `≤ 6.5s`）<br>• **短鏡提醒（`WARN`）**：非 `INSERT`/短反打之 AI 鏡生成 `< 3.0s` 發 `WARN`；聲音先行定版後全線以 `D_tts + 0.4s` 重跑。 | 全自動（`V1_DURATION_ENVELOPE`） |
+| **V1 時長（v2.4 產線品質帽＋H3 17-frame 實長檢核）** | 以「生成總長＝淨長＋裁切緩衝」對齊產線品質抗漂移帽與 Colab L4 穩態包絡（**註：以下為產線品質帽與 L4 穩態上限，非 H3 模型 15s 物理上限**）：<br>• **`ltx`**：淨長 `≤ 2.5s`<br>• **`h3`（`L3_clay_ref2v` on L4）**：**生成長硬上限 `≤ 5.0s`**（`standard_0.5s` 淨 `≤ 4.0s`／`tail_only` 淨 `≤ 4.5s`；超時須轉 A100/G4，對齊 Clay Test Condition 3）<br>• **`h3`（4 槽 `max` 對白 CU on L4）**：建議淨長 `≤ 4.5s`（生成 `≤ 5.5s`，超標發 `WARN`）、**產線品質與 L4 穩態硬上限生成實長 `≤ 6.5s`（依 17-frame 時間網格 `5+17k` 實算幀長檢核：`a ≤ 5.8s` 穩落已測 `141f = 5.875s`；`a = 6.2s` 實進位 `158f = 6.583s` 將觸發硬頂或需 A100/SM-9 驗證）**<br>• **`H3_MIN_DURATION` 墊幀保護（v2.4）**：凡路由至 H3 且 `net+trim < 4.0s` 之短鏡，`preflight_gate.py` 發 `WARN [H3_MIN_DURATION]` 提示執行端 `run_stage4_h3.py` 自動墊高生成參數至 **`≥ 4.0s`（`107f = 4.46s`）**，於 Stage 6A 裁回所需淨秒數<br>• **`wan`**：硬上限生成 `≤ 6.0s`（淨 `≤ 5.0s`）<br>• **`flow`（Omni 1.2 Flash）**：硬上限生成 `≤ 7.5s`（淨 `≤ 6.5s`）<br>• **短鏡提醒（`WARN`）**：非 `is_insert`/`is_reverse`/`ECU`/`reaction`/`turn_jolt` 之 AI 鏡生成 `< 3.0s` 發 `WARN`（或任何 AI 鏡 `< 2.0s`）；聲音先行定版後全線以 `D_tts + 0.4s` 重跑。 | 全自動（`V1_DURATION_ENVELOPE` / `H3_MIN_DURATION`） |
 | **V2 對白速率** | 可用時長＝`target_net_sec − reaction_hold_sec − 0.35s×換人輪數`；含標點 ≤5.5 字/秒、純字 ≤5.0；英文詞 1 詞≈2 漢字、數字按位數計。 | 全自動 |
 | **V3 綁定與聲線單點鎖** | `asset_refs` ≥1（`cpu_card` 除外）且順序 `first_frame/scene → characters → props`；資產須 `LOCKED`；`speaker` 聲線檔須 `LOCKED` 且嚴禁 `dialogue[]`/`audio_groups[]` 覆寫 `voice_id`/`model_id`（`VOICE_AUTHORITY_LOCK`）。 | 全自動 |
 | **V4 幀鏈** | 僅 `transition_out.type=continuous` 或明示 match-cut 得用 `prev_tail`/`i2v_first_last`，且 `chain_trim_override` 必填。 | 格式自動／理由人工 |
 | **V6 一鏡一運鏡／一主動作** | `movement.type` 受控枚舉硬閘；主動作動詞轉折 >1 次告警拆鏡；禁單鏡多切鏡時間碼。 | 半自動 |
 | **V7 鏡尾狀態** | AI 鏡 `end_state` 非空且含可觀察狀態；`cpu_card` 填 `card_hold`。 | 半自動 |
 | **V8 微表情** | `face_visible=true` 而 `microexpression` 空＝不過；voiceover 鏡有臉仍須填。 | 全自動 |
-| **V9 文字紅線** | 生成畫面零可讀文字；`SYS-01` 禁詞硬攔（`SYS01_BAN`）；`avoid` 必含禁字詞。 | 半自動＋硬閘 |
+| **V9 文字紅線（v2.4 AMD-05 v3）** | 生成畫面零可讀文字、零浮動面板、零圓形 HUD 光環；舊 `SYS01_BAN` 退役，改由 **`SYS01_TEXT_PANEL_BAN`** 硬攔面板／HUD／文字詞與 **`SYS01_PROJECTION_ANCHOR_REQ`** 強制全息光學詞＋黑大衣紅圍巾＋尺度模式；`avoid`/`避免：` 必含禁字禁面板詞。 | 全自動＋雙門人工 |
 | **V10 事實綁定** | `shot.beat_id` 與每個 `visual_text_overlay[].beat_id` 指涉 FACT 者必具非空 `source_ids`。 | 全自動 |
-| **V11 運鏡分級護欄** | 單集 L3 >2 鏡須 Creator 特批、>3 鏡告警；快線（T2）出現 L3 硬駁回；`L2_flf` 必配 `gen_mode=i2v_first_last`。 | 全自動 |
+| **V11 運鏡分級護欄** | 單集 L3 >2 鏡須 Creator 特批、>3 鏡告警；快線（T2）出現 L3 硬駁回；`L2_flf` 必配 `gen_mode=i2v_first_last`；H3 嚴禁 `gen_mode=ref2v` 混帶 `last_frame` 或 `control_method=L2_flf`（**`H3_MODE_EXCLUSION`**）。 | 全自動 |
 | **V12a–c 導演硬閘** | V12a 雙門對稱光線（QC-1＋QC-2 留存＋爆光 `<5%`）；V12b `performance_beat` 狀態變化＋詞庫強度／景別耦合與反 AI 假臉（`PERF_INTENSITY_CONFLICT`、`AI_FACE_TABOO`）；V12c 公開高異常場須有 `world_reaction`。 | 全自動＋雙門人工 |
 | **V13 一維度一權威（v2.3 新增）** | 單鏡所有參考資產對每個 `(dimension, scope_target)` 僅允許**唯一邏輯權威組（`owner_group_key`）**；互斥權威硬駁回（`V13_AUTHORITY_CONFLICT`）；擁有 0 維度之孤兒資產硬駁回（`V13_ORPHAN_ASSET`）。同角色、同鎖定年齡帶、同 `outfit_id` 之多視角母圖（如 `ancient-cu`＋`ancient-45`＋`ancient-45R`）屬**同一權威組**，不計衝突。 | 全自動（`preflight_gate.py`） |
-| **AMD-01/04/05/07＋v2.3 契約閘** | `ROUTING_LOCK`、`PROMPT_HYGIENE_NEGATION`、`PROMPT_HYGIENE_DIALECT`、`TWO_SHOT_MICRO_MOTION`、`LIP_SENSITIVE_DIALOGUE`、`SYS01_BAN`、`SAME_LOCATION_DERIVATION`、`SCALE_JUMP_BAN`、`ASSET_CONTRACT`、`REF_COUNT_BUDGET`、`ERA_ANCHOR_CONFLICT`、`CROSS_ERA_CHAR_SCOPE`、`FLIP_ASSET_BAN`、`UNSEEN_SIDE_GUARD`、`AUDIO_BED_HYGIENE`。 | 全自動（`preflight_gate.py`） |
+| **V14 鏡頭覆蓋與短劇節奏閘（v2.4 新增，附錄 D）** | `COVERAGE_SCALE_VARIETY`（R1a）、`COVERAGE_PEAK_CLOSEUP`（R1b）、`COVERAGE_SCALE_STAGNATION`（R1c，升級 V12d）、`COVERAGE_DETAIL_CADENCE`（R2）、`COVERAGE_NON_DIALOGUE_CAP`（R3，與 `SCALE_JUMP_BAN` 聯檢限 Δrank=1）、`COVERAGE_TWO_PERSON_DIALOGUE`（R4）、`COVERAGE_SEGMENT_KINETIC`／`COVERAGE_MOVE_MOTIVATION`（R5a/b，擴充 V12e）、`COVERAGE_DEAD_AIR`（無死氣硬上限）、`COVERAGE_ECU_RATIONING`（R8）、`COVERAGE_AXIS_DISCIPLINE`（R9）；另有 Advisory `COVERAGE_PACE_ENVELOPE`（R7）與 **`INSERT_ECU_DURATION`**（插鏡／ECU 淨長 >2.0s 無理由說明發 `WARN`）。 | 全自動（`preflight_gate.py`） |
+| **AMD-01/04/05/07＋v2.3/v2.4 契約閘** | `ROUTING_LOCK`、`PROMPT_HYGIENE_NEGATION`、`PROMPT_HYGIENE_DIALECT`、`TWO_SHOT_MICRO_MOTION`、`LIP_SENSITIVE_DIALOGUE`、`SYS01_TEXT_PANEL_BAN`、`SYS01_PROJECTION_ANCHOR_REQ`、`SAME_LOCATION_DERIVATION`、`SCALE_JUMP_BAN`、`H3_MODE_EXCLUSION`、`ASSET_CONTRACT`、`REF_COUNT_BUDGET`、`ERA_ANCHOR_CONFLICT`、`CROSS_ERA_CHAR_SCOPE`、`FLIP_ASSET_BAN`、`UNSEEN_SIDE_GUARD`、`AUDIO_BED_HYGIENE`。 | 全自動（`preflight_gate.py`） |
 
 #### §6.1.1 V13 九大受控維度與權威組判定表（v2.3）
 | `dimension` | `scope_target` | 唯一權威組鍵（`owner_group_key`） | 典型衝突案例（必駁回） |
@@ -267,7 +281,7 @@ episodes/EP{NNN}/
   2. `CRAFT_OBSERVABLE_ACTION`：`action`/`microexpression` 含純抽象情緒詞而缺身體動作，或含空泛詞 `epic`/`masterpiece`/`8K`/`stunning`。
   3. `CRAFT_PALETTE_NO_FLUFF`：缺克制色盤／材質線索，或含空泛詞 `cinematic color grade`。
   4. `CRAFT_SOUND_DESIGNED`：非 `cpu_card` 鏡既無段級 `ambience`、亦無 `sfx`，且 H3 `overall_soundscape` 空或 `N/A`。
-- **范蠡 `L4` 強度警戒**（`PERF_INTENSITY_CEILING`）、**L4 H3 `max` >4 圖或 >5.5s 生成提示**、**帶道具母圖未標 `baked_prop` 提示**。
+- **范蠡 `L4` 強度警戒**（`PERF_INTENSITY_CEILING`）、**L4 H3 `max` >4 圖或 >5.5s 生成提示**、**`H3_MIN_DURATION` 短鏡自動墊至 ≥4.0s (107f) 提示**、**`COVERAGE_PACE_ENVELOPE` 場段 ASL／反節拍器 CV 提示**、**`INSERT_ECU_DURATION`（v2.4 Creator 裁示：任何 `INSERT`/`ECU` 尺幅淨長 `> 2.0s` 且無 `hold_justification`〔如 `performance_hold`/`voiceover_density`/`final_image`〕者發 `WARN`）**、**帶道具母圖未標 `baked_prop` 提示**。
 
 ---
 
@@ -298,10 +312,10 @@ episodes/EP{NNN}/
 5. **階段 6B 精修與階段 7 社群封裝**：可跳過精校字幕樣式、片尾 Truth Ledger 聲明卡、多平台比例轉製與 Google Drive 歸檔（母帶電平與環境底床仍依 §3.F.1 執行）。
 
 ### 9.2 Demo 模式「永遠不可跳過」的項目（零豁免紅線）
-1. **結構化契約與前置驗證閘**：必須建立精簡 `script_pack.json` 並通過 `preflight_gate.py`（V1–V13、引擎方言編譯、禁裸否定詞、雙人微動作條款）；**嚴禁手寫臨時 bash 散文 prompt 直接調用生成工具**。
+1. **結構化契約與前置驗證閘**：必須建立精簡 `script_pack.json` 並通過 `preflight_gate.py`（V1–V14、引擎方言編譯、禁裸否定詞、雙人微動作條款）；Stage 0.5 雖可省去長散文，但**逐鏡覆蓋表（附錄 D.1）與結構化覆蓋欄位永不可跳過**，並須通過 V14 覆蓋硬閘；**嚴禁手寫臨時 bash 散文 prompt 直接調用生成工具**。
 2. **身份載體分工與 V3 餵圖順序**：依 §C.1 分工表強制綁定身份載體與 V3（`first_frame/scene → characters → props`）槽位；嚴禁單首幀 i2v 承接 `lip_sensitive=true` 特寫或跨尺幅大幅推臉。
 3. **同場景衍生規則**：同段第 2 鏡起嚴禁以「空景母圖＋文字」獨立重生已出場人物或背景，必走 Path A／B／C（§C.3）。
-4. **資產歸屬紅線**：V9 畫面禁字與 `SYS-01` 彈窗四層後製合成（`composite_ui`）全程生效，無試拍例外。
+4. **資產歸屬紅線**：V9 畫面禁字禁面板紅線與 `SYS-01` 全息投影生成主導＋後製精修規格（§C.4 AMD-05 v3）全程生效，無試拍例外。
 5. **QC-1 跨鏡首幀比對門**：必須由 `diff_sheet_gen.py --mode qc1` 產出高解析 `qc1_diff_sheet.jpg`（含 2.5× 臉領放大），完成靜態不變量核對並寫入 `qc1_gate.json (PASS)`，始得啟動影片生成。
 6. **QC-2 跨鏡成片幀驗收門**：必須由 `diff_sheet_gen.py --mode qc2` 產出 `qc2_diff_sheet.jpg`，逐鏡完成六維成片抽幀驗收並寫入 `qc2_gate.json (PASS)`，始得進入粗剪與 QC-D。
 7. **引擎路由鎖定**：`lip_sensitive=true` 與 `face_lock_level=strict` 正臉特寫鏡鎖定 H3 多圖 Ref2VA（SM-7A 已驗證啟用），Demo 模式不自動豁免。若因算力暫缺由 Creator 事前明文簽核臨時降級（`creator_waiver_signed: true`＋`demo_waiver_reason`），輸出粗剪左上角須自動燒入 **`[ROUTING_WAIVED]`** 浮水印，且僅供非口型／非保臉維度參考。
@@ -372,7 +386,7 @@ episodes/EP{NNN}/
 
 **四項強制採納條件（v2.3 入規）**：
 1. **條件 1 — SM-6 預演產製路徑（VM 工具缺口）**：本 VM 目前僅裝 `node v18.20.4`（低於 CozyClay 需求 `>= 22.19`）且無 `npm`/`npx`/`cclay`，故 CozyClay 本機代理自動化暫為 **BLOCKED**（非帳號牆；日後補齊 Node `>= 22.19`＋`npm`/`npx` 並驗證 SwiftShader 無頭出片時仍強制 `cclay telemetry off` 與 `cclay update --off`）。過渡期採二擇一：① Muse／Creator 於 `cozyclay.org/#try` 匯出 9:16 24fps 灰模 MP4；② 簡單走道／走位測試使用已驗證之零依賴 Python 3D 灰模算圖器（`claytest/render_clay_previs.py`）。
-2. **條件 2 — 強制 `<Picture 1>` 場景錨＋正向替換（防灰模滲漏）**：必以鎖定空景（`LOC-*` 或 QC-1 首幀）放 `<Picture 1>`（V3 順序）配角色母圖 `<Picture 2..3>` 及正向替換句；**禁止僅餵灰模片＋灰棚角色卡而缺場景錨**。已驗證預裝之 `h3-controlnet`（Depth）留作滲漏備援（`L3_clay_controlnet`）；軌跡被蒸餾壓扁時切 20-step 非蒸餾權重。
+2. **條件 2 — 強制 `<Picture 1>` 場景錨＋正向替換（防灰模滲漏）與尾幀互斥禁令**：必以鎖定空景（`LOC-*` 或 QC-1 首幀）放 `<Picture 1>`（V3 順序）配角色母圖 `<Picture 2..3>` 及正向替換句；**禁止僅餵灰模片＋灰棚角色卡而缺場景錨**。**L3 `h3_r2v_clay` 尾幀禁令（`H3_MODE_EXCLUSION`）**：CozyClay 匯出之首幀 PNG 僅供 Stage 3 輔助產出寫實圖再作為 Ref2VA `<Picture 1>`（軟參考），**尾幀 PNG 絕不可作為 H3 `last_frame` 混進 Ref2VA 工作流**（尾幀僅供離線 QC-2 疊圖或改走純 L2 `MiniMaxH3ImageToVideo`）。已驗證預裝之 `h3-controlnet`（Depth）留作滲漏備援（`L3_clay_controlnet`）；軌跡被蒸餾壓扁時切 20-step 非蒸餾權重。
 3. **條件 3 — Colab L4 嚴格記憶體包絡（SM-3）**：L4 24GB（必開 `high_mem: true`）實測峰值 `20.727 GiB` VRAM（餘 `1.307 GiB`）、System RAM 餘 `2.64 GiB`，故 L4 跑 L3 **硬鎖**：`ref_video_0 ≤ 0.35 MP`（`ImageScaleToTotalPixels`）、`ref_image_size="match"`、圖像參考 `≤ 3` 張、輸出 `0.5 MP`（`544×960`）、**生成長 `≤ 5.0s`**（可複用工作流：`claytest/workflows/h3_r2v_clay.json`）。凡超過 5s、`0.8 MP` 或需 `ref_image_size="max"` 之 L3 鏡一律轉 A100／G4。
 4. **條件 4 — 景別紀律與 QC-2 服裝四項門檻**：嚴限 **0–2 顆 MS/LS 非對白走位／運鏡英雄鏡／集**（對白正臉 CU 禁用；快線 T2 禁用）。因 `match` 尺幅於 t=3.5s 曾見短暫 `左衽` 翻領，必須嚴格執行 QC-2 抽幀服裝四項核驗（必要時以 QC-1 核准首幀作 `<Picture 1>` 鎖領）。
 
@@ -401,6 +415,7 @@ episodes/EP{NNN}/
 | **SM-6 VM 上 CozyClay 無頭出片可行性** | **DONE — BLOCKED (VM Runtime)** | 非登入牆；卡 `node v18.20.4 < 22.19` 且無 `npm`/`npx`。過渡期走瀏覽器版或 Python 3D 算圖器 |
 | **SM-7A H3 原生 4 槽 Ref2VA（DEMO-02 S4）** | **DONE — ADOPT WITH CONDITIONS** | `sm7a/SM7A_RESULT.md`：4 槽 `max` `0.5 MP` L4 `4.67m` 0 OOM；採納為對白 CU 基線（三條件見 §C.1） |
 | **SM-7B RefMod（`ComfyUI-MiniMaxH3Mod`）** | **WATCH（不升階）** | 僅在乾淨首幀 `>30°` 大角度轉頭 CU 仍漂移時觸發 |
+| **SM-8 AMD-05 v3 `SYS-01` 全息投影 Carrier A** | **DONE — GO PASS（6/6 達標）** | `sm8/SM8_t1.mp4`（`LOC-ALLEY-NIGHT`＋`OUTFIT-02`＋`sys01-ref-34L-smile/front`）：首幀 `nano2` 1 抽過 QC-1（0 pts）、4s Omni `i2v` 1 抽過 5 幀 QC-2（**12 pts / 0 CU**、`dL*` 跨度 `2.70`、爆光 `0.19%`、V9 零字零面板 `0/5`），正式解鎖 §C.4 v3 併入 v2.4 |
 
 ---
 
@@ -428,7 +443,7 @@ V12a（雙門對稱光線）、V12b（`performance_beat`＋v2.3 詞庫強度與�
 
 ## B.5 QC-D 導演 QC 閘與 B.6 導演手記
 - **位置**：Stage 6A 粗剪之後、Stage 6B 精修／QC-3 之前。
-- **六檢**：合理性／情緒可讀／鏡頭多元／光線連續／運鏡心理／特效拍點。
+- **六檢**：① 合理性／② 情緒可讀／**③ 鏡頭覆蓋與短劇節奏（詳見附錄 D.5 QC-D 四項子檢）**／④ 光線連續／⑤ 運鏡心理／⑥ 特效拍點。
 - **導演手記（`bible/director/playbook.md`）**：累積制，每集闡述前必讀。
 
 ## B.7 Creator 定案三點與 B.8 QC-D 首例裁決（DEMO-02）
@@ -451,7 +466,8 @@ V12a（雙門對稱光線）、V12b（`performance_beat`＋v2.3 詞庫強度與�
 | 雙人同框／過肩 | 有對白或主角正臉：H3 Ref2VA；無對白中景對峙：Flow 同源衍生＋同尺幅 i2v | 靜止否定詞；同場後續鏡獨立 i2i |
 | 動作／中遠景 | 首幀 i2v（主角露臉走 Flow 同尺幅；高動量無正臉走 Wan；複雜走位弧線走 L3 Clay＋H3） | 跨尺幅推臉（臉框放大 >1.8× 或轉頭 >±30°） |
 | 反應／無對白近景、目擊反打 | 主角 CU/MCU 反應：H3 Ref2VA（閉唇鎖定）；配角短反打 ≤2.5s：Flow 同源衍生＋同尺幅 i2v | 空景母圖＋文字重生同場人物 |
-| 證據卡／`SYS-01`／聲明卡 | CPU 後製合成（Pillow＋ffmpeg） | 100% 禁止進生成端 |
+| 證據卡／聲明卡／無框資料側卡 | CPU 後製合成（Pillow＋ffmpeg） | 100% 禁止進生成端 |
+| `SYS-01` 全息投影鏡（v2.4 AMD-05 v3） | **Carrier A：Flow `nano2` 雙卡首幀（單視角裁切 ref）→ Flow Omni `i2v_first`**＋後製微光精修（`S04b` 范蠡 CU 則 `SYS-01` 退為畫外聲；獨鏡對嘴選配 3–4 槽 H3 Solo） | 餵原始多格角色卡；生成浮動面板／HUD 光環／文字；與范蠡混塞進 L4 4 槽 H3 |
 
 **SM-7A 三項強制採納條件（v2.3 入規，自 `sm7a/SM7A_RESULT.md`）**：
 1. **條件 1 — Stage 4 前強制 QC-1 乾淨首幀**：4 槽 Ref2VA 是「時序保持穩定器」，**不是「首幀缺陷橡皮擦」**（SM-7A 實證 `<Pic 1>` 錯邊疤無法被 `<Pic 2..4>` 覆寫）。嚴禁將錯邊疤、反領（`左衽`）或缺簪首幀送入 H3 Ref2VA；每顆對白 CU 首幀必經 Path A 衍生並通過 `qc1_gate.json == PASS`。
@@ -473,10 +489,92 @@ Flow 引擎預設為 **Omni 1.2 Flash**（取代舊 Veo Fast/Quality，後者 20
 ## C.3 AMD-04 同場景衍生規則
 同段非首鏡、反打／過肩、共用配角鏡頭，首幀來源僅三合法路徑：**Path A** 錨鏡衍生（`derived_shot`＋`ref_shot_id`）／**Path B** 反打空景＋錨鏡雙鎖（`generated_dual_lock`＋`LOC_rev`＋`ref_shot_id`）／**Path C** CozyClay 共用場地（`l3_clay_frame0`）。僅餵單一 `LOC-*` 空景重生人物者 preflight 硬駁回。
 
-## C.4 AMD-05 `SYS-01` 彈窗四層後製合成化（定案）
-`SYS-01` 彈窗永不進生成端：人物鏡拍乾淨底板（視線朝預定彈窗位、留青光位），於 assembly 經 `tools/sys01_composite.py` 以四層合成（Layer 0 乾淨底板／Layer 1 方向性羽化青光回打遮罩＋動態 `alpha(t)`／Layer 2 零文字冷單色幾何彈窗與人像＋音訊驅動 `showwaves`／Layer 3 入場 chromatic `rgbashift`＋2 幀閃爍＋3% 共用攝影機呼吸）。prompt 含全息／彈窗詞彙者 preflight 硬駁回。
+## C.4 AMD-05 `SYS-01` 全息投影生成主導＋後製精修化（v3 定案｜SM-8 GO 實證）
 
-## C.5 AMD-06＋07 入口契約與 `preflight_gate.py` 強制力（v2.3）
+`SYS-01` 虛擬真人投影由舊版貼片合成轉為**「生成端主導（Generation-Primary）＋後製精修（Post-Polish）」**，確保全息掃描線、冰藍輪廓光、下身粒子光塵化與現場霧氣／人物光影回打達成原生體積光整合。
+
+1. **核心生成路由（預設 Carrier A）**：
+   - **雙人顯影與中景對話鏡（`MS`/`2S`/`OTS`，`lip_sensitive=false`）**：於 Stage 3 以 `nano2 i2i`（0 點）結合場景／前鏡錨點（AMD-04）、主角母圖與**裁切後單視角 `SYS-01` 參考圖**（`casting/master/sys01-ref-*.png`，嚴守 §3.C.1 禁餵原始多格卡與 `expressions` R2C5 異常格）生成含全息投影之首幀，通過 **QC-1 雙臉＋投影外觀＋零文字門** 後，送 Flow Omni 1.2 Flash（`i2v_first`）生成動態。
+   - **范蠡特寫開口鏡（如 `S04b`）**：嚴禁將 `SYS-01` 塞入范蠡 4 槽 H3 Ref2VA；維持純范蠡 4 槽 H3 CU（臉側承接冷青回打光），`SYS-01` 採畫外 TTS 接聲。
+   - **`SYS-01` 獨鏡微表情特寫（如 `S19`）**：以鎖定表情單格（如 R1C1 微笑 → R1C5 收斂，並配高解析 `sys01-ref-front.png`）於 Stage 3 產出像素對齊之全息首幀（與可選尾幀），經 Flow Omni `i2v_first` / `i2v_first_last` 生成；若逾 2 抽仍過演，改以該兩張已過 QC-1 之全息靜幀於組裝端執行 0.5s 微過渡保底。
+   - **`SYS-01` 獨鏡對嘴特寫（`lip_sensitive=true` 選配）**：僅限 `SYS-01` 獨佔 3–4 槽 H3 Ref2VA（`<Pic 1>` 全息首幀＋`<Pic 2..3>` 單視角臉／圍巾錨點），嚴禁與范蠡混槽。
+2. **強制視覺錨點與 V9 禁字紅線**：
+   - 凡 `SYS-01` 入鏡，生成提示詞（中文房規）**必須**包含：① 至少 2 項全息光學錨詞（`全息投影`／`掃描線`／`粒子消散`／`半透明`／`藍色輪廓光`／`下身光塵化`）；② 臉部自然膚色保護與鎖定服裝錨點（`黑色羊毛大衣`＋`深紅色粗針織圍巾`）；③ 明確尺度模式（`sys01_scale_mode`: `manifestation_hero` | `conversation_eyeline` | `solo_cu`）。
+   - **V9 零文字／零面板鐵律升級**：生成端**100% 嚴禁**任何可讀文字、偽文字、浮動小面板、數據視窗、圓形 HUD 光環、品牌標誌與音訊波形條（`preflight_gate.py` 以 `SYS01_TEXT_PANEL_BAN` 硬封殺，QC-1/QC-2 出現單幀即一票否決）。
+3. **後製精修層（`tools/sys01_composite.py` 保留職責）**：
+   - 不再承擔常態人像去背貼片，轉為提供輕量確定性後製：① 必要時以緊縮羽化遮罩（`ry=0.21`）微補范蠡臉側冷青光平衡；② 依 `SYS01.yaml` TTS 音訊 RMS 驅動投影區 `+4–6%` 輝光微脈；③ 獨立無框資料／新聞側卡疊加（如 `S08` `--mode datacard`）與 2 幀篆字「蠡」閃現（`S03`/`S19`）；④ `sound_drop`（`-38 dBFS` `0.35s`）＋啟動音效；⑤ 保留舊 `--mode panel` 僅供歷史回放與極端故障降級。
+4. **歷史祖父條款（Grandfathering）**：
+   - `DEMO02_v2`（`demo02_v2/DEMO02_v2.mp4`，採 AMD-05 v1 幾何四層合成，QC-0/1/2 全簽核）視為已驗收之管線里程碑，**豁免追溯重製**；自 **SM-8 通過日（2026-11-28）起**，所有新拍（含 DEMO-03 與 EP-01）全面適用 AMD-05 v3。
+
+## C.5 AMD-06＋07 入口契約與 `preflight_gate.py` 強制力（v2.4）
 - 一切生成（含 demo）只能由 `script_pack.json` 經引擎方言編譯產出 prompt；手寫 bash 散文 prompt 全面禁止。
-- `tools/preflight_gate.py` 執行全部硬閘（AMD-01/04/05/07 規則 a–g ＋ v2.3 增量：`ASSET_CONTRACT`、`REF_COUNT_BUDGET`、`V13_AUTHORITY_CONFLICT`/`V13_ORPHAN_ASSET`、`ERA_ANCHOR_CONFLICT`、`PERF_INTENSITY_CONFLICT`/`AI_FACE_TABOO`、`CROSS_ERA_CHAR_SCOPE`/`FLIP_ASSET_BAN`/`UNSEEN_SIDE_GUARD`、`VOICE_AUTHORITY_LOCK`、`AUDIO_BED_HYGIENE`、`V1_DURATION_ENVELOPE`）與 4 項非阻斷 Advisory 電影工藝提示（`WARN`）。
+- `tools/preflight_gate.py` 執行全部硬閘（AMD-01/04/05 v3/07 ＋ v2.3 增量 ＋ **v2.4 增量**：V14 鏡頭覆蓋 12 條、`H3_MODE_EXCLUSION`、`H3_MIN_DURATION`、17-frame `5+17k` 實長檢核、`SYS01_TEXT_PANEL_BAN`、`SYS01_PROJECTION_ANCHOR_REQ`）與非阻斷 Advisory 提示（4 項電影工藝＋`COVERAGE_PACE_ENVELOPE`＋**`INSERT_ECU_DURATION`**）。
 - Demo 邊界條款全文見 §九，零豁免生效。
+
+---
+
+# 附錄 D：導演鏡頭覆蓋與豎屏短劇節奏規格（v2.4 新增）
+
+> **立法目的**：在導演層（Stage 0.5）與前置閘門（QC-0）把「景別覆蓋、鏡數密度、單鏡秒數與豎屏高張力節奏」從口頭散文升格為可驗證數據契約，根除「技術全過、但全段平緩中景缺特寫」的失格成片；同時嚴守引擎物理邊界（`SCALE_JUMP_BAN`、V1/V2）與成本紀律。
+
+## D.1 Stage 0.5 逐鏡覆蓋表契約（數據優先，Demo／快線不可跳過）
+
+每場段於 Stage 0.5 `DIRECTOR_STATEMENT.md` 必附 **逐鏡覆蓋表**，並於 Stage 1 1:1 映射入 `script_pack.json`（schema 2.4）：
+- **場段級必填**：`segment_pacing_profile`（`hook`／`escalation`／`confrontation`／`revelation`／`climax`／`release_bridge`／`chase_tension`）與 `axis_plan`（≥2 人物鏡段鎖定各角色 `screen_side` 與 `default_facing`）。
+- **鏡級核心欄**：`shot_size`（純距離 6 級：`WS(1) < MLS(2) < MS(3) < MCU(4) < CU(5) < ECU(6)` ＋ `CARD(0)`）、`framing_flags`（`{is_ots, is_reverse, is_two_shot, is_insert}`）、`movement.named_shot`、`target_net_sec`、`movement.{type,speed,amplitude,end_shot_size,motivation}`、`camera_psychology`、`coverage_role`、`emotional_peak`、`dialogue_mode`、`lip_sensitive`、`screen_side`、`internal_event_sec[]`、`hold_justification`。
+
+### D.1.1 運鏡動機受控詞表 `movement.motivation`（與 `camera_psychology` 聯動）
+
+| `motivation` | 導演功能 | 合法 `camera_psychology` |
+|---|---|---|
+| `emotional_intensify` | 情緒加壓、逼近心理轉折 | `intimate_drift` / `stable_control` / `predator_stalk` |
+| `spatial_reveal` | 揭露環境因果、目擊者或威脅 | `cold_observe` / `predator_stalk` / `handheld_anxiety` |
+| `subjective_instability` | 失重墜落、警戒晃動、主觀焦慮 | `handheld_anxiety` / `subjective_pov` |
+| `action_follow` | 跟隨身體動量或視線引導 | `handheld_anxiety` / `predator_stalk` / `subjective_pov` |
+| `power_lock` | 刻意定鏡或極緩推建立威壓自制 | `stable_control` / `cold_observe` |
+| `rhythm_jolt` | 拍點反轉衝擊、模式中斷（常配 L4 急推／甩切） | `handheld_anxiety` / `predator_stalk` / `intimate_drift` |
+
+## D.2 豎屏短劇節奏帶與景別時長基準
+
+| `segment_pacing_profile` | 目標 ASL | 每 10 秒鏡數 | 無對白上限（R3） | 無死氣軟／硬上限 |
+|---|---:|---:|---:|---:|
+| `hook`（0–5s 開場鉤） | `1.5–2.2s` | `4.5–6.5` | `3.5s` | `2.0s` / `2.5s` |
+| `chase_tension`（高危動作） | `1.4–2.2s` | `4.5–7.0` | `3.0s` | `1.8s` / `2.5s` |
+| `climax`（高潮／集尾） | `1.8–2.6s` | `3.8–5.5` | `3.5s` | `2.0s` / `2.5s` |
+| `escalation`（加壓升溫） | `2.0–2.8s` | `3.5–5.0` | `3.5s` | `2.5s` / `3.5s` |
+| `confrontation`（雙人交鋒） | `2.2–3.0s` | `3.3–4.5` | `4.0s` | `2.5s` / `3.5s` |
+| `revelation`（揭露／回顧） | `2.4–3.2s` | `3.1–4.2` | `4.0s` | `3.0s` / `4.0s` |
+| `release_bridge`（短暫呼吸） | `2.8–3.8s` | `2.6–3.5` | `4.0s` | `3.5s` / `4.5s` |
+
+- **景別建議淨長**：`ECU` `1.0–2.0s`（絕對 `0.8–2.5s`；依 Creator 裁示 **`INSERT`/`ECU` 淨長 `> 2.0s` 無理由說明觸發 Advisory `INSERT_ECU_DURATION` `WARN`**）；`CU` 無對白反應 `1.2–2.5s`、對白／峰值 `2.5–4.8s`（守 V1 產線品質帽／V2）；`MCU` `2.0–4.0s`；`MS` `2.0–3.5s`；`MLS` `1.8–3.0s`；`WS` 定場 **`≤ 2.5s`**（跨 1 級推進 ≤4.0s）；`CARD` `1.5–3.0s`。
+- **長停頓紀律（香料非預設）**：`> 3.5s` 單鏡僅限承載 `peak_emotion`、`dread_compression` 或 `held_reaction`（須填 `hold_justification`），前後至少一側須配 `≤ 2.0s` 快切形成速度反差，嚴禁連播兩顆 `> 3.5s` 靜止鏡。
+- **無死氣原則（No-Dead-Air）**：凡 `movement.type == "static"` 且無 `vfx_beats[]`／無 `visual_text_overlay[]` 之鏡，其相鄰 `internal_event_sec[]` 間隔不得逾上表「無死氣硬上限」。
+
+## D.3 V14 鏡頭覆蓋規則（HARD 硬閘 vs ADVISORY 軟檢）
+
+1. **R1a 景別多元（HARD：`COVERAGE_SCALE_VARIETY`）**：非卡長 `≥ 8.0s` 或非卡鏡 `≥ 4` 之場段，須含 **≥ 3 種相異 `shot_size`** 且 **≥ 1 顆 `CU`/`ECU`**（≤2 鏡/<6s 微場段與 `release_bridge` 豁免）。
+2. **R1b 情緒峰值特寫（HARD：`COVERAGE_PEAK_CLOSEUP`）**：非橋接段 `≥ 8.0s` 必標 ≥1 顆 `emotional_peak: true`，且該鏡必為 `CU`/`ECU` 或 `MCU→CU`（Δrank=1）。
+3. **R1c 禁同尺幅停滯（HARD：`COVERAGE_SCALE_STAGNATION`）**：非反打不可連 `> 2` 鏡同 `SCALE_RANK`；正反打對切連 4 鏡發 `WARN`、連 `> 4` 鏡無 `monotony_exempt_reason` 發 `FAIL`。
+4. **R2 細節切鏡節奏（HARD 高張力段／WARN 其餘：`COVERAGE_DETAIL_CADENCE`）**：任一連續 `≥ 10.0s` 非卡滑窗內至少 1 顆 `CU`/`ECU`；段長 `≥ 12.0s` 者每 `12.0s` 至少 1 顆非對白細節／反應 `CU`/`ECU`（`is_insert` 或 `coverage_role ∈ {insert_detail, reaction}`）。
+5. **R3 無對白鏡長上限（HARD：`COVERAGE_NON_DIALOGUE_CAP`）**：無對白非卡鏡須 `≤ 3.5s`（高張力段）或 `≤ 4.0s`（一般段）；僅於 **鏡內跨恰好 1 級相鄰尺幅**（`Δrank == 1`，≤5.0s）或 **`deliberate_hold=true`＋`hold_justification`**（≤4.5s）得展延。**嚴禁以 `Δrank ≥ 2`（如 `MS→CU`）推臉繞過（由 `SCALE_JUMP_BAN` 硬駁回）；跨多級必拆原子鏡切鏡**。
+6. **R4 雙人對白反打（HARD：`COVERAGE_TWO_PERSON_DIALOGUE`）**：段內 `≥ 2` 說話者且 `≥ 2` 輪次，必含 ≥1 顆 `is_ots`/`is_reverse`、≥1 顆單人 `CU`/`MCU`，且不可連 `> 1` 顆有對白 `is_two_shot`。
+7. **R5 運鏡動能與動機（HARD：`COVERAGE_SEGMENT_KINETIC`／`COVERAGE_MOVE_MOTIVATION`）**：`≥ 3` 顆非卡鏡段禁 100% 靜鏡（高張力段主動運鏡 `< 50%` 發 `WARN`）；每鏡必填 `movement.motivation`，與 `camera_psychology` 衝突發 `WARN`。
+8. **R6 景別弧線模板（ADVISORY｜QC-D #3a）**：依場段選用對應弧線——抵達（`WS/MLS→ECU→MCU→MS 2S→OTS/CU`）、對峙（`MS/2S≤2.5s→OTS MCU→反打 CU→ECU 中斷→緊 CU`）、揭露（`MCU→ECU/CARD 證據→CU 反應`）、懸念收束（`MS→MCU→慢推 CU→ECU 異變→黑`）、追逐（`MLS→連切 ECU→手持 MS→L4 甩切→CU`）。
+9. **R7 單集節奏曲線與反節拍器（ADVISORY：`COVERAGE_PACE_ENVELOPE`）**：對齊 60–100s 五段曲線（開場與高潮最密、高潮配 1 顆對比峰值停頓、集尾急煞）；全集鏡長變異係數 `CV < 0.25` 發 `WARN`。
+10. **R8 `ECU` 配給紀律（HARD >40% 或連切 >2／WARN >30% 鏡數或 >20% 時長：`COVERAGE_ECU_RATIONING`）**：節制使用以保衝擊力（`chase_tension` 連切放寬至 ≤3）；有臉 `ECU` 保留予 `TURN`/`JOLT`/`CLIFF`/`emotional_peak`。
+11. **R9 180° 軸線與視線紀律（HARD 反打同向／WARN 無因翻向：`COVERAGE_AXIS_DISCIPLINE`）**：`is_reverse=true` 與所回應前鏡之 `subject_facing` 必相向；同角連鏡左右翻轉須明示 `axis_turn_trigger`。
+12. **插鏡／ECU 時長紀律（ADVISORY：`INSERT_ECU_DURATION`｜2026-11-28 Creator 裁示）**：任何 `shot_size == "ECU"` 或 `framing_flags.is_insert == true`（含舊版 `shot_size == "INSERT"`）之鏡頭，若淨時長 `target_net_sec > 2.0s` 且未填理由說明（`hold_justification` 或合理備註如 `performance_hold`/`voiceover_density`/`final_image`），`preflight_gate.py` 發出 `WARN [INSERT_ECU_DURATION]`。
+
+## D.4 與 V1／V2／`SCALE_JUMP_BAN` 及成本紀律的組合
+
+1. **短插鏡 V1 豁免與 H3 4.0s 墊幀分流**：`is_insert`/`is_reverse`/`ECU`/`reaction`/`turn_jolt` 鏡頭生成長落於 `2.0–3.0s`（或 `trim_policy: "tail_only"`）不觸發 `V1_DURATION_ENVELOPE` 短鏡 `WARN`（僅豁免剪輯淨長；若路由至 H3，仍依 `H3_MIN_DURATION` 自動墊高生成參數至 `≥4.0s / 107f` 再於 Stage 6A 裁切）。
+2. **長台詞用 L-cut 降 ASL，禁硬壓 V2**：超過 `3.5s` 之對白優先以 `audio_groups[]` 走 L-cut 切入 `1.2–1.8s` 聽者反應或無臉細節插鏡，兼顧 V2 語速與豎屏快節奏。
+3. **成本感知買密度**：新增節奏鏡優先配發 **無正臉 `ECU` 插鏡（Flow `3s tail_only` 或 Wan 2.2）**、**`cpu_card`（0 成本）**、**L4 剪輯接點特效（甩鏡／急推／微推／補抖）**與**同片雙切反應回收**，嚴控 `H3-4Ref` 對白 CU 總鏡數不膨脹。
+
+## D.5 QC-D 第 ③ 檢細化（鏡頭覆蓋與短劇節奏）
+
+Stage 6A 粗剪後於 QC-D 第 ③ 檢逐一確認（過／不過＋一句證據）：
+- **③a 景別弧線**：景別變化服務情緒遞進，峰值穩落最緊 `CU`/`ECU`；
+- **③b 豎屏張力**：前 1.5–3s 靜音即有視覺變故，無空轉死氣與機械等長感，長停頓皆具明確張力動機；
+- **③c 反應與細節**：切在聽者反應與手／眼細節，非純盯說話者念稿；`ECU` 節制打在轉折拍點；
+- **③d 軸線視線**：跨切視線與左右空間自然連貫，無無故跳軸。

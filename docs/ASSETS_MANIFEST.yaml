@@ -1,34 +1,37 @@
-# ASSETS_MANIFEST — 第二次文明資產清單（batch-2, 2026-11-28）
+# ASSETS_MANIFEST — 第二次文明資產清單（v2, 2026-11-28）
 # 二進位資產不入 git；本清單記錄 ID／狀態／存放位置，存放位置以生產 VM ~/drama-line 為主。
-version: 1
+version: 2
 updated: 2026-11-28
 
 characters:
   - id: FANLI-MASTER-MODERN
     desc: 范蠡現代裝身分基準（Creator 本人臉版）＋一致性全套（45°／背影／A 年輕版／C 老年版）
     status: LOCKED
-    location: VM ~/drama-line/casting/master/ (fanli-master-B-userface.png 等)
-    note: master 圖傷痕為鏡像右眉尾；規格恆為左眉尾，生成時改回
+    location: VM ~/drama-line/casting/master/ (fanli-master-B-userface.png 等；棄用 Seedream 舊臉 fanli-master-B.jpg 已 move-only 歸檔至 casting/master/superseded-seedream/)
+    note: master 圖傷痕為鏡像右眉尾；規格恆為左眉尾，生成時改回；錨點規格見 bible/anchors/FANLI.yaml
   - id: FANLI-MASTER-ANCIENT
     desc: 范蠡古裝基準組（正面／左45°／右45°無疤／正面特寫）
     status: LOCKED
-    location: VM ~/drama-line/casting/master/ (含 fanli-master-ancient-45R.jpg 修復版；.v1-flip-defect.jpg 為缺陷版禁用)
+    location: VM ~/drama-line/casting/master/ (fanli-master-ancient-front.jpg / -45.jpg / -45R.jpg / -cu.jpg)
+    note: 缺陷版 fanli-master-ancient-45R.v1-flip-defect.jpg 及 6 項 tmp_* 工作殘留已於 2026-11-28 move-only 歸檔至 casting/archive/（零刪除，見 casting/archive/ARCHIVE_MANIFEST.txt）
   - id: FANLI-CHARCARD-MODERN
-    desc: 現代裝角色卡兩張（四視圖＋六表情細節列），Creator 以豆包生成，定為 OUTFIT-01 後續生成標準參考
+    desc: 現代裝角色卡兩張（四視圖＋六表情細節列）及 OUTFIT-01 單視圖 H3 四槽基準組（CPU 無損裁切 cu／45L ＋ nano2 無疤 45R）
     status: LOCKED
-    location: VM ~/drama-line/casting/master/fanli-modern-charactercard-main.png / -expressions.png
+    location: VM ~/drama-line/casting/master/ (原卡 fanli-modern-charactercard-main.png / -expressions.png；單視圖 fanli-modern-ref-cu.png / fanli-modern-ref-45L.png / fanli-modern-ref-45R.jpg)
+    note: 嚴守 V3：多格原卡永不直接餵入生成模型；EP-01 現代線 H3 對白鏡一律使用單視圖 ref 組（45R 右眉 100% 無疤，已過 QC-1 LOCKED）
   - id: SYS-01
-    desc: 系統人像定妝基準（Creator 以豆包生成的角色卡兩張：四視圖＋表情細節列，2026-11-28 拍板採用為基準）
+    desc: 系統人像定妝基準（Creator 豆包角色卡兩張 ＋ 9 張純 CPU 無損矩形裁切單視圖 PNG ＋ bible/anchors/SYS01.yaml）
     status: LOCKED
-    location: VM ~/drama-line/casting/master/sys01-charactercard-main.png / sys01-charactercard-expressions.png
-    note: 簽名造型——黑色短鮑伯頭、黑大衣、紅色針織圍巾。彈窗呈現走 AMD-05 後製合成＋半透明青藍 UI 處理；表情表一格有生成贅物（手持海綿）棄用。專屬聲線仍未定版（見 voices/SYS01-VOICE）。agy 的 A 方向首幀（sys01_candidates/dirA_warm_1.jpg）降為備案。
+    location: VM ~/drama-line/casting/master/ (sys01-ref-front.png / -full-front.png / -full-profileL.png / -full-back.png / -34L-smile.png / -34L-neutral.png / -expr-R1C1-smile.png / -expr-R1C5-hesitate.png / -expr-R1C6-downcast.png；錨點檔 bible/anchors/SYS01.yaml)
+    note: 簽名造型——黑色短鮑伯頭、素面黑羊毛大衣、深紅色粗針織圍巾、自然溫潤膚色。呈現路線已於 2026-11-28 經 SM-8（6/6 GO，12/24 Flow pts，0 CU）與 Spec v2.4（§C.4）正式切換為「AMD-05 v3 生成端主導＋後製精修」（Carrier A：nano2 單視角裁切 ref 保留灰棚底零去背 → Flow Omni i2v_first；嚴禁浮動面板／HUD 圓環／文字，受 SYS01_TEXT_PANEL_BAN 與 SYS01_PROJECTION_ANCHOR_REQ 雙閘把關）。嚴禁直接餵多格原卡、expressions R2C5（手持木物異常格）與 sys01-projection-look-ref.png。專屬聲線仍待試聽拍板（見 voices/SYS01-VOICE）。
 
 outfits:
   - id: FANLI-OUTFIT-01
     desc: 現代丁案（深色西裝外套＋灰高領毛衣＋深色長褲黑皮鞋；腕錶左腕、方孔錢右手）
     status: LOCKED
+    location: VM ~/drama-line/casting/master/ (單視圖 fanli-modern-ref-cu.png / -45L.png / -45R.jpg；規格見 COSTUME_REGISTRY.md)
   - id: FANLI-OUTFIT-02
-    desc: 春秋布衣・退隱期（玄黑深衣、束髻黑緇布冠木笄、持竹簡）
+    desc: 春秋布衣・退隱期（玄黑深衣、束髻黑緇布冠木笄、持竹簡／佩越劍）
     status: LOCKED
     note: 古裝版絕不可持方孔錢（方孔圓錢為戰國晚期至秦才有）
   - id: FANLI-OUTFIT-03
@@ -39,20 +42,98 @@ outfits:
     desc: 陶朱公鉅賈
     status: PLACEHOLDER  # 待設計
 
+props:
+  - id: PROP-SWORD-01
+    desc: 范蠡春秋青銅越劍（圓首素柄、窄銅格、暗啞髹漆鞘、無銘文；佩左腰；三態：sheathed_hip／hand_on_hilt_ecu／unsheathed_1inch）
+    status: LOCKED
+    location: VM ~/drama-line/casting/props/PROP-SWORD-01/ (規格見 docs/PROP_REGISTRY.md)
+    note: 錨定 fanli-outfit03-45.jpg 既有越劍外型；僅春秋線使用（EP-01 S00 / S13），現代線禁用實劍
+  - id: PROP-SWORD-02
+    desc: 越王禮制青銅賜劍（細密雲雷暗紋銅格、深漆禮鞘、無銘文無亮金；內侍雙手橫托於折疊玄黑素帛布上）
+    status: LOCKED
+    location: VM ~/drama-line/casting/props/PROP-SWORD-02/ (規格見 docs/PROP_REGISTRY.md)
+    note: Creator 2026-11-28 拍板獨立建卡（方案 B）；僅 EP-01 S16a 捧劍特寫使用（不露臉、2.0s）
+  - id: PROP-BAMBOO-01
+    desc: 春秋無字素面竹簡（展開 open／半捲 half_rolled 二態，100% 空白無墨無字，文字一律後製）
+    status: LOCKED
+    location: VM ~/drama-line/casting/props/PROP-BAMBOO-01/ (規格見 docs/PROP_REGISTRY.md)
+    note: 用於 EP-01 S14b / S15a；春秋線專用
+  - id: PROP-COIN-01
+    desc: 古銅方孔圓錢（直徑 3.8–4.5cm、右手持、錢面磨損不可讀；僅現代線，春秋古裝嚴禁）
+    status: PENDING  # P2：EP-01 0 鏡剛需，不擋開拍
+    location: VM ~/drama-line/casting/props/PROP-COIN-01/ (規格見 docs/PROP_REGISTRY.md)
+    note: V9 紅線——嚴禁裁切 fanli-modern-charactercard-expressions.png R2C2（錢面含可辨偽字「通寶」）
+
 locations:
   - id: LOC-ALLEY-NIGHT
-    desc: 藍調入夜窄巷（濕柏油、巷底暖黃路燈），DEMO-02 場景母圖
+    desc: 藍調入夜窄巷（濕柏油、巷底暖黃路燈），DEMO-02／SM-8 場景母圖
     status: LOCKED
-    location: VM ~/drama-line/demo02/loc/
+    light_lock_id: LK-ALLEY-NIGHT
+    location: VM ~/drama-line/demo02/loc/e3a9ae98-2106-4fc2-8e30-2bbaf65e4491_1.jpg (規格見 docs/LOCATION_REGISTRY.md)
+  - id: LOC-TAIHU-NIGHT
+    desc: 太湖夜岸蘆葦水濱（冷月暗墨水面、岸邊蘆葦、遠岸 3 點微小火把光點，零人物）
+    status: LOCKED
+    light_lock_id: LK-TAIHU-NIGHT
+    location: VM ~/drama-line/casting/scenes/LOC-TAIHU-NIGHT/loc-taihu-night.jpg (規格見 docs/LOCATION_REGISTRY.md)
+    note: EP-01 v0.3.3 S00 夜行按劍專用空景母圖
+  - id: LOC-TAIHU-DAWN
+    desc: 太湖晨霧獨舟空座（冷藍灰破曉濃霧、素樸暗舊實木獨舟＋對面空座，零人物）
+    status: LOCKED
+    light_lock_id: LK-TAIHU-MIST
+    location: VM ~/drama-line/casting/scenes/LOC-TAIHU-DAWN/loc-taihu-dawn.jpg (規格見 docs/LOCATION_REGISTRY.md)
+    note: EP-01 S01 / S16b 及 DEMO-03 S0 共用空景母圖
+  - id: LOC-TAIPEI-STREET-2022
+    desc: 2022 台北陰天傍晚街頭騎樓與長椅（正反打雙角度 _main ＋ _rev，零人物、零可讀招牌）
+    status: LOCKED
+    light_lock_id: LK-TAIPEI-DUSK22
+    location: VM ~/drama-line/casting/scenes/LOC-TAIPEI-STREET-2022/ (loc-taipei-street-2022-main.jpg / -rev.jpg；規格見 docs/LOCATION_REGISTRY.md)
+    note: EP-01 SEG-02（S02–S04c）專用；|ΔL_bg|=0.87、|Δb_bg|=0.52
+  - id: LOC-FANLI-STUDIO-26
+    desc: 范蠡 2026 台北深夜小套房（系列常駐主場三角度：_desk / _window / _tabletop，右側預留 SYS-01 暗牆負形）
+    status: LOCKED
+    light_lock_id: LK-STUDIO-NIGHT26
+    location: VM ~/drama-line/casting/scenes/LOC-FANLI-STUDIO-26/ (loc-fanli-studio-26-desk.jpg / -window.jpg / -tabletop.jpg；規格見 docs/LOCATION_REGISTRY.md)
+    note: EP-01 SEG-03 / SEG-05（S06–S12, S17a–S19）常駐主場；3 角度全幀 |ΔL*|=14.42、上部暗牆跨度 1.36、blowout ≤ 0.02%
+  - id: LOC-YUE-COURT
+    desc: 春秋晚期越國朝堂大殿空座（素樸深暗實木方柱與木樑、蒲席空座與矮漆几、青銅燈暖琥珀微光，零人物零匾額）
+    status: LOCKED
+    light_lock_id: LK-COURT-TORCH
+    location: VM ~/drama-line/casting/scenes/LOC-YUE-COURT/loc-yue-court.jpg (規格見 docs/LOCATION_REGISTRY.md)
+    note: EP-01 SEG-04（S13 / S14a / S15b）；嚴守先秦春秋建築考據（無明清紅牆雕龍）
+  - id: LOC-WENZHONG-GATE
+    desc: 春秋晚期越國大夫文種府門與門內玄關（半開未上漆厚木府門、粗灰石階、壁燈暖火光露內室蒲席矮几，零人物零匾額）
+    status: LOCKED
+    light_lock_id: LK-COURT-TORCH
+    location: VM ~/drama-line/casting/scenes/LOC-WENZHONG-GATE/loc-wenzhong-gate.jpg (規格見 docs/LOCATION_REGISTRY.md)
+    note: EP-01 SEG-04（S14b / S15a）；自 LOC-YUE-COURT 獨立拆卡以守 AMD-04，與大殿同鎖 LK-COURT-TORCH（|Δwhole_L|=0.33）
 
 voices:
   - id: FANLI-VOICE-F
     desc: ElevenLabs F・胸腔共鳴（eleven_v4, stability 0.65）
     status: LOCKED
-    location: bible/voices/FANLI.yaml（參數與 voice_id 以該檔為準）
+    location: VM ~/drama-line/voices/FANLI.yaml（repo 對應路徑：bible/voices/FANLI.yaml；參數與 voice_id 以該檔為準）
   - id: SYS01-VOICE
-    desc: 系統專屬聲線
-    status: PENDING
+    desc: 系統專屬聲線（eleven_v4, stability 0.72 規格已備，待 Creator 試聽拍板）
+    status: PENDING  # P0-EP01（不擋 SM-8，擋 EP-01 Stage 1.5）
+  - id: GOUJIAN-VOICE
+    desc: 越王勾踐客串聲線（EP-01 S13 單句 11 字，ElevenLabs Voice Library 待篩選）
+    status: PENDING  # P1
+  - id: WENZHONG-VOICE
+    desc: 文種客串聲線（EP-01 S15a 單句 12 字，ElevenLabs Voice Library 待篩選）
+    status: PENDING  # P1
+  - id: WITNESS-DEMO03-VOICE
+    desc: DEMO-03 巷口目擊婦人聲線（條件項：僅於獨立製作 DEMO-03 時啟用；跳過 DEMO-03 則 DROP/P2）
+    status: PENDING  # CONDITIONAL
+
+audio_beds:
+  - id: AUDIO-LIB-ROOMTONES
+    desc: 6 條 48kHz 共用環境音底床（alley_night_wet_48k［既有移入共用路徑］＋ 5 條新增：taihu_night_reed_48k / taihu_dawn_water_48k / taipei_street_crowd_48k / studio_night_hum_48k / ancient_hall_torch_48k）
+    status: LOCKED
+    location: VM ~/drama-line/audio_lib/roomtone/ (生成腳本 tools/make_ep01_audio_lib.py，純 CPU 48kHz 16-bit PCM)
+  - id: AUDIO-LIB-SFX
+    desc: 共用環境／動作 Foley（s00_sword_draw_1inch_48k.wav［新增］＋ distant_scooter_alarm_chirp.wav ＋ sys01_glitch_ignition_pulse.wav）
+    status: LOCKED
+    location: VM ~/drama-line/audio_lib/sfx/
 
 productions:
   - id: DEMO-01
@@ -67,3 +148,7 @@ productions:
     desc: 同段以規格 v2.3 全管線修復重製（23.79s），三閘全過、收件抽幀複核屬實
     status: VERIFIED
     location: VM ~/drama-line/demo02_v2/DEMO02_v2.mp4（報告 docs/memos/DEMO02_V2_FULL_RUN_REPORT.md）
+  - id: SM-8
+    desc: AMD-05 v3 SYS-01 生成端主導全息投影冒煙驗證（4.032s Flow Omni i2v_first，12/24 pts，0 CU，6/6 GO/PASS）
+    status: VERIFIED
+    location: VM ~/drama-line/sm8/SM8_t1.mp4（報告 sm8/SM8_RESULT.md，已同步 docs/memos/SM8_RESULT.md）

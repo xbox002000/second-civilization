@@ -1,0 +1,103 @@
+# bible/camera/named_shots.yaml — 受控 9:16 鏡型庫（Spec v2.4）
+version: "2.4"
+updated: "2026-11-28"
+shots:
+  # Appendix A.7 Core 10
+  - id: steady-dialogue-lock
+    shot_size: [MCU, CU, MS]
+    movement: { type: static, speed: slow, amplitude: small, motivation: power_lock }
+    control_method: L1_prompt
+    verified_9x16_status: VERIFIED_DEMO02_V2
+  - id: slow-push-verdict
+    shot_size: [CU, MCU]
+    movement: { type: push-in, speed: slow, amplitude: small, motivation: emotional_intensify }
+    control_method: L1_prompt
+    verified_9x16_status: VERIFIED_DEMO02_V2
+  - id: subtle-pull-reveal
+    shot_size: [MS, MLS, MCU]
+    movement: { type: pull-out, speed: slow, amplitude: small, motivation: spatial_reveal }
+    control_method: L1_prompt
+    verified_9x16_status: UNTESTED
+  - id: handheld-jolt
+    shot_size: [MLS, MS, MCU]
+    movement: { type: handheld, speed: fast, amplitude: large, motivation: subjective_instability }
+    control_method: L1_prompt
+    verified_9x16_status: VERIFIED_DEMO02_V2
+  - id: ots-push-tension
+    shot_size: [MCU]
+    framing_flags: { is_ots: true }
+    movement: { type: push-in, speed: slow, amplitude: small, motivation: emotional_intensify }
+    control_method: L1_prompt
+    verified_9x16_status: UNTESTED
+  - id: arc-reveal-90
+    shot_size: [WS, MLS, MS]
+    movement: { type: arc, speed: slow, amplitude: medium, motivation: spatial_reveal }
+    control_method: L3_clay_ref2v
+    verified_9x16_status: VERIFIED_CLAY_TEST
+  - id: low-angle-authority
+    shot_size: [MS, MCU]
+    angle_v: low
+    movement: { type: static, speed: slow, amplitude: small, motivation: power_lock }
+    control_method: L1_prompt
+    verified_9x16_status: UNTESTED
+  - id: match-cut-bridge
+    shot_size: [CU, MCU, MS]
+    movement: { type: push-in, speed: slow, amplitude: small, motivation: spatial_reveal }
+    control_method: L2_flf
+    verified_9x16_status: UNTESTED
+  - id: crash-zoom-post
+    shot_size: [CU, ECU, MCU]
+    movement: { type: zoom-in, speed: fast, amplitude: medium, motivation: rhythm_jolt }
+    control_method: L4_post_25d
+    verified_9x16_status: UNTESTED
+  - id: ken-burns-card
+    shot_size: [CARD]
+    movement: { type: zoom-in, speed: slow, amplitude: small, motivation: spatial_reveal }
+    control_method: L4_post_25d
+    verified_9x16_status: VERIFIED_DEMO02_V2
+
+  # Director Layer Q3 Additions (4)
+  - id: intimate-drift-close
+    shot_size: [MCU, CU]
+    movement: { type: push-in, speed: slow, amplitude: small, motivation: emotional_intensify }
+    control_method: L1_prompt
+    verified_9x16_status: VERIFIED_DEMO02_V2
+  - id: cold-static-observe
+    shot_size: [WS, MLS, MS]
+    movement: { type: static, speed: slow, amplitude: small, motivation: power_lock }
+    control_method: L1_prompt
+    verified_9x16_status: UNTESTED
+  - id: stalk-track-fg
+    shot_size: [MLS, MS]
+    movement: { type: track, speed: standard, amplitude: medium, motivation: action_follow }
+    control_method: L3_clay_ref2v
+    verified_9x16_status: UNTESTED
+  - id: pov-handheld-scan
+    shot_size: [MS, MCU]
+    movement: { type: pov, speed: standard, amplitude: medium, motivation: subjective_instability }
+    control_method: L1_prompt
+    verified_9x16_status: UNTESTED
+
+  # Coverage v2.4 Additions (4)
+  - id: ecu-detail-insert
+    shot_size: [ECU]
+    framing_flags: { is_insert: true }
+    movement: { type: push-in, speed: slow, amplitude: small, motivation: rhythm_jolt }
+    control_method: L1_prompt
+    verified_9x16_status: UNTESTED
+  - id: ots-reverse-cu
+    shot_size: [CU, MCU]
+    framing_flags: { is_ots: true, is_reverse: true }
+    movement: { type: handheld, speed: slow, amplitude: small, motivation: action_follow }
+    control_method: L1_prompt
+    verified_9x16_status: UNTESTED
+  - id: push-escalation-mcu
+    shot_size: [MCU]
+    movement: { type: push-in, speed: slow, amplitude: small, end_shot_size: CU, motivation: emotional_intensify }
+    control_method: L1_prompt
+    verified_9x16_status: UNTESTED
+  - id: whip-cut-anchor
+    shot_size: [MS, MCU]
+    movement: { type: pan, speed: fast, amplitude: medium, motivation: rhythm_jolt }
+    control_method: L4_post_25d
+    verified_9x16_status: UNTESTED

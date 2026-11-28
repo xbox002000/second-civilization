@@ -1,20 +1,14 @@
 #!/usr/bin/env python3
 """
-preflight_gate.py — Workflow V2.3 Preflight Validation Gate (QC-0)
-Implements AMD-01/04/05/06/07 (v2.2) + V2.3 increments:
-  - ASSET_CONTRACT & REF_COUNT_BUDGET (Item 1)
-  - V13_AUTHORITY_CONFLICT & V13_ORPHAN_ASSET (Item 2)
-  - ERA_ANCHOR_CONFLICT (Item 3)
-  - PERF_INTENSITY_CONFLICT / PERF_INTENSITY_CEILING / PERF_LEXICON_UNKNOWN / AI_FACE_TABOO (Item 4)
-  - CROSS_ERA_CHAR_SCOPE / FLIP_ASSET_BAN / UNSEEN_SIDE_GUARD (Item 5)
-  - VOICE_AUTHORITY_LOCK (Item 6)
-  - Advisory Craft Checks: CRAFT_LIGHT_SPECIFICITY / CRAFT_OBSERVABLE_ACTION /
-    CRAFT_PALETTE_NO_FLUFF / CRAFT_SOUND_DESIGNED (Item 7b, WARN only)
-  - AUDIO_BED_HYGIENE (Item 7c)
-  - V1_DURATION_ENVELOPE (Item 7d, L4 measured sub-caps)
+preflight_gate.py — Workflow V2.4 Preflight Validation Gate (QC-0)
+Implements AMD-01/04/05 v3/06/07 + V2.3 increments + V2.4 increments:
+  - V14 Coverage & Short-Video Pacing Rule Group (Appendix D: R1a/b/c, R2, R3, R4, R5a/b, R7, R8, R9, Dead-Air)
+  - INSERT_ECU_DURATION Advisory (Creator direction 2026-11-28: INSERT/ECU net > 2.0s without justification -> WARN)
+  - AMD-05 v3 SYS-01 Gates: SYS01_TEXT_PANEL_BAN + SYS01_PROJECTION_ANCHOR_REQ (retires legacy SYS01_BAN on v2.4+)
+  - H3 Official Spec Reconcile: H3_MODE_EXCLUSION, H3_MIN_DURATION (>=4.0s pad rule), 17-frame grid (5+17k) real-length check
 
 Usage:
-  python3 preflight_gate.py <script_pack.json> [--mode normal|demo] [--json]
+  python3 preflight_gate.py <script_pack.json> [--mode normal|demo] [--coverage-strict] [--json]
   python3 preflight_gate.py --selftest
 """
 
@@ -23,7 +17,9 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import math
 import re
+import statistics
 import sys
 from dataclasses import dataclass, asdict
 from pathlib import Path
@@ -35,21 +31,89 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 # ---------------------------------------------------------------------------
 
 CU_MCU_SIZES = {"CU", "MCU", "ECU"}
-MS_LS_SIZES = {"MS", "LS", "ELS"}
+MS_LS_SIZES = {"MS", "LS", "ELS", "WS", "MLS"}
 VIDEO_ENGINES = {"h3", "flow", "wan"}
 
-# Shot-size closeness rank (larger = closer)
+# Shot-size closeness rank (larger = closer) — legacy + v2.4 normalized
 SHOT_SIZE_RANK: Dict[str, int] = {
+    "CARD": 0,
     "ELS": 1,
-    "LS": 2,
+    "LS": 1,
+    "WS": 1,
+    "MLS": 2,
     "2S": 3,
     "MS": 3,
     "OTS": 4,
-    "MCU": 5,
-    "CU": 6,
-    "ECU": 7,
+    "MCU": 4,
+    "CU": 5,
+    "ECU": 6,
     "INSERT": 6,
 }
+
+# v2.4 Normalized 6-level distance scale + CARD
+SCALE_RANK_V24: Dict[str, int] = {
+    "CARD": 0,
+    "WS": 1,
+    "MLS": 2,
+    "MS": 3,
+    "MCU": 4,
+    "CU": 5,
+    "ECU": 6,
+}
+
+# v2.4 Segment Pacing Profiles (Appendix D.2 Table A)
+PACING_PROFILES: Dict[str, Dict[str, Any]] = {
+    "hook":           {"asl": (1.5, 2.2), "non_dial_cap": 3.5, "dead_soft": 2.0, "dead_hard": 2.5, "high_tension": True},
+    "chase_tension":  {"asl": (1.4, 2.2), "non_dial_cap": 3.0, "dead_soft": 1.8, "dead_hard": 2.5, "high_tension": True},
+    "climax":         {"asl": (1.8, 2.6), "non_dial_cap": 3.5, "dead_soft": 2.0, "dead_hard": 2.5, "high_tension": True},
+    "escalation":     {"asl": (2.0, 2.8), "non_dial_cap": 3.5, "dead_soft": 2.5, "dead_hard": 3.5, "high_tension": True},
+    "confrontation":  {"asl": (2.2, 3.0), "non_dial_cap": 4.0, "dead_soft": 2.5, "dead_hard": 3.5, "high_tension": True},
+    "revelation":     {"asl": (2.4, 3.2), "non_dial_cap": 4.0, "dead_soft": 3.0, "dead_hard": 4.0, "high_tension": False},
+    "release_bridge": {"asl": (2.8, 3.8), "non_dial_cap": 4.0, "dead_soft": 3.5, "dead_hard": 4.5, "high_tension": False},
+}
+
+# v2.4 movement.motivation controlled vocabulary & compatible camera_psychology (Appendix D.1.1)
+MOTIVATION_PSYCH_COMPAT: Dict[str, Set[str]] = {
+    "emotional_intensify":    {"intimate_drift", "stable_control", "predator_stalk"},
+    "spatial_reveal":         {"cold_observe", "predator_stalk", "handheld_anxiety"},
+    "subjective_instability": {"handheld_anxiety", "subjective_pov"},
+    "action_follow":          {"handheld_anxiety", "predator_stalk", "subjective_pov"},
+    "power_lock":             {"stable_control", "cold_observe"},
+    "rhythm_jolt":            {"handheld_anxiety", "predator_stalk", "intimate_drift"},
+}
+
+# v2.4 AMD-05 v3 SYS-01 text/panel/HUD banned terms (checked outside Avoid:/避免：)
+SYS01_PANEL_BANNED_ZH = [
+    "彈窗", "弹窗", "懸浮面板", "悬浮面板", "浮動面板", "浮动面板", "浮動小面板",
+    "數據面板", "数据面板", "浮動視窗", "浮动视窗", "懸浮數據視窗", "懸浮屏幕", "懸浮螢幕", "悬浮屏幕",
+    "圓形光環", "圆形光环", "雷達環", "雷达环", "圓形雷達光環",
+    "狀態欄", "状态栏", "任務啟動", "任务启动", "豆包", "女性頭像", "女性头像",
+]
+SYS01_PANEL_BANNED_EN = [
+    re.compile(r"\bfloating\s+(?:screen|panel|ui|window|interface)\b", re.IGNORECASE),
+    re.compile(r"\bpop[- ]?up\s+(?:screen|panel|window|ui)\b", re.IGNORECASE),
+    re.compile(r"\bhud\s+(?:ring|frame|interface|overlay)\b", re.IGNORECASE),
+    re.compile(r"\bdata\s+(?:screen|panel|window)\b", re.IGNORECASE),
+    re.compile(r"\bui\s+window\b", re.IGNORECASE),
+    re.compile(r"\breadable\s+text\b", re.IGNORECASE),
+    re.compile(r"\bfemale\s+avatar\b", re.IGNORECASE),
+]
+SYS01_OPTICS_TERMS = [
+    "全息投影", "掃描線", "扫描线", "粒子消散", "半透明", "藍色輪廓光", "蓝色轮廓光", "冰藍色輪廓光", "下身光塵化", "下身光尘化",
+    "holographic", "scanline", "particles", "translucent", "rim glow", "dissolv",
+]
+SYS01_SCALE_MODES = {"manifestation_hero", "conversation_eyeline", "solo_cu"}
+SYS01_AVOID_REQUIRED_RE = re.compile(r"文字|漢字|面板|光環|HUD|text|panel|hud", re.IGNORECASE)
+
+# v2.4 ZH Anti-AI-face taboo terms
+AI_FACE_TABOO_ZH = ["美顏濾鏡", "美颜滤镜", "塑膠肌", "塑胶肌", "商業假笑", "商业假笑", "誇張大笑", "夸张大笑"]
+
+# v2.4 INSERT/ECU justification keywords (Addendum)
+INSERT_JUSTIFICATION_RE = re.compile(
+    r"performance_hold|voiceover_density|final_image|hesitation|dread|peak_emotion|held_reaction|"
+    r"表演停頓|旁白密度|終鏡|定格|遲疑",
+    re.IGNORECASE,
+)
 
 # Item 1: Role Default Scoped Contracts
 ROLE_DEFAULT_CONTRACTS: Dict[str, Dict[str, List[str]]] = {
@@ -302,6 +366,119 @@ def _strip_avoid_clause(text: str) -> str:
     return text
 
 
+def _extract_avoid_clause(text: str) -> str:
+    if not text:
+        return ""
+    m = re.search(r"\bavoid\s*[:：]|避免\s*[:：]", text, re.IGNORECASE)
+    if m:
+        return text[m.start():]
+    return ""
+
+
+def _parse_schema_version(pack: Dict[str, Any]) -> Tuple[int, int]:
+    sv = _norm_str(pack.get("schema_version") or "2.3")
+    m = re.match(r"(\d+)\.(\d+)", sv)
+    if m:
+        return int(m.group(1)), int(m.group(2))
+    return (2, 3)
+
+
+def _h3_grid_frames_sec(gen_sec: float) -> Tuple[int, float]:
+    """Compute actual H3 17-frame grid length (5 + 17k frames at 24 fps)."""
+    raw_f = max(5, int(round(gen_sec * 24.0)))
+    k = max(0, int(math.ceil((raw_f - 5) / 17.0)))
+    grid_f = 5 + 17 * k
+    return grid_f, grid_f / 24.0
+
+
+def _normalize_shot_size_v24(shot: Dict[str, Any]) -> Tuple[str, Dict[str, bool]]:
+    """
+    Normalize legacy (2.0-2.3) and v2.4 shot_size + framing_flags into pure
+    distance enum {WS, MLS, MS, MCU, CU, ECU, CARD} + {is_ots, is_reverse, is_two_shot, is_insert}.
+    """
+    raw_sz = _norm_str(shot.get("shot_size")).upper()
+    angle_h = _norm_str(shot.get("angle_h")).lower()
+    raw_ff = shot.get("framing_flags") if isinstance(shot.get("framing_flags"), dict) else {}
+    flags = {
+        "is_ots": bool(raw_ff.get("is_ots", False)),
+        "is_reverse": bool(raw_ff.get("is_reverse", False)),
+        "is_two_shot": bool(raw_ff.get("is_two_shot", False)),
+        "is_insert": bool(raw_ff.get("is_insert", False)),
+    }
+    if angle_h == "ots":
+        flags["is_ots"] = True
+    if angle_h == "reverse":
+        flags["is_reverse"] = True
+
+    if _norm_str(shot.get("gen_mode")).lower() == "cpu_card" or _norm_str(shot.get("engine_route")).lower() == "ffmpeg_card" or raw_sz == "CARD":
+        return "CARD", flags
+    if raw_sz in {"ELS", "LS", "WS"}:
+        return "WS", flags
+    if raw_sz == "MLS":
+        return "MLS", flags
+    if raw_sz in {"2S", "TWO-SHOT", "TWO_SHOT"}:
+        flags["is_two_shot"] = True
+        return "MS", flags
+    if raw_sz == "OTS":
+        flags["is_ots"] = True
+        return "MCU", flags
+    if raw_sz == "INSERT":
+        flags["is_insert"] = True
+        return "ECU", flags
+    if raw_sz in SCALE_RANK_V24:
+        return raw_sz, flags
+    return raw_sz or "MS", flags
+
+
+def _find_sys01_panel_banned(text: str) -> List[str]:
+    pos = _strip_avoid_clause(text)
+    hits: List[str] = []
+    if not pos:
+        return hits
+    for term in SYS01_PANEL_BANNED_ZH:
+        if term in pos:
+            hits.append(term)
+    for pat in SYS01_PANEL_BANNED_EN:
+        m = pat.search(pos)
+        if m:
+            hits.append(m.group(0))
+    return hits
+
+
+def _is_sys01_in_frame(shot: Dict[str, Any]) -> bool:
+    if bool(shot.get("sys01_in_frame", False)):
+        return True
+    if _norm_str(shot.get("sys01_mode")).lower() == "post_composite_fallback":
+        return False
+    for ref in shot.get("asset_refs") or []:
+        if isinstance(ref, dict):
+            aid = _norm_str(ref.get("asset_id")).upper()
+            if "SYS01" in aid or "SYS-01" in aid:
+                return True
+    return False
+
+
+def _count_sys01_optics(text: str) -> int:
+    pos = _strip_avoid_clause(text).lower()
+    matched = set()
+    for term in SYS01_OPTICS_TERMS:
+        if term.lower() in pos:
+            matched.add(term.lower())
+    return len(matched)
+
+
+def _has_sys01_costume_and_skin(text: str) -> Tuple[bool, List[str]]:
+    pos = _strip_avoid_clause(text)
+    missing: List[str] = []
+    if not re.search(r"紅圍巾|红围巾|紅色.{0,4}圍巾|红色.{0,4}围巾|red\s+(?:knit\s+)?scarf", pos, re.IGNORECASE):
+        missing.append("red_scarf")
+    if not re.search(r"黑.{0,3}大衣|羊毛大衣|black\s+(?:wool\s+)?coat", pos, re.IGNORECASE):
+        missing.append("black_coat")
+    if not re.search(r"自然.{0,2}膚色|自然.{0,2}肤色|真實膚色|真实肤色|溫潤膚色|温润肤色|natural\s+(?:warm\s+)?skin", pos, re.IGNORECASE):
+        missing.append("natural_skin")
+    return (len(missing) == 0), missing
+
+
 def _find_bare_negations(text: str) -> List[str]:
     hits: List[str] = []
     if not text:
@@ -528,14 +705,18 @@ def _check_voice_locked(speaker: str) -> Optional[str]:
 # ---------------------------------------------------------------------------
 
 def validate_script_pack(
-    pack: Dict[str, Any], mode_override: Optional[str] = None
+    pack: Dict[str, Any],
+    mode_override: Optional[str] = None,
+    coverage_strict: bool = False,
 ) -> Tuple[List[Finding], List[str]]:
     """
-    Validate a Schema 2.0–2.3 script_pack dict against AMD-01/04/05/06/07 + v2.3 rules.
+    Validate a Schema 2.0–2.4 script_pack dict against AMD-01/04/05 v3/06/07 + v2.3 + v2.4 rules.
     Returns (findings, stamps).
     """
     findings: List[Finding] = []
     stamps: List[str] = []
+    schema_ver = _parse_schema_version(pack)
+    is_v24 = schema_ver >= (2, 4)
 
     prod_mode = mode_override or _norm_str(pack.get("production_mode")) or "normal"
     if prod_mode == "demo":
@@ -544,7 +725,7 @@ def validate_script_pack(
                 level="PASS",
                 rule="DEMO_BOUNDARY",
                 shot_id="PACK",
-                message="production_mode=demo detected; all v2.2/v2.3 hard gates remain enforced (zero exemption).",
+                message="production_mode=demo detected; all v2.2/v2.3/v2.4 hard gates remain enforced (zero exemption).",
             )
         )
 
@@ -717,18 +898,44 @@ def validate_script_pack(
                 )
             else:
                 is_zh, cjk_n, lat_n = _is_chinese_prose(vid_prompt)
-                if is_zh:
-                    findings.append(
-                        Finding(
-                            level="FAIL",
-                            rule="PROMPT_HYGIENE_DIALECT",
-                            shot_id=sid,
-                            message=(
-                                f"video_prompt for engine '{engine}' contains Chinese prose "
-                                f"(CJK={cjk_n}, Latin={lat_n} outside <d> tags); must use §A.4 English engine dialect."
-                            ),
+                if is_zh and not (is_v24 and engine == "flow"):
+                    if engine == "h3":
+                        # Check H3 structure markers even if prose is ZH; on <2.4 reject ZH prose
+                        if not is_v24:
+                            findings.append(
+                                Finding(
+                                    level="FAIL",
+                                    rule="PROMPT_HYGIENE_DIALECT",
+                                    shot_id=sid,
+                                    message=(
+                                        f"video_prompt for engine '{engine}' contains Chinese prose "
+                                        f"(CJK={cjk_n}, Latin={lat_n} outside <d> tags); must use §A.4 English engine dialect."
+                                    ),
+                                )
+                            )
+                        else:
+                            h3_err = _check_h3_dialect(vid_prompt, gen_mode)
+                            if h3_err:
+                                findings.append(
+                                    Finding(
+                                        level="FAIL",
+                                        rule="PROMPT_HYGIENE_DIALECT",
+                                        shot_id=sid,
+                                        message=h3_err,
+                                    )
+                                )
+                    else:
+                        findings.append(
+                            Finding(
+                                level="FAIL",
+                                rule="PROMPT_HYGIENE_DIALECT",
+                                shot_id=sid,
+                                message=(
+                                    f"video_prompt for engine '{engine}' contains Chinese prose "
+                                    f"(CJK={cjk_n}, Latin={lat_n} outside <d> tags); must use §A.4 English engine dialect."
+                                ),
+                            )
                         )
-                    )
                 elif engine == "h3":
                     h3_err = _check_h3_dialect(vid_prompt, gen_mode)
                     if h3_err:
@@ -740,6 +947,37 @@ def validate_script_pack(
                                 message=h3_err,
                             )
                         )
+
+        # ------------------------------------------------------------------
+        # v2.4 H3 Reconcile: H3_MODE_EXCLUSION (FL2V vs Ref2VA mutual exclusion)
+        # ------------------------------------------------------------------
+        if not is_cpu_card and engine == "h3":
+            has_last_frame = bool(shot.get("last_frame"))
+            if gen_mode == "ref2v" and (has_last_frame or control_method == "L2_flf"):
+                findings.append(
+                    Finding(
+                        level="FAIL",
+                        rule="H3_MODE_EXCLUSION",
+                        shot_id=sid,
+                        message=(
+                            "H3 architecture strictly forbids mixing gen_mode='ref2v' with "
+                            f"last_frame={has_last_frame} or control_method='{control_method}' "
+                            "(MiniMaxH3ReferenceToVideo vs MiniMaxH3ImageToVideo are mutually exclusive)."
+                        ),
+                    )
+                )
+            elif gen_mode == "i2v_first_last" and (len(char_refs) > 0 or len(previs_refs) > 0):
+                findings.append(
+                    Finding(
+                        level="FAIL",
+                        rule="H3_MODE_EXCLUSION",
+                        shot_id=sid,
+                        message=(
+                            "H3 gen_mode='i2v_first_last' (MiniMaxH3ImageToVideo) cannot accept Ref2VA "
+                            f"character/previs_video refs (got char_refs={len(char_refs)}, previs={len(previs_refs)})."
+                        ),
+                    )
+                )
 
         # ------------------------------------------------------------------
         # Rule c: TWO_SHOT_MICRO_MOTION (AMD-07 / §B.8-5)
@@ -849,24 +1087,81 @@ def validate_script_pack(
                     )
 
         # ------------------------------------------------------------------
-        # Rule e: SYS01_BAN (AMD-05 / V9)
+        # Rule e: AMD-05 v3 SYS01_TEXT_PANEL_BAN + SYS01_PROJECTION_ANCHOR_REQ
+        # (Legacy SYS01_BAN preserved for schema_version < 2.4 backward compat)
         # ------------------------------------------------------------------
-        if _mentions_sys01(shot):
-            img_ban = _find_sys01_banned(img_prompt)
-            vid_ban = _find_sys01_banned(vid_prompt)
-            if img_ban or vid_ban:
-                findings.append(
-                    Finding(
-                        level="FAIL",
-                        rule="SYS01_BAN",
-                        shot_id=sid,
-                        message=(
-                            "SYS-01 / composite_ui shot contains banned AI UI terms "
-                            f"(image_prompt={img_ban}, video_prompt={vid_ban}); "
-                            "SYS-01 must be composited in assembly, never generated."
-                        ),
+        if not is_v24:
+            if _mentions_sys01(shot):
+                img_ban = _find_sys01_banned(img_prompt)
+                vid_ban = _find_sys01_banned(vid_prompt)
+                if img_ban or vid_ban:
+                    findings.append(
+                        Finding(
+                            level="FAIL",
+                            rule="SYS01_BAN",
+                            shot_id=sid,
+                            message=(
+                                "SYS-01 / composite_ui shot contains banned AI UI terms "
+                                f"(image_prompt={img_ban}, video_prompt={vid_ban}); "
+                                "SYS-01 must be composited in assembly, never generated."
+                            ),
+                        )
                     )
-                )
+        else:
+            if not is_cpu_card:
+                img_pban = _find_sys01_panel_banned(img_prompt)
+                vid_pban = _find_sys01_panel_banned(vid_prompt)
+                if img_pban or vid_pban:
+                    findings.append(
+                        Finding(
+                            level="FAIL",
+                            rule="SYS01_TEXT_PANEL_BAN",
+                            shot_id=sid,
+                            message=(
+                                "V9/AMD-05 v3 forbids floating panels, HUD rings, UI windows, or readable text in generation prompts "
+                                f"(image_prompt={img_pban}, video_prompt={vid_pban})."
+                            ),
+                        )
+                    )
+                if _is_sys01_in_frame(shot):
+                    # Require avoid clause with no-text/no-panel guard
+                    img_av = _extract_avoid_clause(img_prompt)
+                    vid_av = _extract_avoid_clause(vid_prompt)
+                    if not SYS01_AVOID_REQUIRED_RE.search(img_av) or (vid_prompt and not SYS01_AVOID_REQUIRED_RE.search(vid_av)):
+                        findings.append(
+                            Finding(
+                                level="FAIL",
+                                rule="SYS01_TEXT_PANEL_BAN",
+                                shot_id=sid,
+                                message="SYS-01 in-frame shot must include explicit no-text / no-panel / no-HUD terms inside Avoid:/避免： clause.",
+                            )
+                        )
+                    # Require >= 2 holographic optical terms + costume/skin + valid sys01_scale_mode
+                    img_opt = _count_sys01_optics(img_prompt)
+                    vid_opt = _count_sys01_optics(vid_prompt) if vid_prompt else 2
+                    ok_cs_img, miss_cs_img = _has_sys01_costume_and_skin(img_prompt)
+                    ok_cs_vid, miss_cs_vid = _has_sys01_costume_and_skin(vid_prompt) if vid_prompt else (True, [])
+                    scale_mode = _norm_str(shot.get("sys01_scale_mode"))
+                    errs: List[str] = []
+                    if img_opt < 2:
+                        errs.append(f"image_prompt optics terms={img_opt} (<2)")
+                    if vid_prompt and vid_opt < 2:
+                        errs.append(f"video_prompt optics terms={vid_opt} (<2)")
+                    if not ok_cs_img:
+                        errs.append(f"image_prompt missing {miss_cs_img}")
+                    if vid_prompt and not ok_cs_vid:
+                        errs.append(f"video_prompt missing {miss_cs_vid}")
+                    if scale_mode not in SYS01_SCALE_MODES:
+                        errs.append(f"invalid sys01_scale_mode='{scale_mode}' (required one of {sorted(SYS01_SCALE_MODES)})")
+                    if errs:
+                        findings.append(
+                            Finding(
+                                level="FAIL",
+                                rule="SYS01_PROJECTION_ANCHOR_REQ",
+                                shot_id=sid,
+                                message="AMD-05 v3 SYS-01 projection anchor check failed: " + "; ".join(errs),
+                            )
+                        )
 
         # ------------------------------------------------------------------
         # Rule f: SAME_LOCATION_DERIVATION (AMD-04)
@@ -953,33 +1248,40 @@ def validate_script_pack(
             seen_chars.update(char_refs)
 
         # ------------------------------------------------------------------
-        # Rule g: SCALE_JUMP_BAN (AMD-01)
+        # Rule g: SCALE_JUMP_BAN (AMD-01 + v2.4 Δrank >= 2 on i2v)
         # ------------------------------------------------------------------
-        if shot_size in MS_LS_SIZES:
-            sj_hits = _find_scale_jump_terms(vid_prompt)
-            mov = shot.get("movement") if isinstance(shot.get("movement"), dict) else {}
-            end_sz = _norm_str(mov.get("end_shot_size")).upper()
-            size_jump = (
-                gen_mode in {"i2v_first", "i2v_first_last"}
-                and (
-                    (shot_size in {"LS", "ELS"} and end_sz in {"CU", "ECU"})
-                    or (shot_size == "MS" and end_sz == "ECU")
+        norm_sz_v24, fflags_v24 = _normalize_shot_size_v24(shot)
+        mov = shot.get("movement") if isinstance(shot.get("movement"), dict) else {}
+        end_sz_raw = _norm_str(mov.get("end_shot_size")).upper()
+        end_sz_norm = (
+            "WS" if end_sz_raw in {"ELS", "LS", "WS"} else
+            ("MS" if end_sz_raw == "2S" else ("MCU" if end_sz_raw == "OTS" else ("ECU" if end_sz_raw == "INSERT" else end_sz_raw)))
+        )
+        start_rank = SCALE_RANK_V24.get(norm_sz_v24, 0)
+        end_rank = SCALE_RANK_V24.get(end_sz_norm, 0) if end_sz_norm else 0
+        delta_rank_jump = (
+            gen_mode in {"i2v_first", "i2v_first_last"}
+            and start_rank > 0
+            and end_rank > 0
+            and abs(end_rank - start_rank) >= 2
+        )
+        sj_hits = _find_scale_jump_terms(vid_prompt) if shot_size in MS_LS_SIZES else []
+        if sj_hits or delta_rank_jump:
+            detail = []
+            if sj_hits:
+                detail.append(f"video_prompt demands extreme-close detail {sj_hits}")
+            if delta_rank_jump:
+                detail.append(
+                    f"movement.end_shot_size jumps {norm_sz_v24}->{end_sz_norm} (Δrank={abs(end_rank - start_rank)} >= 2) on {gen_mode}"
+                )
+            findings.append(
+                Finding(
+                    level="FAIL",
+                    rule="SCALE_JUMP_BAN",
+                    shot_id=sid,
+                    message=f"Shot ({shot_size}) violates AMD-01/R3 scale-jump ban: {'; '.join(detail)}.",
                 )
             )
-            if sj_hits or size_jump:
-                detail = []
-                if sj_hits:
-                    detail.append(f"video_prompt demands extreme-close detail {sj_hits}")
-                if size_jump:
-                    detail.append(f"movement.end_shot_size jumps {shot_size}->{end_sz} on {gen_mode}")
-                findings.append(
-                    Finding(
-                        level="FAIL",
-                        rule="SCALE_JUMP_BAN",
-                        shot_id=sid,
-                        message=f"MS/LS shot ({shot_size}) violates AMD-01 scale-jump ban: {'; '.join(detail)}.",
-                    )
-                )
 
         # ------------------------------------------------------------------
         # v2.3 Item 1 + Item 2 + Item 5: ASSET_CONTRACT, REF_COUNT_BUDGET,
@@ -1013,14 +1315,30 @@ def validate_script_pack(
                         )
                     )
 
-                # Item 1: Uncropped charactercard ban
-                if "charactercard" in aid.lower() or "charactercard" in apath.lower():
+                # Item 1 + v2.4 AMD-05 v3: Uncropped charactercard / banned projection look ref / R2C5 ban
+                aid_low = aid.lower()
+                apath_low = apath.lower()
+                if "charactercard" in aid_low or "charactercard" in apath_low:
                     findings.append(
                         Finding(
                             level="FAIL",
                             rule="ASSET_CONTRACT",
                             shot_id=sid,
                             message=f"Uncropped multi-panel charactercard '{aid}' cannot be fed directly (prevents card_layout bleed).",
+                        )
+                    )
+                if (
+                    "sys01-projection-look-ref" in aid_low
+                    or "sys01-projection-look-ref" in apath_low
+                    or "r2c5" in aid_low
+                    or "r2c5" in apath_low
+                ):
+                    findings.append(
+                        Finding(
+                            level="FAIL",
+                            rule="ASSET_CONTRACT",
+                            shot_id=sid,
+                            message=f"Forbidden SYS-01 source asset '{aid or apath}' (contains panels/HUD text or R2C5 defect); never feed to generator.",
                         )
                     )
 
@@ -1302,13 +1620,14 @@ def validate_script_pack(
                             )
                         )
 
-        # Anti-AI-face taboo check (positive text only)
+        # Anti-AI-face taboo check (positive text only — EN + v2.4 ZH)
         pos_face_blob = " ".join([
             micro_txt,
             _strip_avoid_clause(img_prompt),
             _strip_avoid_clause(vid_prompt),
         ])
         taboo_hits = [p.search(pos_face_blob).group(0) for p in AI_FACE_TABOO_EN if p.search(pos_face_blob)]
+        taboo_hits += [t for t in AI_FACE_TABOO_ZH if t in pos_face_blob]
         if taboo_hits:
             findings.append(
                 Finding(
@@ -1350,7 +1669,8 @@ def validate_script_pack(
             )
 
         # ------------------------------------------------------------------
-        # v2.3 Item 7d: V1_DURATION_ENVELOPE
+        # v2.3 Item 7d + v2.4 H3 Reconcile: V1_DURATION_ENVELOPE, H3_MIN_DURATION,
+        # 17-frame grid (5+17k) real-length check, and INSERT_ECU_DURATION Advisory
         # ------------------------------------------------------------------
         if not is_cpu_card and shot.get("target_net_sec") is not None:
             try:
@@ -1360,6 +1680,7 @@ def validate_script_pack(
             trim_policy = _norm_str(shot.get("trim_policy") or "standard_0.5s").lower()
             trim_buf = 1.0 if trim_policy == "standard_0.5s" else (0.5 if trim_policy == "tail_only" else 0.0)
             gen_sec = net_sec + trim_buf
+            cov_role = _norm_str(shot.get("coverage_role")).lower()
 
             if engine == "ltx" and net_sec > 2.5:
                 findings.append(
@@ -1380,24 +1701,65 @@ def validate_script_pack(
                     )
                 )
             elif engine == "h3":
-                if gen_sec > 6.5:
-                    findings.append(
-                        Finding(
-                            level="FAIL",
-                            rule="V1_DURATION_ENVELOPE",
-                            shot_id=sid,
-                            message=f"H3 gen_sec={gen_sec:.2f}s exceeds hard cap 6.5s (split shot + L-cut per §B.7).",
-                        )
-                    )
-                elif gen_mode == "ref2v" and gen_sec > 5.5 and shot_accel not in {"A100", "G4"}:
+                grid_f, grid_sec = _h3_grid_frames_sec(gen_sec)
+                if gen_sec < 4.0:
                     findings.append(
                         Finding(
                             level="WARN",
-                            rule="V1_DURATION_ENVELOPE",
+                            rule="H3_MIN_DURATION",
                             shot_id=sid,
-                            message=f"H3 ref2v on {shot_accel} gen_sec={gen_sec:.2f}s exceeds recommended 5.5s stability cap.",
+                            message=(
+                                f"H3 gen_sec={gen_sec:.2f}s is below 4.0s official/verified minimum "
+                                "(trained range ~124-362f; lowest L4 verified 107f=4.46s); "
+                                "pad generation to >=4.0s (107f) and trim in Stage 6A."
+                            ),
                         )
                     )
+                if shot_accel not in {"A100", "G4"}:
+                    if grid_sec > 6.5:
+                        findings.append(
+                            Finding(
+                                level="FAIL",
+                                rule="V1_DURATION_ENVELOPE",
+                                shot_id=sid,
+                                message=(
+                                    f"H3 on {shot_accel} gen_sec={gen_sec:.2f}s rounds on 17-frame grid (5+17k) to "
+                                    f"{grid_f}f ({grid_sec:.3f}s) > 6.5s production quality / L4 stability cap "
+                                    "(keep gen_sec <=5.8s for verified 141f=5.875s bucket, split + L-cut, or use A100)."
+                                ),
+                            )
+                        )
+                    elif gen_mode == "ref2v" and gen_sec > 5.5:
+                        findings.append(
+                            Finding(
+                                level="WARN",
+                                rule="V1_DURATION_ENVELOPE",
+                                shot_id=sid,
+                                message=(
+                                    f"H3 ref2v on {shot_accel} gen_sec={gen_sec:.2f}s (grid {grid_f}f={grid_sec:.2f}s) "
+                                    "exceeds recommended 5.5s stability cap."
+                                ),
+                            )
+                        )
+                else:
+                    if grid_sec > 15.0:
+                        findings.append(
+                            Finding(
+                                level="FAIL",
+                                rule="V1_DURATION_ENVELOPE",
+                                shot_id=sid,
+                                message=f"H3 on {shot_accel} grid length {grid_f}f ({grid_sec:.2f}s) exceeds 15.0s model upper bound.",
+                            )
+                        )
+                    elif grid_sec > 6.5:
+                        findings.append(
+                            Finding(
+                                level="WARN",
+                                rule="V1_DURATION_ENVELOPE",
+                                shot_id=sid,
+                                message=f"H3 on {shot_accel} grid length {grid_f}f ({grid_sec:.2f}s) exceeds 6.5s short-drama quality cap.",
+                            )
+                        )
             elif engine == "wan" and gen_sec > 6.0:
                 findings.append(
                     Finding(
@@ -1417,7 +1779,15 @@ def validate_script_pack(
                     )
                 )
 
-            if gen_sec < 3.0 and shot_size != "INSERT" and angle_h != "reverse":
+            is_short_coverage_ok = (
+                fflags_v24["is_insert"]
+                or fflags_v24["is_reverse"]
+                or norm_sz_v24 == "ECU"
+                or shot_size == "INSERT"
+                or angle_h == "reverse"
+                or cov_role in {"insert_detail", "reaction", "turn_jolt"}
+            )
+            if engine != "h3" and ((gen_sec < 2.0 and not is_short_coverage_ok) or (gen_sec < 3.0 and not is_short_coverage_ok)):
                 findings.append(
                     Finding(
                         level="WARN",
@@ -1426,6 +1796,28 @@ def validate_script_pack(
                         message=f"AI shot gen_sec={gen_sec:.2f}s is below 3.0s stability window.",
                     )
                 )
+
+            # Addendum (2026-11-28 Creator direction): INSERT_ECU_DURATION Advisory
+            is_insert_or_ecu = (norm_sz_v24 == "ECU") or fflags_v24["is_insert"] or (shot_size == "INSERT")
+            if is_insert_or_ecu and net_sec > 2.0:
+                just_blob = " ".join([
+                    _norm_str(shot.get("hold_justification")),
+                    _norm_str(shot.get("duration_justification")),
+                    _norm_str(shot.get("notes")),
+                    _norm_str(shot.get("continuity_notes")),
+                ])
+                if not INSERT_JUSTIFICATION_RE.search(just_blob):
+                    findings.append(
+                        Finding(
+                            level="WARN",
+                            rule="INSERT_ECU_DURATION",
+                            shot_id=sid,
+                            message=(
+                                f"INSERT/ECU shot target_net_sec={net_sec:.2f}s exceeds 2.0s without a justification note "
+                                "(add hold_justification / duration_justification e.g. performance_hold / voiceover_density / final_image)."
+                            ),
+                        )
+                    )
 
         # ------------------------------------------------------------------
         # v2.3 Item 7b: 4 Advisory Craft Checks (WARN only — never FAIL)
@@ -1492,7 +1884,530 @@ def validate_script_pack(
                     )
                 )
 
+    # ------------------------------------------------------------------
+    # v2.4 Appendix D: V14 Coverage & Short-Video Pacing Rule Group (12 rules)
+    # ------------------------------------------------------------------
+    if is_v24 or coverage_strict:
+        _validate_coverage_rules(pack, seg_map, shots, findings, hard_level="FAIL")
+    elif any(
+        isinstance(seg, dict) and seg.get("segment_pacing_profile")
+        for seg in seg_map.values()
+    ):
+        _validate_coverage_rules(pack, seg_map, shots, findings, hard_level="WARN")
+
     return findings, stamps
+
+
+def _validate_coverage_rules(
+    pack: Dict[str, Any],
+    seg_map: Dict[str, Dict[str, Any]],
+    shots: List[Any],
+    findings: List[Finding],
+    hard_level: str = "FAIL",
+) -> None:
+    """
+    Validate v2.4 Appendix D V14 coverage rules (R1a/b/c, R2, R3, R4, R5a/b, Dead-Air, R7, R8, R9).
+    hard_level='FAIL' for schema_version >= 2.4 (including demo mode) or --coverage-strict;
+    hard_level='WARN' for legacy packs that opt into segment_pacing_profile.
+    """
+    # Group non-dict-safe shots by segment_id preserving order
+    seg_order: List[str] = []
+    seg_shots: Dict[str, List[Dict[str, Any]]] = {}
+    all_non_card_durs: List[float] = []
+
+    for s in shots:
+        if not isinstance(s, dict):
+            continue
+        seg_id = _norm_str(s.get("segment_id")) or "SEG-DEFAULT"
+        if seg_id not in seg_shots:
+            seg_order.append(seg_id)
+            seg_shots[seg_id] = []
+        seg_shots[seg_id].append(s)
+
+    for seg_id in seg_order:
+        seg_obj = seg_map.get(seg_id, {})
+        profile = _norm_str(seg_obj.get("segment_pacing_profile") or "escalation").lower()
+        pmeta = PACING_PROFILES.get(profile, PACING_PROFILES["escalation"])
+        is_bridge = (profile == "release_bridge")
+        is_high_tension = bool(pmeta["high_tension"])
+        non_dial_cap = float(pmeta["non_dial_cap"])
+        dead_soft = float(pmeta["dead_soft"])
+        dead_hard = float(pmeta["dead_hard"])
+
+        non_cards: List[Tuple[Dict[str, Any], str, Dict[str, bool], float]] = []
+        for s in seg_shots[seg_id]:
+            nsz, fflags = _normalize_shot_size_v24(s)
+            if nsz == "CARD":
+                continue
+            try:
+                dur = float(s.get("target_net_sec") or 0.0)
+            except (TypeError, ValueError):
+                dur = 0.0
+            non_cards.append((s, nsz, fflags, dur))
+            if dur > 0:
+                all_non_card_durs.append(dur)
+
+        if not non_cards:
+            continue
+
+        total_dur = sum(x[3] for x in non_cards)
+        n_non_cards = len(non_cards)
+        distinct_sizes = {x[1] for x in non_cards}
+        has_cu_ecu = any(x[1] in {"CU", "ECU"} for x in non_cards)
+
+        # R1a: COVERAGE_SCALE_VARIETY
+        if not is_bridge:
+            if total_dur >= 8.0 or n_non_cards >= 4:
+                if len(distinct_sizes) < 3 or not has_cu_ecu:
+                    findings.append(
+                        Finding(
+                            level=hard_level,
+                            rule="COVERAGE_SCALE_VARIETY",
+                            shot_id=seg_id,
+                            message=(
+                                f"Segment {seg_id} ({n_non_cards} shots, {total_dur:.1f}s) needs >=3 distinct normalized "
+                                f"shot sizes and >=1 CU/ECU (got {sorted(distinct_sizes)})."
+                            ),
+                        )
+                    )
+            elif n_non_cards == 3 or (6.0 <= total_dur < 8.0 and n_non_cards >= 3):
+                if len(distinct_sizes) < 2 or not has_cu_ecu:
+                    findings.append(
+                        Finding(
+                            level="WARN",
+                            rule="COVERAGE_SCALE_VARIETY",
+                            shot_id=seg_id,
+                            message=f"Short segment {seg_id} ({n_non_cards} shots, {total_dur:.1f}s) has narrow scale variety {sorted(distinct_sizes)}.",
+                        )
+                    )
+
+        # R1b: COVERAGE_PEAK_CLOSEUP
+        peak_count = 0
+        for s, nsz, _, _ in non_cards:
+            if bool(s.get("emotional_peak", False)):
+                peak_count += 1
+                mov = s.get("movement") if isinstance(s.get("movement"), dict) else {}
+                end_sz = _norm_str(mov.get("end_shot_size")).upper()
+                ok_peak = (nsz in {"CU", "ECU"}) or (nsz == "MCU" and end_sz == "CU")
+                if not ok_peak:
+                    findings.append(
+                        Finding(
+                            level=hard_level,
+                            rule="COVERAGE_PEAK_CLOSEUP",
+                            shot_id=_norm_str(s.get("shot_id")),
+                            message=f"emotional_peak=true shot must be CU/ECU or MCU->CU (got shot_size={nsz}, end_shot_size={end_sz or 'none'}).",
+                        )
+                    )
+        if not is_bridge and total_dur >= 8.0 and peak_count == 0:
+            findings.append(
+                Finding(
+                    level=hard_level,
+                    rule="COVERAGE_PEAK_CLOSEUP",
+                    shot_id=seg_id,
+                    message=f"Non-bridge segment {seg_id} ({total_dur:.1f}s >= 8.0s) must mark >=1 shot with emotional_peak=true.",
+                )
+            )
+
+        # R1c: COVERAGE_SCALE_STAGNATION
+        run_rank: Optional[int] = None
+        run_len = 0
+        run_all_rev = True
+        run_exempt = False
+        for s, nsz, fflags, _ in non_cards:
+            rk = SCALE_RANK_V24.get(nsz, 3)
+            sid = _norm_str(s.get("shot_id"))
+            is_rev = fflags["is_reverse"]
+            exempt = bool(_norm_str(s.get("monotony_exempt_reason")))
+            if rk == run_rank:
+                run_len += 1
+                if not is_rev:
+                    run_all_rev = False
+                if exempt:
+                    run_exempt = True
+            else:
+                run_rank = rk
+                run_len = 1
+                run_all_rev = is_rev
+                run_exempt = exempt
+
+            if run_len == 3 and not run_all_rev and not run_exempt:
+                findings.append(
+                    Finding(
+                        level=hard_level,
+                        rule="COVERAGE_SCALE_STAGNATION",
+                        shot_id=sid,
+                        message=f"3+ consecutive non-reverse shots locked at same SCALE_RANK ({nsz}) in {seg_id}.",
+                    )
+                )
+            elif run_len == 4 and run_all_rev and not run_exempt:
+                findings.append(
+                    Finding(
+                        level="WARN",
+                        rule="COVERAGE_SCALE_STAGNATION",
+                        shot_id=sid,
+                        message=f"4 consecutive reverse shots at same SCALE_RANK ({nsz}) without monotony_exempt_reason.",
+                    )
+                )
+            elif run_len >= 5 and run_all_rev and not run_exempt:
+                findings.append(
+                    Finding(
+                        level=hard_level,
+                        rule="COVERAGE_SCALE_STAGNATION",
+                        shot_id=sid,
+                        message=f"5+ consecutive reverse shots at same SCALE_RANK ({nsz}) without monotony_exempt_reason.",
+                    )
+                )
+
+        # R2: COVERAGE_DETAIL_CADENCE
+        cadence_lvl = hard_level if is_high_tension else "WARN"
+        if total_dur >= 10.0:
+            # Sliding span without any CU/ECU
+            dry_span = 0.0
+            max_dry_span = 0.0
+            for _, nsz, _, dur in non_cards:
+                if nsz in {"CU", "ECU"}:
+                    dry_span = 0.0
+                else:
+                    dry_span += dur
+                    max_dry_span = max(max_dry_span, dry_span)
+            if max_dry_span >= 10.0:
+                findings.append(
+                    Finding(
+                        level=cadence_lvl,
+                        rule="COVERAGE_DETAIL_CADENCE",
+                        shot_id=seg_id,
+                        message=f"Segment {seg_id} has {max_dry_span:.1f}s continuous span (>=10.0s) without any CU/ECU.",
+                    )
+                )
+        if total_dur >= 12.0:
+            detail_cnt = sum(
+                1 for s, nsz, fflags, _ in non_cards
+                if nsz in {"CU", "ECU"} and (
+                    fflags["is_insert"] or _norm_str(s.get("coverage_role")).lower() in {"insert_detail", "reaction"}
+                )
+            )
+            min_needed = int(total_dur // 12.0)
+            if detail_cnt < min_needed:
+                findings.append(
+                    Finding(
+                        level=cadence_lvl,
+                        rule="COVERAGE_DETAIL_CADENCE",
+                        shot_id=seg_id,
+                        message=f"Segment {seg_id} ({total_dur:.1f}s) has {detail_cnt} detail/reaction CU/ECU shots (need >={min_needed}, 1 per 12s).",
+                    )
+                )
+
+        # R3: COVERAGE_NON_DIALOGUE_CAP + R5b: COVERAGE_MOVE_MOTIVATION + Dead-Air + R8 + R9
+        speakers_in_seg: Set[str] = set()
+        dialogue_turns = 0
+        consec_dial_2s = 0
+        has_ots_or_rev = False
+        has_single_cu_mcu = False
+        kinetic_count = 0
+        ecu_count = 0
+        ecu_dur = 0.0
+        consec_ecu = 0
+        ecu_consec_limit = 3 if profile == "chase_tension" else 2
+        person_shots = 0
+        prev_person_facing: Optional[str] = None
+        last_facing_by_char: Dict[str, str] = {}
+
+        for s, nsz, fflags, dur in non_cards:
+            sid = _norm_str(s.get("shot_id"))
+            mov = s.get("movement") if isinstance(s.get("movement"), dict) else {}
+            mtype = _norm_str(mov.get("type") or "static").lower()
+            mmot = _norm_str(mov.get("motivation")).lower()
+            mamp = _norm_str(mov.get("amplitude") or "medium").lower()
+            cpsych = _norm_str(s.get("camera_psychology")).lower()
+            ctrl = _norm_str(s.get("control_method") or "L1_prompt")
+            dmode = _norm_str(s.get("dialogue_mode")).lower()
+            dial = s.get("dialogue") if isinstance(s.get("dialogue"), list) else []
+            has_dialogue = (dmode in {"on_camera", "off_camera", "voiceover", "l_cut_carry"}) or (len(dial) > 0 and dmode != "none")
+            if not dmode:
+                dmode = "on_camera" if dial else "none"
+
+            # Track R4 two-person dialogue stats
+            if dial:
+                dialogue_turns += 1
+                for de in dial:
+                    if isinstance(de, dict) and _norm_str(de.get("speaker")):
+                        speakers_in_seg.add(_norm_str(de.get("speaker")).upper())
+            if fflags["is_ots"] or fflags["is_reverse"]:
+                has_ots_or_rev = True
+            if nsz in {"CU", "MCU"} and not fflags["is_two_shot"]:
+                has_single_cu_mcu = True
+            if has_dialogue and fflags["is_two_shot"]:
+                consec_dial_2s += 1
+            else:
+                consec_dial_2s = 0
+            if consec_dial_2s > 1:
+                findings.append(
+                    Finding(
+                        level=hard_level,
+                        rule="COVERAGE_TWO_PERSON_DIALOGUE",
+                        shot_id=sid,
+                        message="Consecutive >1 dialogue shots framed as is_two_shot=true; break with OTS or single CU/MCU.",
+                    )
+                )
+
+            # R3: COVERAGE_NON_DIALOGUE_CAP
+            if not has_dialogue and dur > non_dial_cap:
+                end_sz_raw = _norm_str(mov.get("end_shot_size")).upper()
+                end_sz = (
+                    "WS" if end_sz_raw in {"ELS", "LS", "WS"} else
+                    ("MS" if end_sz_raw == "2S" else ("MCU" if end_sz_raw == "OTS" else ("ECU" if end_sz_raw == "INSERT" else end_sz_raw)))
+                )
+                s_rk = SCALE_RANK_V24.get(nsz, 0)
+                e_rk = SCALE_RANK_V24.get(end_sz, 0) if end_sz else 0
+                delta_1_ok = (s_rk > 0 and e_rk > 0 and abs(e_rk - s_rk) == 1 and dur <= 5.0)
+                pb = s.get("performance_beat") if isinstance(s.get("performance_beat"), dict) else {}
+                delib_hold = bool(pb.get("deliberate_hold", False))
+                hold_just = _norm_str(s.get("hold_justification"))
+                hold_ok = (delib_hold and bool(hold_just) and dur <= 4.5)
+                if not (delta_1_ok or hold_ok):
+                    findings.append(
+                        Finding(
+                            level=hard_level,
+                            rule="COVERAGE_NON_DIALOGUE_CAP",
+                            shot_id=sid,
+                            message=(
+                                f"Non-dialogue shot dur={dur:.1f}s exceeds {profile} cap {non_dial_cap:.1f}s "
+                                "without valid Δrank==1 in-shot move (<=5.0s) or deliberate_hold+hold_justification (<=4.5s)."
+                            ),
+                        )
+                    )
+                elif dur >= 4.0 and not s.get("internal_event_sec"):
+                    findings.append(
+                        Finding(
+                            level="WARN",
+                            rule="COVERAGE_NON_DIALOGUE_CAP",
+                            shot_id=sid,
+                            message=f"Extended non-dialogue shot ({dur:.1f}s) should declare internal_event_sec[].",
+                        )
+                    )
+
+            # R5a: kinetic tracking
+            is_kinetic = (mtype != "static") or (ctrl == "L4_post_25d") or bool(s.get("post_camera_motion"))
+            if is_kinetic:
+                kinetic_count += 1
+
+            # R5b: COVERAGE_MOVE_MOTIVATION
+            if not mmot or mmot not in MOTIVATION_PSYCH_COMPAT:
+                findings.append(
+                    Finding(
+                        level=hard_level,
+                        rule="COVERAGE_MOVE_MOTIVATION",
+                        shot_id=sid,
+                        message=f"Missing or invalid movement.motivation='{mmot}' (must be one of {sorted(MOTIVATION_PSYCH_COMPAT.keys())}).",
+                    )
+                )
+            elif cpsych and not _norm_str(s.get("camera_override_reason")):
+                compat_psych = MOTIVATION_PSYCH_COMPAT[mmot]
+                conflict = (cpsych not in compat_psych)
+                if mmot == "power_lock" and (cpsych == "handheld_anxiety" or mamp == "large"):
+                    conflict = True
+                if mmot == "subjective_instability" and mtype == "static":
+                    conflict = True
+                if mmot == "emotional_intensify" and mtype in {"pull-out", "zoom-out"}:
+                    conflict = True
+                if conflict:
+                    findings.append(
+                        Finding(
+                            level="WARN",
+                            rule="COVERAGE_MOVE_MOTIVATION",
+                            shot_id=sid,
+                            message=f"movement.motivation='{mmot}' conflicts with camera_psychology='{cpsych}' / movement='{mtype}' ({mamp}).",
+                        )
+                    )
+
+            # Dead-Air (§2b.3)
+            has_vfx = bool(s.get("vfx_beats"))
+            has_overlay = bool(s.get("visual_text_overlay"))
+            if mtype == "static" and not has_vfx and not has_overlay and not bool(s.get("post_camera_motion")):
+                ev_raw = s.get("internal_event_sec") or []
+                ev_pts = sorted(
+                    [float(x) for x in ev_raw if isinstance(x, (int, float)) and 0.0 < float(x) < dur]
+                )
+                marks = [0.0] + ev_pts + [dur]
+                max_gap = max((marks[i + 1] - marks[i] for i in range(len(marks) - 1)), default=dur)
+                if max_gap > dead_hard:
+                    findings.append(
+                        Finding(
+                            level=hard_level,
+                            rule="COVERAGE_DEAD_AIR",
+                            shot_id=sid,
+                            message=f"Static shot max event-free gap={max_gap:.2f}s exceeds {profile} hard Dead-Air cap {dead_hard:.1f}s.",
+                        )
+                    )
+                elif max_gap > dead_soft:
+                    findings.append(
+                        Finding(
+                            level="WARN",
+                            rule="COVERAGE_DEAD_AIR",
+                            shot_id=sid,
+                            message=f"Static shot max event-free gap={max_gap:.2f}s exceeds {profile} soft Dead-Air cap {dead_soft:.1f}s.",
+                        )
+                    )
+
+            # R8: COVERAGE_ECU_RATIONING
+            if nsz == "ECU":
+                ecu_count += 1
+                ecu_dur += dur
+                consec_ecu += 1
+                if consec_ecu > ecu_consec_limit:
+                    findings.append(
+                        Finding(
+                            level=hard_level,
+                            rule="COVERAGE_ECU_RATIONING",
+                            shot_id=sid,
+                            message=f"Consecutive ECU shots ({consec_ecu}) exceed limit {ecu_consec_limit} for {profile}.",
+                        )
+                    )
+                bf = _norm_str(s.get("beat_function")).upper()
+                if bool(s.get("face_visible", False)) and bf in {"SETUP", "BRIDGE"} and not bool(s.get("emotional_peak", False)):
+                    findings.append(
+                        Finding(
+                            level="WARN",
+                            rule="COVERAGE_ECU_RATIONING",
+                            shot_id=sid,
+                            message=f"Face-visible ECU used on beat_function={bf}; reserve face ECU for TURN/JOLT/CLIFF/emotional_peak.",
+                        )
+                    )
+            else:
+                consec_ecu = 0
+
+            # R9: COVERAGE_AXIS_DISCIPLINE
+            face_vis = bool(s.get("face_visible", True))
+            facing = _norm_str(s.get("subject_facing")).lower()
+            if face_vis and not fflags["is_insert"]:
+                person_shots += 1
+                if fflags["is_reverse"] and prev_person_facing in {"left", "right"} and facing in {"left", "right"}:
+                    if facing == prev_person_facing:
+                        findings.append(
+                            Finding(
+                                level=hard_level,
+                                rule="COVERAGE_AXIS_DISCIPLINE",
+                                shot_id=sid,
+                                message=f"Reverse shot has subject_facing='{facing}' identical to preceding shot ('{prev_person_facing}'); reverse eyelines must oppose (left vs right).",
+                            )
+                        )
+                # Same-character flip check
+                oid = _norm_str(s.get("outfit_id")).upper()
+                primary_char = oid.split("-", 1)[0] if "-" in oid else oid
+                if primary_char and facing in {"left", "right"}:
+                    prev_cf = last_facing_by_char.get(primary_char)
+                    if prev_cf in {"left", "right"} and prev_cf != facing:
+                        if not _norm_str(s.get("axis_turn_trigger")) and not _norm_str(s.get("continuity_override")):
+                            findings.append(
+                                Finding(
+                                    level="WARN",
+                                    rule="COVERAGE_AXIS_DISCIPLINE",
+                                    shot_id=sid,
+                                    message=f"Character '{primary_char}' flipped facing {prev_cf}->{facing} in {seg_id} without axis_turn_trigger or continuity_override.",
+                                )
+                            )
+                    last_facing_by_char[primary_char] = facing
+                if facing in {"left", "right"}:
+                    prev_person_facing = facing
+
+        # Segment-level R4 check
+        if len(speakers_in_seg) >= 2 and dialogue_turns >= 2:
+            if not has_ots_or_rev or not has_single_cu_mcu:
+                findings.append(
+                    Finding(
+                        level=hard_level,
+                        rule="COVERAGE_TWO_PERSON_DIALOGUE",
+                        shot_id=seg_id,
+                        message=(
+                            f"Two-person dialogue segment {seg_id} ({sorted(speakers_in_seg)}, {dialogue_turns} turns) "
+                            f"requires >=1 OTS/reverse (got {has_ots_or_rev}) and >=1 single CU/MCU (got {has_single_cu_mcu})."
+                        ),
+                    )
+                )
+
+        # Segment-level R5a check
+        if n_non_cards >= 3:
+            if kinetic_count == 0:
+                findings.append(
+                    Finding(
+                        level=hard_level,
+                        rule="COVERAGE_SEGMENT_KINETIC",
+                        shot_id=seg_id,
+                        message=f"Segment {seg_id} ({n_non_cards} non-card shots) is 100% static with no active or L4 camera movement.",
+                    )
+                )
+            elif profile in {"hook", "escalation", "climax"} and (kinetic_count / n_non_cards) < 0.5:
+                findings.append(
+                    Finding(
+                        level="WARN",
+                        rule="COVERAGE_SEGMENT_KINETIC",
+                        shot_id=seg_id,
+                        message=f"High-tension segment {seg_id} active movement ratio {kinetic_count}/{n_non_cards} < 50%.",
+                    )
+                )
+
+        # Segment-level R8 ratio check
+        if n_non_cards >= 4:
+            ecu_ratio = ecu_count / n_non_cards
+            ecu_dur_ratio = (ecu_dur / total_dur) if total_dur > 0 else 0.0
+            if ecu_ratio > 0.40:
+                findings.append(
+                    Finding(
+                        level=hard_level,
+                        rule="COVERAGE_ECU_RATIONING",
+                        shot_id=seg_id,
+                        message=f"Segment {seg_id} ECU count ratio {ecu_count}/{n_non_cards} ({ecu_ratio*100:.0f}%) exceeds hard 40% cap.",
+                    )
+                )
+            elif ecu_ratio > 0.30 or ecu_dur_ratio > 0.20:
+                findings.append(
+                    Finding(
+                        level="WARN",
+                        rule="COVERAGE_ECU_RATIONING",
+                        shot_id=seg_id,
+                        message=f"Segment {seg_id} ECU share ({ecu_ratio*100:.0f}% shots / {ecu_dur_ratio*100:.0f}% dur) exceeds 30%/20% advisory band.",
+                    )
+                )
+
+        # Segment-level R9 axis_plan presence
+        if person_shots >= 2 and not seg_obj.get("axis_plan"):
+            findings.append(
+                Finding(
+                    level="WARN",
+                    rule="COVERAGE_AXIS_DISCIPLINE",
+                    shot_id=seg_id,
+                    message=f"Segment {seg_id} has {person_shots} person shots but lacks segments[].axis_plan.",
+                )
+            )
+
+        # Segment-level R7 ASL envelope (Advisory WARN)
+        if n_non_cards >= 3 and total_dur > 0:
+            seg_asl = total_dur / n_non_cards
+            asl_hi = float(pmeta["asl"][1])
+            if seg_asl > asl_hi + 0.5:
+                findings.append(
+                    Finding(
+                        level="WARN",
+                        rule="COVERAGE_PACE_ENVELOPE",
+                        shot_id=seg_id,
+                        message=f"Segment {seg_id} ASL={seg_asl:.2f}s exceeds {profile} band upper bound {asl_hi:.1f}s by >0.5s.",
+                    )
+                )
+
+    # Episode-level R7 Anti-Metronome CV check (Advisory WARN)
+    if len(all_non_card_durs) >= 6:
+        mean_d = statistics.mean(all_non_card_durs)
+        stdev_d = statistics.pstdev(all_non_card_durs)
+        cv = (stdev_d / mean_d) if mean_d > 0 else 0.0
+        if cv < 0.25:
+            findings.append(
+                Finding(
+                    level="WARN",
+                    rule="COVERAGE_PACE_ENVELOPE",
+                    shot_id="PACK",
+                    message=f"Episode shot-duration CV={cv:.2f} < 0.25 (metronome pacing warning; vary shot durations).",
+                )
+            )
 
 
 def format_report(
@@ -1754,7 +2669,7 @@ def _build_compliant_pack() -> Dict[str, Any]:
 
 
 def run_selftest() -> int:
-    print("=== RUNNING preflight_gate.py v2.3 SELFTEST ===")
+    print("=== RUNNING preflight_gate.py v2.4 SELFTEST ===")
     base = _build_compliant_pack()
     all_ok = True
 
@@ -1975,16 +2890,358 @@ def run_selftest() -> int:
     p_dur["shots"][0]["video_prompt"] = p_dur["shots"][3]["video_prompt"]
     assert_case("v23_item7d_l3_l4_duration_cap", p_dur, expect_pass=False, expect_rule="V1_DURATION_ENVELOPE")
 
+    # ------------------------------------------------------------------
+    # v2.4 Selftests: V14 Coverage (T33-T46), AMD-05 v3 (T47-T49),
+    # H3 Official Spec Reconcile (T50-T52), Addendum INSERT_ECU_DURATION (T53-T54)
+    # ------------------------------------------------------------------
+    def _build_compliant_v24_pack() -> Dict[str, Any]:
+        """Compliant Schema 2.4 pack modeled on Coverage Memo 11-shot DEMO-02 re-layout."""
+        return {
+            "schema_version": "2.4",
+            "episode_id": "DEMO-02-V24-COMPLIANT",
+            "production_mode": "demo",
+            "accelerator": "L4",
+            "segments": [
+                {
+                    "segment_id": "SEG-01",
+                    "scene_id": "LOC-ALLEY-NIGHT",
+                    "time_layer": "2022",
+                    "segment_pacing_profile": "hook",
+                    "axis_plan": {
+                        "FANLI": {"screen_side": "left", "default_facing": "right"},
+                        "WITNESS": {"screen_side": "right", "default_facing": "left"},
+                    },
+                    "lighting_base": "Cool blue twilight overhead and warm sodium streetlamp behind",
+                    "light_lock_id": "LK-ALLEY-NIGHT",
+                    "atmosphere": "Humid dark Taipei narrow alley, muted charcoal matte palette",
+                    "ambience": {"source": "library_roomtone", "asset_id": "alley_night_wet_48k", "target_db": -24.0},
+                }
+            ],
+            "shots": [
+                {
+                    "shot_id": "S1a", "segment_id": "SEG-01", "shot_size": "MLS",
+                    "framing_flags": {"is_ots": False, "is_reverse": False, "is_two_shot": False, "is_insert": False},
+                    "target_net_sec": 2.2, "trim_policy": "standard_0.5s",
+                    "coverage_role": "establish", "emotional_peak": False, "beat_function": "HOOK",
+                    "dialogue_mode": "none", "lip_sensitive": False, "face_visible": True,
+                    "subject_facing": "right", "screen_side": "left", "outfit_id": "FANLI-OUTFIT-02",
+                    "engine_route": "flow", "gen_mode": "i2v_first", "control_method": "L1_prompt",
+                    "face_lock_level": "standard", "voice_mode": "none", "ambient_source": "post_roomtone",
+                    "camera_psychology": "handheld_anxiety",
+                    "movement": {"type": "handheld", "speed": "fast", "amplitude": "large", "motivation": "subjective_instability"},
+                    "first_frame": {"source": "generated"},
+                    "asset_refs": [{"asset_id": "LOC-ALLEY-NIGHT", "role": "scene"}, {"asset_id": "FANLI-OUTFIT-02-45R", "role": "character"}],
+                    "action": "Fanli staggers forward bracing his palm toward the wet wall.",
+                    "microexpression": "Startled tense brow, heavy breathing.",
+                    "performance_beat": {"from": "off-balance", "trigger": "lamp flickers", "to": "braced", "deliberate_hold": False, "intensity": "L3"},
+                    "image_prompt": "9:16 豎屏實拍，冷藍夜巷光與遠處暖黃路燈。中全景范蠡踉蹌衝向濕牆，暗炭色調。避免：任何文字。",
+                    "video_prompt": "寫實電影實拍，3秒。冷藍夜巷光，手持快晃跟隨范蠡扶牆喘息，暗炭色調。避免：任何文字。",
+                },
+                {
+                    "shot_id": "S1b", "segment_id": "SEG-01", "shot_size": "ECU",
+                    "framing_flags": {"is_ots": False, "is_reverse": False, "is_two_shot": False, "is_insert": True},
+                    "target_net_sec": 1.2, "trim_policy": "tail_only",
+                    "coverage_role": "insert_detail", "emotional_peak": False, "beat_function": "JOLT",
+                    "dialogue_mode": "none", "lip_sensitive": False, "face_visible": False,
+                    "outfit_id": "FANLI-OUTFIT-02",
+                    "engine_route": "flow", "gen_mode": "i2v_first", "control_method": "L1_prompt",
+                    "face_lock_level": "none", "voice_mode": "none", "ambient_source": "post_roomtone",
+                    "camera_psychology": "handheld_anxiety",
+                    "movement": {"type": "handheld", "speed": "standard", "amplitude": "medium", "motivation": "rhythm_jolt"},
+                    "first_frame": {"source": "derived_shot", "ref_shot_id": "S1a"},
+                    "asset_refs": [{"asset_id": "S1A-FIRST", "role": "first_frame"}],
+                    "action": "Wet palm slams against rough concrete wall, droplets shaking loose.",
+                    "microexpression": "",
+                    "performance_beat": {"from": "impact", "trigger": "wall contact", "to": "grip", "deliberate_hold": False, "intensity": "L2"},
+                    "image_prompt": "9:16 極近特寫，冷藍濕光下濕掌拍上粗糙水泥牆，暗炭色調。避免：文字。",
+                    "video_prompt": "寫實電影實拍，2秒。冷藍濕光，手持特寫掌心拍牆震落水珠，暗炭色調。避免：文字。",
+                },
+                {
+                    "shot_id": "S2a", "segment_id": "SEG-01", "shot_size": "MS",
+                    "framing_flags": {"is_ots": False, "is_reverse": False, "is_two_shot": True, "is_insert": False},
+                    "target_net_sec": 2.4, "trim_policy": "standard_0.5s",
+                    "coverage_role": "speaker", "emotional_peak": False, "beat_function": "ESCALATION",
+                    "dialogue_mode": "on_camera", "lip_sensitive": False, "face_visible": True,
+                    "subject_facing": "right", "screen_side": "left", "outfit_id": "FANLI-OUTFIT-02",
+                    "dialogue": [{"line_id": "D1", "speaker": "WITNESS", "line": "欸你在拍戲喔？", "delivery_mode": "on_camera", "pause_after_sec": 0.2}],
+                    "engine_route": "flow", "gen_mode": "i2v_first", "control_method": "L1_prompt",
+                    "face_lock_level": "standard", "voice_mode": "tts", "ambient_source": "post_roomtone",
+                    "camera_psychology": "handheld_anxiety",
+                    "movement": {"type": "handheld", "speed": "slow", "amplitude": "small", "motivation": "action_follow"},
+                    "first_frame": {"source": "derived_shot", "ref_shot_id": "S1a"},
+                    "asset_refs": [{"asset_id": "S1A-FIRST", "role": "first_frame"}, {"asset_id": "FANLI-OUTFIT-02-45R", "role": "character"}],
+                    "action": "Fanli shifts weight against wall while witness stops and raises phone, both breathing visibly.",
+                    "microexpression": "Guarded eyes blinking slowly.",
+                    "performance_beat": {"from": "startled", "trigger": "witness calls", "to": "guarded standoff", "deliberate_hold": False, "intensity": "L2", "lexicon_ids": ["z4_weight_shift"]},
+                    "image_prompt": "9:16 中景雙人，冷藍夜巷光與暖黃路燈，范蠡左站右視、右眉無疤，暗炭色調。避免：文字。",
+                    "video_prompt": "寫實電影實拍，3.4秒。冷藍夜巷光，緩慢手持，婦人舉手機眨眼呼吸，范蠡重心微移戒備盯視，暗炭色調。避免：文字。",
+                },
+                {
+                    "shot_id": "S2c", "segment_id": "SEG-01", "shot_size": "CU",
+                    "framing_flags": {"is_ots": True, "is_reverse": True, "is_two_shot": False, "is_insert": False},
+                    "target_net_sec": 1.8, "trim_policy": "tail_only",
+                    "coverage_role": "reaction", "emotional_peak": False, "beat_function": "ESCALATION",
+                    "dialogue_mode": "none", "lip_sensitive": False, "face_visible": True,
+                    "subject_facing": "left", "screen_side": "right", "outfit_id": "WITNESS-CASUAL",
+                    "engine_route": "flow", "gen_mode": "i2v_first", "control_method": "L1_prompt",
+                    "face_lock_level": "standard", "voice_mode": "none", "ambient_source": "post_roomtone",
+                    "camera_psychology": "handheld_anxiety",
+                    "movement": {"type": "handheld", "speed": "slow", "amplitude": "small", "motivation": "action_follow"},
+                    "first_frame": {"source": "derived_shot", "ref_shot_id": "S2a"},
+                    "asset_refs": [{"asset_id": "S2A-FIRST", "role": "first_frame"}, {"asset_id": "WITNESS-WOMAN-01", "role": "character"}],
+                    "action": "Over Fanli shoulder reverse CU of witness stepping back half a pace with phone raised.",
+                    "microexpression": "Uneasy narrowed eyes.",
+                    "performance_beat": {"from": "curious", "trigger": "his intense gaze", "to": "uneasy", "deliberate_hold": False, "intensity": "L3"},
+                    "image_prompt": "9:16 過肩反打特寫，冷藍夜巷光，婦人朝左方看舉手機，暗炭色調。避免：文字。",
+                    "video_prompt": "寫實電影實拍，2.3秒。冷藍夜巷光，輕微手持，婦人後退半步舉穩手機，暗炭色調。避免：文字。",
+                },
+                {
+                    "shot_id": "S3a", "segment_id": "SEG-01", "shot_size": "MCU",
+                    "framing_flags": {"is_ots": False, "is_reverse": False, "is_two_shot": False, "is_insert": False},
+                    "target_net_sec": 2.0, "trim_policy": "standard_0.5s",
+                    "coverage_role": "turn_jolt", "emotional_peak": False, "beat_function": "TURN",
+                    "dialogue_mode": "none", "lip_sensitive": False, "face_visible": True,
+                    "subject_facing": "right", "screen_side": "left", "outfit_id": "FANLI-OUTFIT-02",
+                    "engine_route": "flow", "gen_mode": "i2v_first", "control_method": "L1_prompt",
+                    "face_lock_level": "standard", "voice_mode": "none", "ambient_source": "post_roomtone",
+                    "camera_psychology": "intimate_drift",
+                    "movement": {"type": "push-in", "speed": "slow", "amplitude": "small", "motivation": "emotional_intensify"},
+                    "first_frame": {"source": "derived_shot", "ref_shot_id": "S2a"},
+                    "asset_refs": [{"asset_id": "S2A-FIRST", "role": "first_frame"}, {"asset_id": "FANLI-OUTFIT-02-45R", "role": "character"}],
+                    "action": "Cool cyan glow illuminates Fanli's cheek from right; he steadies his breath.",
+                    "microexpression": "Eyes tighten slightly, lips closed.",
+                    "performance_beat": {"from": "guarded", "trigger": "cyan glow", "to": "taut alert", "deliberate_hold": False, "intensity": "L2"},
+                    "image_prompt": "9:16 中近景，冷青微光從右照上范蠡右頰，右眉無疤，暗炭色調。避免：文字。",
+                    "video_prompt": "寫實電影實拍，3秒。冷青微光映臉，緩慢推進，范蠡緊盯右方收緊下顎，暗炭色調。避免：文字。",
+                },
+                {
+                    "shot_id": "S4", "segment_id": "SEG-01", "shot_size": "CU",
+                    "framing_flags": {"is_ots": False, "is_reverse": False, "is_two_shot": False, "is_insert": False},
+                    "target_net_sec": 3.8, "trim_policy": "standard_0.5s",
+                    "coverage_role": "peak_hold", "emotional_peak": True, "beat_function": "CLIFF",
+                    "dialogue_mode": "on_camera", "lip_sensitive": True, "face_visible": True,
+                    "subject_facing": "right", "screen_side": "left", "outfit_id": "FANLI-OUTFIT-02",
+                    "dialogue": [{"line_id": "D2", "speaker": "FANLI", "line": "……你，怎知我名？", "delivery_mode": "on_camera", "pause_after_sec": 0.4}],
+                    "engine_route": "h3", "gen_mode": "ref2v", "control_method": "L1_prompt",
+                    "face_lock_level": "strict", "voice_mode": "tts", "ambient_source": "post_roomtone",
+                    "camera_psychology": "stable_control",
+                    "movement": {"type": "push-in", "speed": "slow", "amplitude": "small", "motivation": "power_lock"},
+                    "first_frame": {"source": "derived_shot", "ref_shot_id": "S3a"},
+                    "asset_refs": [
+                        {"asset_id": "S4-FIRST", "role": "first_frame"},
+                        {"asset_id": "FANLI-OUTFIT-02-CU", "role": "character"},
+                        {"asset_id": "FANLI-OUTFIT-02-45", "role": "character"},
+                        {"asset_id": "FANLI-OUTFIT-02-45R", "role": "character"},
+                    ],
+                    "action": "Fanli inhales calmly, lowers his chin, and asks quietly on camera.",
+                    "microexpression": "Sharp cold gaze, subtle chin tuck.",
+                    "performance_beat": {"from": "silence", "trigger": "hears name", "to": "sharp verdict", "deliberate_hold": False, "intensity": "L2", "lexicon_ids": ["z3_chin_tuck"]},
+                    "image_prompt": "9:16 CU derived from S3a. Cool blue twilight and soft cyan glow from right. Fanli facing right with clean anatomical right brow in matte black linen robe. Muted dark palette. Avoid: text.",
+                    "video_prompt": (
+                        "subject_definitions: <Picture 1> S4 frame defining ONLY lighting and framing; <Picture 2> Fanli CU; <Picture 3> Fanli 45; <Picture 4> Fanli 45R.\n"
+                        "summary: [Identity locked] Fanli delivers one quiet sharp line.\n"
+                        "retention_analysis: face=fully_preserved, outfit=fully_preserved.\n"
+                        "detailed_description: Under cool blue twilight and subtle cyan glow from right, camera pushes in slowly. Fanli inhales calmly and speaks quietly: <d>[Chinese] ……你，怎知我名？</d> Muted charcoal palette.\n"
+                        "overall_soundscape: Quiet humid alley hum.\n"
+                        "non_diegetic_music: N/A"
+                    ),
+                },
+            ],
+        }
+
+    v24_base = _build_compliant_v24_pack()
+    assert_case("T33_v24_compliant_coverage", copy.deepcopy(v24_base), expect_pass=True)
+
+    # T34: DEMO02_v2 style marked 2.4 -> FAIL (stagnation + detail_cadence + dead_air)
+    p34 = copy.deepcopy(base)
+    p34["schema_version"] = "2.4"
+    p34["segments"][0]["segment_pacing_profile"] = "hook"
+    p34["shots"][2]["shot_size"] = "MS"
+    p34["shots"][2]["angle_h"] = "front"
+    p34["shots"][3]["target_net_sec"] = 5.0
+    p34["shots"][3]["vfx_beats"] = []
+    assert_case("T34_v24_old_style_fails", p34, expect_pass=False, expect_rule="COVERAGE_SCALE_STAGNATION")
+
+    # T35: 1-shot micro segment exempt from COVERAGE_SCALE_VARIETY
+    p35 = copy.deepcopy(v24_base)
+    p35["shots"] = [copy.deepcopy(v24_base["shots"][0])]
+    p35["shots"][0]["target_net_sec"] = 3.0
+    assert_case("T35_v24_micro_segment_exempt", p35, expect_pass=True)
+
+    # T36: emotional_peak on MS -> FAIL [COVERAGE_PEAK_CLOSEUP]
+    p36 = copy.deepcopy(v24_base)
+    p36["shots"][2]["emotional_peak"] = True
+    assert_case("T36_v24_peak_not_cu", p36, expect_pass=False, expect_rule="COVERAGE_PEAK_CLOSEUP")
+
+    # T37a: 3 consecutive non-reverse MS -> FAIL [COVERAGE_SCALE_STAGNATION]
+    p37a = copy.deepcopy(v24_base)
+    p37a["shots"][0]["shot_size"] = "MS"
+    p37a["shots"][1]["shot_size"] = "MS"
+    p37a["shots"][1]["framing_flags"]["is_insert"] = False
+    p37a["shots"][2]["shot_size"] = "MS"
+    assert_case("T37a_v24_stagnation_3_ms", p37a, expect_pass=False, expect_rule="COVERAGE_SCALE_STAGNATION")
+
+    # T37b: 3 consecutive reverse CU -> PASS
+    p37b = copy.deepcopy(v24_base)
+    p37b["shots"][3]["shot_size"] = "CU"
+    p37b["shots"][3]["framing_flags"]["is_reverse"] = True
+    p37b["shots"][4]["shot_size"] = "CU"
+    p37b["shots"][4]["framing_flags"]["is_reverse"] = True
+    p37b["shots"][5]["framing_flags"]["is_reverse"] = True
+    p37b["shots"][5]["subject_facing"] = "left"
+    p37b["shots"][5]["axis_turn_trigger"] = "turns"
+    p37b["shots"][4]["subject_facing"] = "right"
+    assert_case("T37b_v24_3_reverse_cu_pass", p37b, expect_pass=True)
+
+    # T38a/b/c: Non-dialogue 4.5s MS static vs Δ=1 vs Δ=2
+    p38a = copy.deepcopy(v24_base)
+    p38a["shots"][0]["shot_size"] = "MS"
+    p38a["shots"][0]["target_net_sec"] = 4.5
+    p38a["shots"][0]["movement"] = {"type": "static", "speed": "slow", "motivation": "power_lock"}
+    p38a["shots"][0]["camera_psychology"] = "cold_observe"
+    assert_case("T38a_v24_nondial_cap_fail", p38a, expect_pass=False, expect_rule="COVERAGE_NON_DIALOGUE_CAP")
+
+    p38b = copy.deepcopy(v24_base)
+    p38b["shots"][0]["shot_size"] = "MS"
+    p38b["shots"][0]["target_net_sec"] = 4.5
+    p38b["shots"][0]["internal_event_sec"] = [2.0]
+    p38b["shots"][0]["movement"] = {"type": "push-in", "speed": "slow", "end_shot_size": "MCU", "motivation": "emotional_intensify"}
+    p38b["shots"][0]["camera_psychology"] = "intimate_drift"
+    assert_case("T38b_v24_nondial_delta1_pass", p38b, expect_pass=True)
+
+    p38c = copy.deepcopy(p38b)
+    p38c["shots"][0]["movement"]["end_shot_size"] = "CU"  # MS -> CU (Δrank=2)
+    assert_case("T38c_v24_nondial_delta2_scale_jump_fail", p38c, expect_pass=False, expect_rule="SCALE_JUMP_BAN")
+
+    # T39: Non-dialogue 4.2s CU deliberate_hold + hold_justification + push-in -> PASS
+    p39 = copy.deepcopy(v24_base)
+    p39["shots"][3]["shot_size"] = "MCU"  # avoid 3 consecutive CU stagnation
+    p39["shots"][4]["shot_size"] = "CU"
+    p39["shots"][4]["target_net_sec"] = 4.2
+    p39["shots"][4]["performance_beat"]["deliberate_hold"] = True
+    p39["shots"][4]["performance_beat"]["intensity"] = "L1"
+    p39["shots"][4]["hold_justification"] = "dread"
+    p39["shots"][4]["internal_event_sec"] = [2.0]
+    assert_case("T39_v24_deliberate_hold_pass", p39, expect_pass=True)
+
+    # T40: Two-person dialogue all 2S without OTS/single CU -> FAIL [COVERAGE_TWO_PERSON_DIALOGUE]
+    p40 = copy.deepcopy(v24_base)
+    p40["shots"][3]["framing_flags"]["is_ots"] = False
+    p40["shots"][3]["framing_flags"]["is_reverse"] = False
+    p40["shots"][3]["framing_flags"]["is_two_shot"] = True
+    p40["shots"][3]["shot_size"] = "MS"
+    p40["shots"][4]["framing_flags"]["is_two_shot"] = True
+    p40["shots"][5]["framing_flags"]["is_two_shot"] = True
+    p40["shots"][5]["shot_size"] = "CU"
+    assert_case("T40_v24_two_person_no_ots", p40, expect_pass=False, expect_rule="COVERAGE_TWO_PERSON_DIALOGUE")
+
+    # T41: All-static 4-shot segment -> FAIL [COVERAGE_SEGMENT_KINETIC]
+    p41 = copy.deepcopy(v24_base)
+    for s in p41["shots"]:
+        s["movement"]["type"] = "static"
+        s["movement"]["motivation"] = "power_lock"
+        s["camera_psychology"] = "cold_observe"
+        s["internal_event_sec"] = [1.0, 2.0, 3.0]
+    assert_case("T41_v24_all_static_fail", p41, expect_pass=False, expect_rule="COVERAGE_SEGMENT_KINETIC")
+
+    # T42a/b: Missing motivation FAIL; conflicting psychology+motivation WARN
+    p42a = copy.deepcopy(v24_base)
+    del p42a["shots"][0]["movement"]["motivation"]
+    assert_case("T42a_v24_missing_motivation_fail", p42a, expect_pass=False, expect_rule="COVERAGE_MOVE_MOTIVATION")
+
+    p42b = copy.deepcopy(v24_base)
+    p42b["shots"][0]["camera_psychology"] = "handheld_anxiety"
+    p42b["shots"][0]["movement"]["motivation"] = "power_lock"
+    assert_case("T42b_v24_motivation_conflict_warn", p42b, expect_pass=True, expect_warn="COVERAGE_MOVE_MOTIVATION")
+
+    # T43: hook static 3.0s no VFX/internal_event -> FAIL [COVERAGE_DEAD_AIR]
+    p43 = copy.deepcopy(v24_base)
+    p43["shots"][4]["movement"] = {"type": "static", "speed": "slow", "motivation": "power_lock"}
+    p43["shots"][4]["camera_psychology"] = "cold_observe"
+    p43["shots"][4]["target_net_sec"] = 3.0
+    assert_case("T43_v24_dead_air_fail", p43, expect_pass=False, expect_rule="COVERAGE_DEAD_AIR")
+
+    # T44a/b: ECU rationing (3 consecutive ECU; >40% ECU count) -> FAIL [COVERAGE_ECU_RATIONING]
+    p44a = copy.deepcopy(v24_base)
+    p44a["shots"][1]["shot_size"] = "ECU"
+    p44a["shots"][2]["shot_size"] = "ECU"
+    p44a["shots"][3]["shot_size"] = "ECU"
+    assert_case("T44_v24_ecu_rationing_fail", p44a, expect_pass=False, expect_rule="COVERAGE_ECU_RATIONING")
+
+    # T45a/b: Axis discipline (reverse same facing FAIL; same-char unmotivated flip WARN)
+    p45a = copy.deepcopy(v24_base)
+    p45a["shots"][3]["subject_facing"] = "right"  # same as S2a ("right")
+    assert_case("T45a_v24_axis_reverse_same_facing_fail", p45a, expect_pass=False, expect_rule="COVERAGE_AXIS_DISCIPLINE")
+
+    p45b = copy.deepcopy(v24_base)
+    p45b["shots"][4]["subject_facing"] = "left"  # FANLI flipped right->left without trigger
+    assert_case("T45b_v24_axis_flip_warn", p45b, expect_pass=True, expect_warn="COVERAGE_AXIS_DISCIPLINE")
+
+    # T46: 1.2s ECU insert tail_only -> PASS (no V1 short-shot WARN)
+    p46_findings, _ = validate_script_pack(copy.deepcopy(v24_base))
+    t46_v1_warns = [f for f in p46_findings if f.rule == "V1_DURATION_ENVELOPE" and f.shot_id == "S1b"]
+    ok46 = len(t46_v1_warns) == 0
+    if not ok46:
+        all_ok = False
+    print(f"  [{'OK' if ok46 else 'ASSERT_FAIL'}] T46_v24_short_ecu_no_v1_warn: v1_warns={t46_v1_warns}")
+
+    # T47-T49: AMD-05 v3 SYS-01 gates (v2.4)
+    p47 = copy.deepcopy(v24_base)
+    p47["shots"][2]["sys01_in_frame"] = True
+    p47["shots"][2]["sys01_scale_mode"] = "manifestation_hero"
+    p47["shots"][2]["image_prompt"] = "9:16 實拍冷藍夜巷，右側半透明全息投影、藍色輪廓光、細密掃描線，自然膚色，素面黑色羊毛大衣與深紅圍巾，暗炭色調。避免：任何文字、浮動面板、圓形光環。"
+    p47["shots"][2]["video_prompt"] = "寫實電影實拍，3.4秒。冷藍夜巷，半透明全息投影、藍色輪廓光、粒子消散，自然膚色，黑大衣與紅圍巾，范蠡重心微移眨眼呼吸，暗炭色調。避免：任何文字、浮動面板、圓形HUD光環。"
+    assert_case("T47_v24_amd05_v3_valid_projection_pass", p47, expect_pass=True)
+
+    p48 = copy.deepcopy(p47)
+    p48["shots"][2]["image_prompt"] = "9:16 實拍，右側懸浮面板與圓形光環顯示豆包系統。避免：文字。"
+    assert_case("T48_v24_amd05_v3_panel_ban_fail", p48, expect_pass=False, expect_rule="SYS01_TEXT_PANEL_BAN")
+
+    p49 = copy.deepcopy(p47)
+    p49["shots"][2]["sys01_scale_mode"] = "invalid_scale"
+    p49["shots"][2]["image_prompt"] = "9:16 實拍冷藍夜巷，右側一位站立女子，暗炭色調。避免：任何文字、面板。"
+    assert_case("T49_v24_amd05_v3_anchor_req_fail", p49, expect_pass=False, expect_rule="SYS01_PROJECTION_ANCHOR_REQ")
+
+    # T50-T52: H3 Official Spec Reconcile (H3_MODE_EXCLUSION, H3_MIN_DURATION, 17-frame grid check)
+    p50 = copy.deepcopy(v24_base)
+    p50["shots"][5]["last_frame"] = {"source": "generated", "path": "S4_last.jpg"}
+    assert_case("T50_h3_mode_exclusion_fail", p50, expect_pass=False, expect_rule="H3_MODE_EXCLUSION")
+
+    p51 = copy.deepcopy(v24_base)
+    p51["shots"][5]["target_net_sec"] = 2.0
+    p51["shots"][5]["trim_policy"] = "standard_0.5s"  # gen_sec=3.0 < 4.0 -> WARN H3_MIN_DURATION
+    assert_case("T51_h3_min_duration_warn", p51, expect_pass=True, expect_warn="H3_MIN_DURATION")
+
+    p52 = copy.deepcopy(v24_base)
+    p52["shots"][5]["target_net_sec"] = 5.2
+    p52["shots"][5]["trim_policy"] = "standard_0.5s"  # gen_sec=6.2 -> 158f=6.583s > 6.5s -> FAIL V1_DURATION_ENVELOPE
+    assert_case("T52_h3_17frame_grid_6p2s_fail", p52, expect_pass=False, expect_rule="V1_DURATION_ENVELOPE")
+
+    # T53-T54: Addendum INSERT_ECU_DURATION Advisory
+    p53 = copy.deepcopy(v24_base)
+    p53["shots"][1]["target_net_sec"] = 3.0  # ECU insert > 2.0s without justification -> WARN
+    assert_case("T53_insert_ecu_duration_warn", p53, expect_pass=True, expect_warn="INSERT_ECU_DURATION")
+
+    p54 = copy.deepcopy(p53)
+    p54["shots"][1]["hold_justification"] = "final_image / hesitation beat"
+    p54_findings, _ = validate_script_pack(p54)
+    t54_warns = [f for f in p54_findings if f.rule == "INSERT_ECU_DURATION"]
+    ok54 = len(t54_warns) == 0
+    if not ok54:
+        all_ok = False
+    print(f"  [{'OK' if ok54 else 'ASSERT_FAIL'}] T54_insert_ecu_justified_no_warn: warns={t54_warns}")
+
     print(f"=== SELFTEST {'PASSED' if all_ok else 'FAILED'} ===")
     return 0 if all_ok else 1
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Workflow V2.3 Preflight Validation Gate (QC-0)"
+        description="Workflow V2.4 Preflight Validation Gate (QC-0)"
     )
-    parser.add_argument("script_pack", nargs="?", help="Path to script_pack.json (schema 2.0–2.3)")
+    parser.add_argument("script_pack", nargs="?", help="Path to script_pack.json (schema 2.0–2.4)")
     parser.add_argument("--mode", choices=["normal", "demo"], default=None, help="Override production_mode")
+    parser.add_argument("--coverage-strict", action="store_true", help="Enforce V14 coverage rules as FAIL even on schema < 2.4")
     parser.add_argument("--json", action="store_true", help="Emit JSON report")
     parser.add_argument("--selftest", action="store_true", help="Run built-in self-test suite")
     args = parser.parse_args()
@@ -2003,7 +3260,7 @@ def main() -> int:
     with path.open("r", encoding="utf-8") as fh:
         pack = json.load(fh)
 
-    findings, stamps = validate_script_pack(pack, mode_override=args.mode)
+    findings, stamps = validate_script_pack(pack, mode_override=args.mode, coverage_strict=args.coverage_strict)
     if args.json:
         fails = [f for f in findings if f.level == "FAIL"]
         payload = {

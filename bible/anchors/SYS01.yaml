@@ -1,0 +1,98 @@
+# bible/anchors/SYS01.yaml — SYS-01 跨鏡身分與全息投影錨點唯一準據（v2.4 / AMD-05 v3）
+char_id: SYS01
+aliases: ["SYS-01"]
+status: LOCKED
+identity_master: casting/master/sys01-ref-front.png
+expression_refs:
+  front_smile: casting/master/sys01-ref-expr-R1C1-smile.png
+  angle_34L_smile: casting/master/sys01-ref-34L-smile.png
+  angle_34L_neutral: casting/master/sys01-ref-34L-neutral.png
+  hesitate_R1C5: casting/master/sys01-ref-expr-R1C5-hesitate.png
+  downcast_R1C6: casting/master/sys01-ref-expr-R1C6-downcast.png
+full_body_refs:
+  full_front: casting/master/sys01-ref-full-front.png
+  full_profileL: casting/master/sys01-ref-full-profileL.png
+  full_back: casting/master/sys01-ref-full-back.png
+forbidden_source_assets:
+  - "sys01-charactercard-main.png"
+  - "sys01-charactercard-expressions.png"
+  - "sys01-projection-look-ref.png"
+  - "expressions_R2C5_wooden_object"
+
+anchors:
+  - anchor_id: ANC-SYS01-01
+    name: 臉部對卡一致＋自然膚色＋黑色齊下巴短鮑伯頭
+    category: permanent_anatomical
+    applies_to_eras: ["2022", "2026"]
+    spec:
+      age_band: "20多歲東亞年輕女性"
+      hair: "齊下巴自然微層次黑色短鮑伯頭，自然微偏分露額角"
+      skin_protection: "保留 82–88% 原生自然溫潤膚色、清亮深棕眼眸與清晰唇線；嚴禁整臉染成單色藍鬼或塑膠美顏肌"
+    forbidden_in_anchor: ["單色藍臉鬼", "塑膠美顏肌", "換臉", "長髮", "馬尾", "誇張露齒大笑"]
+    qc_gate_key: age_id
+    prompt_zh_positive: "20多歲東亞年輕女性，齊下巴自然黑色短鮑伯頭、清亮深棕眼眸、保留自然溫潤膚色與清晰五官"
+
+  - anchor_id: ANC-SYS01-02
+    name: 簽名服裝（素面黑色羊毛大衣＋深紅色粗針織圍巾）
+    category: permanent_costume
+    applies_to_eras: ["2022", "2026"]
+    spec:
+      coat: "素面啞光黑色羊毛翻領大衣（無條紋、無徽章、無科幻發光線條）"
+      scarf: "深紅色（暗酒紅）粗針織圍巾繞頸自然垂落（畫面核心低飽和暖色視覺錨點）"
+    forbidden_in_anchor: ["灰底細條紋西裝外套", "現代科幻緊身衣", "無紅圍巾", "淺色外套"]
+    qc_gate_key: costume_4pt
+    prompt_zh_positive: "穿素面黑色羊毛大衣，頸圍深紅色粗針織圍巾"
+
+  - anchor_id: ANC-SYS01-03
+    name: 全息投影光學五要素（AMD-05 v3）
+    category: projection_optics
+    applies_to_eras: ["2022", "2026"]
+    required_prompt_terms_min: 2
+    canonical_prompt_terms_zh:
+      - "全息投影"
+      - "半透明"
+      - "掃描線"
+      - "藍色輪廓光"
+      - "粒子消散"
+      - "下身光塵化"
+    spec:
+      optics_5pt:
+        - "半透明軀幹（非實心肉身站立）"
+        - "水平細密藍色掃描線集中於肩衣與軀幹（臉部極淡豁免）"
+        - "柔和冰藍色輪廓光包覆髮絲與肩線"
+        - "胸腹／腰下自然半透明下身光塵化，化作漂浮藍色光塵融於霧氣／暗景"
+        - "對現場霧氣與范蠡臉側／衣領自然回打柔和冷青微光（爆光 <5%）"
+    forbidden_in_anchor: ["實心真人站立", "粗糙白邊去背貼紙", "矩形軟體視窗外框", "音訊波形條", "過曝閃白"]
+    qc_gate_key: light_lock
+    prompt_zh_positive: "半透明全息投影，冰藍色輪廓光，水平細密藍色掃描線覆於肩衣（臉部極淡），胸腹以下下身光塵化為漂浮藍色粒子消散，柔和冷青光映照范蠡臉側"
+
+  - anchor_id: ANC-SYS01-04
+    name: V9 零文字／零浮動面板／零圓形 HUD 光環（一票否決）
+    category: hard_ban_v9
+    applies_to_eras: ["2022", "2026"]
+    auto_fail_on_single_frame: true
+    forbidden_in_anchor:
+      - "任何漢字／英文字母／數字／偽文字"
+      - "浮動小面板／懸浮數據視窗"
+      - "圓形雷達光環／HUD介面框"
+      - "豆包／品牌標誌／任務啟動字樣"
+    qc_gate_key: pose_spatial
+    prompt_zh_avoid: "任何文字、漢字、英文字母、數字、浮動小面板、懸浮數據視窗、圓形雷達光環、HUD介面框、品牌標誌、浮水印、音訊波形條"
+
+  - anchor_id: ANC-SYS01-05
+    name: 尺度調度與微表情可讀性（sys01_scale_mode）
+    category: scale_and_expression
+    variants:
+      manifestation_hero:
+        applies_to_scale_modes: ["manifestation_hero"]
+        spec: "右上懸浮半身投影，頭肩約范蠡 1.25–1.45×，胸腹以下光塵化；范蠡居左下仰角 20–35° 注視（S03/S04a）"
+        forbidden_in_variant: ["等高硬擠窄框", "同場無故縮放 >±10%"]
+      conversation_eyeline:
+        applies_to_scale_modes: ["conversation_eyeline"]
+        spec: "並肩或前後景深錯位，頭高約范蠡 0.90–1.00×、眼平 ±5°（S08/S10；S08 預留暗區給後製無框側卡）"
+        forbidden_in_variant: ["巨人懸浮壓頂", "同場無故縮放 >±10%"]
+      solo_cu:
+        applies_to_scale_modes: ["solo_cu"]
+        spec: "85mm 正面胸上特寫；S19 必於 360px 手機縮圖下清晰辨識 R1C1 禮貌微笑 → R1C5 半秒嘴角微收 1–2mm 凝滯遲疑"
+        forbidden_in_variant: ["掃描線遮蓋眼唇", "過度悲傷皺眉流淚", "大轉頭"]
+    qc_gate_key: expression_lip
