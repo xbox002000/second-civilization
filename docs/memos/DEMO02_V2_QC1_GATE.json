@@ -1,0 +1,201 @@
+{
+  "schema_version": "2.0",
+  "gate_type": "qc1",
+  "project_id": "DEMO-02-V2",
+  "segment_id": "SEG-01",
+  "generated_at": "2026-11-28T07:41:22Z",
+  "diff_sheet_path": "/home/hatch/drama-line/demo02_v2/qc/qc1_diff_sheet.jpg",
+  "diff_sheet_sha256": "c5af7ba316be79efff6cff7b8b36b5c7e778eb302e5985bf363e4c1db2a1602f",
+  "sheet_dimensions": {
+    "width": 3620,
+    "height": 8424,
+    "cell_width": 768,
+    "cell_height": 1376,
+    "jpeg_quality": 92
+  },
+  "status": "PASS",
+  "reviewer": "agy (full-process mandate)",
+  "reviewed_at": "2026-11-28T07:42:00Z",
+  "shots": [
+    {
+      "shot_id": "S1",
+      "shot_size": "MS",
+      "shot_type": "action",
+      "source_files": {
+        "first_frame": {
+          "path": "/home/hatch/drama-line/demo02_v2/frames/S1_first.jpg",
+          "sha256": "da29dcad316b080f7e7ecacb0f3ad645baf24b06b6046be2cbb8da00a4577367"
+        }
+      },
+      "metrics": {
+        "bg_L": 11.41,
+        "bg_b": -0.56,
+        "blowout_pct": 0.0,
+        "dL_seg": -5.73,
+        "db_seg": -1.7
+      },
+      "auto_flags": [],
+      "checks": {
+        "age_id": "PASS",
+        "scar_side": "PASS",
+        "costume_4pt": "PASS",
+        "light_lock": "PASS",
+        "pose_spatial": "PASS"
+      },
+      "failed_anchor_ids": [],
+      "shot_status": "PASS",
+      "override_reason": "",
+      "notes": "Reused clean S1 anchor frame: 38-40 yr Fanli, left brow scar on screen-right, cap+wooden pin+y-right collar+jade disc all verified, LK-ALLEY-NIGHT 0% blowout."
+    },
+    {
+      "shot_id": "S2",
+      "shot_size": "2S",
+      "shot_type": "two_shot",
+      "source_files": {
+        "first_frame": {
+          "path": "/home/hatch/drama-line/demo02_v2/frames/S2_first.jpg",
+          "sha256": "1cc9bdeae27cac9c0e5c8743e74cd45d4d4f576a3898378321c03b2e26fb968c"
+        }
+      },
+      "metrics": {
+        "bg_L": 16.55,
+        "bg_b": -0.18,
+        "blowout_pct": 0.0,
+        "dL_seg": -0.59,
+        "db_seg": -1.32
+      },
+      "auto_flags": [],
+      "checks": {
+        "age_id": "PASS",
+        "scar_side": "PASS",
+        "costume_4pt": "PASS",
+        "light_lock": "PASS",
+        "pose_spatial": "PASS"
+      },
+      "failed_anchor_ids": [],
+      "shot_status": "PASS",
+      "override_reason": "",
+      "notes": "Regenerated derived_shot from S1: fixes missing cap/pin defect and S1->S2 pose jump (right palm remains braced on damp left wall); full OUTFIT-02 4/4 verified at native resolution; witness woman on screen-right in beige jacket + red-white striped bag raising phone."
+    },
+    {
+      "shot_id": "S3a",
+      "shot_size": "MS",
+      "shot_type": "reaction",
+      "source_files": {
+        "first_frame": {
+          "path": "/home/hatch/drama-line/demo02_v2/frames/S3a_first.jpg",
+          "sha256": "ca42391e21b35e0b6c79abd3968deae536601cde6ca341c9a257f6503769b4bd"
+        }
+      },
+      "metrics": {
+        "bg_L": 16.18,
+        "bg_b": 0.86,
+        "blowout_pct": 0.01,
+        "dL_seg": -0.96,
+        "db_seg": -0.28
+      },
+      "auto_flags": [],
+      "checks": {
+        "age_id": "PASS",
+        "scar_side": "PASS",
+        "costume_4pt": "PASS",
+        "light_lock": "PASS",
+        "pose_spatial": "PASS"
+      },
+      "failed_anchor_ids": [],
+      "shot_status": "PASS",
+      "override_reason": "",
+      "notes": "Reused verified clean S3a frame: 38-40 yr Fanli, left brow scar on screen-right, cap+pin+y-right collar+jade disc intact, damp left wall + scooter consistent with S1/S2."
+    },
+    {
+      "shot_id": "S3b",
+      "shot_size": "MCU",
+      "shot_type": "reaction",
+      "source_files": {
+        "first_frame": {
+          "path": "/home/hatch/drama-line/demo02_v2/frames/S3b_first.jpg",
+          "sha256": "b30b7bcd04cef55a5a36aa8764238e908baed859a1546a4196f775b4e9f3c3f4"
+        }
+      },
+      "metrics": {
+        "bg_L": 22.09,
+        "bg_b": 0.1,
+        "blowout_pct": 0.01,
+        "dL_seg": 4.95,
+        "db_seg": -1.04
+      },
+      "auto_flags": [],
+      "checks": {
+        "age_id": "PASS",
+        "scar_side": "PASS",
+        "costume_4pt": "PASS",
+        "light_lock": "PASS",
+        "pose_spatial": "PASS"
+      },
+      "failed_anchor_ids": [],
+      "shot_status": "PASS",
+      "override_reason": "",
+      "notes": "Regenerated clean actor plate (derived_shot from S3a + patched 45R): zero AI hologram/UI, clean right 55% landing zone for sys01_composite.py, smooth scar-free anatomical right brow (screen-left), cap+pin+y-right collar all verified in 2.5x zoom."
+    },
+    {
+      "shot_id": "S2R",
+      "shot_size": "MCU",
+      "shot_type": "reaction",
+      "source_files": {
+        "first_frame": {
+          "path": "/home/hatch/drama-line/demo02_v2/frames/S2R_first.jpg",
+          "sha256": "edf361ce0a6dc741a0e94c11e536faa7c6e833b000f4e7cf0d0cb86479767379"
+        }
+      },
+      "metrics": {
+        "bg_L": 20.76,
+        "bg_b": -0.85,
+        "blowout_pct": 0.04,
+        "dL_seg": 3.62,
+        "db_seg": -1.99
+      },
+      "auto_flags": [],
+      "checks": {
+        "age_id": "PASS",
+        "scar_side": "N_A",
+        "costume_4pt": "PASS",
+        "light_lock": "PASS",
+        "pose_spatial": "PASS"
+      },
+      "failed_anchor_ids": [],
+      "shot_status": "PASS",
+      "override_reason": "",
+      "notes": "Regenerated via AMD-04 Path A derived_shot from approved S2: exact witness woman in beige jacket + red-white striped bag + raised phone on screen-right facing screen-left OTS; zero flipped axis, zero invented vegetable crates."
+    },
+    {
+      "shot_id": "S4",
+      "shot_size": "CU",
+      "shot_type": "dialogue",
+      "source_files": {
+        "first_frame": {
+          "path": "/home/hatch/drama-line/demo02_v2/frames/S4_first.jpg",
+          "sha256": "aa860bae99de128484d49ef8cdb92b4c0095fa665cc2a899f53b1a70b6f9bbdc"
+        }
+      },
+      "metrics": {
+        "bg_L": 14.66,
+        "bg_b": -1.06,
+        "blowout_pct": 0.0,
+        "dL_seg": -2.48,
+        "db_seg": -2.2
+      },
+      "auto_flags": [],
+      "checks": {
+        "age_id": "PASS",
+        "scar_side": "PASS",
+        "costume_4pt": "PASS",
+        "light_lock": "PASS",
+        "pose_spatial": "PASS"
+      },
+      "failed_anchor_ids": [],
+      "shot_status": "PASS",
+      "override_reason": "",
+      "notes": "Regenerated clean derived_shot from S3b + patched 45R + ancient-cu (old S4 banned): 2.5x zoom confirms 100% smooth scar-free anatomical right brow (screen-left), y-right collar + brown geometric weave, cap+wooden pin, consistent LK-ALLEY-NIGHT + subtle cool cyan bounce from screen-right."
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+# ASSETS_MANIFEST — 第二次文明資產清單（batch-2, 2026-11-28）
+# 二進位資產不入 git；本清單記錄 ID／狀態／存放位置，存放位置以生產 VM ~/drama-line 為主。
+version: 1
+updated: 2026-11-28
+
+characters:
+  - id: FANLI-MASTER-MODERN
+    desc: 范蠡現代裝身分基準（Creator 本人臉版）＋一致性全套（45°／背影／A 年輕版／C 老年版）
+    status: LOCKED
+    location: VM ~/drama-line/casting/master/ (fanli-master-B-userface.png 等)
+    note: master 圖傷痕為鏡像右眉尾；規格恆為左眉尾，生成時改回
+  - id: FANLI-MASTER-ANCIENT
+    desc: 范蠡古裝基準組（正面／左45°／右45°無疤／正面特寫）
+    status: LOCKED
+    location: VM ~/drama-line/casting/master/ (含 fanli-master-ancient-45R.jpg 修復版；.v1-flip-defect.jpg 為缺陷版禁用)
+  - id: FANLI-CHARCARD-MODERN
+    desc: 現代裝角色卡兩張（四視圖＋六表情細節列），Creator 以豆包生成，定為 OUTFIT-01 後續生成標準參考
+    status: LOCKED
+    location: VM ~/drama-line/casting/master/fanli-modern-charactercard-main.png / -expressions.png
+  - id: SYS-01
+    desc: 系統人像（半透明彈窗 AI 助理，豆包式年輕女性形象）
+    status: PENDING_DESIGN  # DEMO02_v2 使用幾何佔位圖；定妝為 EP-01 開拍前 Gate，專屬聲線亦未定版
+    location: 參考圖 ~/workspace/ep001-script/system-avatar-ref.png (Muse 工作區)
+
+outfits:
+  - id: FANLI-OUTFIT-01
+    desc: 現代丁案（深色西裝外套＋灰高領毛衣＋深色長褲黑皮鞋；腕錶左腕、方孔錢右手）
+    status: LOCKED
+  - id: FANLI-OUTFIT-02
+    desc: 春秋布衣・退隱期（玄黑深衣、束髻黑緇布冠木笄、持竹簡）
+    status: LOCKED
+    note: 古裝版絕不可持方孔錢（方孔圓錢為戰國晚期至秦才有）
+  - id: FANLI-OUTFIT-03
+    desc: 春秋上大夫朝服・朝堂期
+    status: LOCKED
+    note: 正面圖傷痕偏淡，是否補修正版待 Creator 決定
+  - id: FANLI-OUTFIT-04
+    desc: 陶朱公鉅賈
+    status: PLACEHOLDER  # 待設計
+
+locations:
+  - id: LOC-ALLEY-NIGHT
+    desc: 藍調入夜窄巷（濕柏油、巷底暖黃路燈），DEMO-02 場景母圖
+    status: LOCKED
+    location: VM ~/drama-line/demo02/loc/
+
+voices:
+  - id: FANLI-VOICE-F
+    desc: ElevenLabs F・胸腔共鳴（eleven_v4, stability 0.65）
+    status: LOCKED
+    location: bible/voices/FANLI.yaml（參數與 voice_id 以該檔為準）
+  - id: SYS01-VOICE
+    desc: 系統專屬聲線
+    status: PENDING
+
+productions:
+  - id: DEMO-01
+    desc: 抵達段 3 鏡試水（14.93s）
+    status: DELIVERED_SUPERSEDED
+    location: VM ~/drama-line/demo01/
+  - id: DEMO-02-V1
+    desc: 抵達段 6 鏡（24.5s），Creator QC-D 判不過（六類失敗）
+    status: REJECTED
+    location: VM ~/drama-line/demo02/
+  - id: DEMO-02-V2
+    desc: 同段以規格 v2.3 全管線修復重製（23.79s），三閘全過、收件抽幀複核屬實
+    status: VERIFIED
+    location: VM ~/drama-line/demo02_v2/DEMO02_v2.mp4（報告 docs/memos/DEMO02_V2_FULL_RUN_REPORT.md）

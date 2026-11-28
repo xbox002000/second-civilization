@@ -1,0 +1,165 @@
+# bible/performance/micro_expressions.yaml — 表演微表情有界詞表（v2.3）
+# 比照 bible/camera/named_shots.yaml 自建原則：全正向可觀察物理句，零裸否定詞
+version: "2.3"
+
+intensity_scale:
+  L1:
+    label: 極克制・內斂微動（Baseline Restrained）
+    zones_active: 1
+    fanli_budget: "預設主力（~70% 鏡頭）；適用 deliberate_hold=true、stable_control、cold_observe"
+    min_shot_size: "MS"
+  L2:
+    label: 克制轉折・可讀訊號（Controlled Shift）
+    zones_active: "1-2"
+    fanli_budget: "交鋒／反問／判讀主力（~25% 鏡頭，如 DEMO-02 S4、EP-01 S06/S17）"
+    min_shot_size: "MCU"
+  L3:
+    label: 壓抑張力・危機臨界（Contained Tension）
+    zones_active: "2-3（含 Z4 呼吸肩頸）"
+    fanli_budget: "范蠡上限（≤5% 鏡頭，僅限穿越失重／突發異象如 DEMO-02 S1/S3a/S3b）"
+    min_shot_size: "MS"
+  L4:
+    label: 外放情緒・明確失控（Overt Outburst）
+    zones_active: "3-4"
+    fanli_budget: "范蠡預設禁用（觸發 preflight WARN，須填 intensity_override_reason）；僅供目擊者／對手配角使用"
+    min_shot_size: "MS"
+
+zones:
+  Z1_gaze_eyelids:
+    - id: z1_slow_blink
+      level: L1
+      min_shot_size: MCU
+      zh: 緩慢深眨眼（約 0.4 秒，時間感比旁人慢半拍）
+      en: "unhurried slow deliberate blink, eyelids closing calmly and reopening without haste"
+    - id: z1_steady_hold
+      level: L1
+      min_shot_size: MCU
+      zh: 沉靜久視（對方講完仍不移開目光）
+      en: "heavy steady gaze resting calmly forward, upper eyelids slightly relaxed and unbothered"
+    - id: z1_object_to_person
+      level: L2
+      min_shot_size: MCU
+      zh: 先看物再只抬眼看人（不急著抬頭）
+      en: "eyes held on the object for a beat before slowly lifting only his gaze to meet the speaker"
+    - id: z1_glare_squint
+      level: L2
+      min_shot_size: MCU
+      zh: 對冷白螢幕或強光極輕微瞇眼
+      en: "brief subtle narrowing of the eyelids against the bright glare before shifting gaze smoothly"
+    - id: z1_sharp_lock
+      level: L2
+      min_shot_size: CU
+      zh: 眼神定住收束（聽見關鍵詞時警覺凝神）
+      en: "eyes subtly focusing and locking forward with quiet guarded sharpness"
+    - id: z1_startled_snap
+      level: L3
+      min_shot_size: MS
+      zh: 驟然側目轉頭盯向異光源（轉幅守 ±30° 內）
+      en: "head turns briskly within thirty degrees toward the sudden light source, eyes alert and guarded"
+
+  Z2_brow_glabella:
+    - id: z2_hairline_knit
+      level: L1
+      min_shot_size: CU
+      zh: 眉心極輕微收攏（不破左眉尾疤線）
+      en: "faint tension gathering briefly between the inner brows while keeping the outer brow line natural"
+    - id: z2_brow_settle
+      level: L1
+      min_shot_size: CU
+      zh: 眉骨緩沉鬆回（看穿局勢後的平靜）
+      en: "inner brows gradually softening and settling into quiet composure"
+    - id: z2_skeptical_furrow
+      level: L2
+      min_shot_size: CU
+      zh: 審視性微蹙眉（冷靜質疑，非憤怒皺眉）
+      en: "restrained analytical furrow between the brows, eyes narrowed slightly in quiet skepticism"
+    - id: z2_alert_tension
+      level: L3
+      min_shot_size: MCU
+      zh: 戒備繃眉（遇未知威脅）
+      en: "brows drawing tighter with tense alertness, face taut under the alley light"
+
+  Z3_mouth_jaw_chin:
+    - id: z3_closed_still_lips
+      level: L1
+      min_shot_size: MS
+      zh: 雙唇自然閉合（無對白／畫外音必鎖）
+      en: "lips resting naturally and completely closed with relaxed mouth corners"
+    - id: z3_jaw_clench
+      level: L2
+      min_shot_size: CU
+      zh: 下顎微收緊（壓住情緒不發作）
+      en: "jawline tightening faintly for a moment as he keeps his lips closed"
+    - id: z3_chin_tuck
+      level: L2
+      min_shot_size: MCU
+      zh: 下巴微收半寸（開口反問前壓穩氣場，DEMO-02 S4 簽名）
+      en: "chin dipping slightly inward half an inch as he steadies himself before speaking"
+    - id: z3_quiet_part_speak
+      level: L2
+      min_shot_size: CU
+      zh: 唇線小幅度克制開啟吐字（配合 <d> 對白本文）
+      en: "lips parting slightly with restrained, minimal articulation as he speaks quietly"
+    - id: z3_swallow_hold
+      level: L2
+      min_shot_size: MCU
+      zh: 輕微吞嚥喉結微動後定神
+      en: "subtle swallow along his throat, jaw settling back into calm stillness"
+
+  Z4_breath_neck_shoulders:
+    - id: z4_calm_breath
+      level: L1
+      min_shot_size: MS
+      zh: 胸肩平緩極微起伏（雙人鏡／靜止反應必備活人感）
+      en: "subtle slow rise and fall of his chest and shoulders with calm measured breathing"
+    - id: z4_pre_line_exhale
+      level: L1
+      min_shot_size: MCU
+      zh: 開口前極輕緩吐氣半拍、雙肩微沉
+      en: "quiet measured exhale with shoulders settling a fraction lower before speaking"
+    - id: z4_weight_shift
+      level: L1
+      min_shot_size: "2S"
+      zh: 站姿重心極微轉移（打破 2S 蠟像僵直）
+      en: "subtle barely perceptible shift of weight across his stance while breathing steadily"
+    - id: z4_heavy_heave
+      level: L3
+      min_shot_size: MS
+      zh: 失衡扶牆後的急促喘息肩部起伏（DEMO-02 S1）
+      en: "chest and shoulders heaving visibly with ragged, rapid breathing while bracing against the wall"
+    - id: z4_back_brace
+      level: L3
+      min_shot_size: MS
+      zh: 肩背驟繃貼牆、手臂警戒收緊（DEMO-02 S3b）
+      en: "shoulders drawing back firmly against the damp wall with taut breathing"
+
+  supporting_L4_only:
+    - id: z_sup_double_take_retreat
+      level: L4
+      min_shot_size: MS
+      allowed_speakers: ["SUPPORTING", "WITNESS"]
+      zh: 目擊者明顯驚愣、後退半步、急促眨眼舉手機
+      en: "eyes widening briefly in shock, stepping back half a pace with rapid nervous blinks and tense breathing"
+
+anti_ai_face_hygiene:
+  banned_overacting_en:
+    - "exaggerated gasp"
+    - "jaw drops wide open"
+    - "wide toothy grin"
+    - "radiant smile"
+    - "commercial smile"
+    - "maniacal"
+    - "dramatic tears"
+    - "porcelain skin"
+    - "flawless airbrushed skin"
+    - "beauty filter"
+    - "overly symmetrical model face"
+  banned_abstract_only_zh:
+    - "感到難過"
+    - "很生氣"
+    - "非常震驚"
+    - "表情複雜"
+    - "內心掙扎"
+    - "露出微笑"
+  compiler_flow_avoid: "plastic airbrushed skin, beauty filter, exaggerated theatrical expression, stiff wax-figure stare, wide commercial smile"
+  compiler_h3_positive_guard: "authentic natural skin texture with subtle pores, restrained understated facial movement, lifelike subtle breathing"

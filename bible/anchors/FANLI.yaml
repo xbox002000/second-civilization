@@ -1,0 +1,77 @@
+# bible/anchors/FANLI.yaml — 范蠡跨鏡身分錨點唯一準據（v2.3）
+# 對應身分基準：MASTER_FACE_DECISION.md｜對應服裝：COSTUME_REGISTRY.md
+char_id: FANLI
+status: LOCKED
+canonical_age_band: B   # 38-40 歲（A=~28, C=~60 僅限顯式跨齡鏡）
+identity_master: casting/master/fanli-master-B-userface.png
+
+anchors:
+  - anchor_id: ANC-FANLI-01
+    name: 左眉眉尾淡舊斜疤
+    category: permanent_anatomical
+    applies_to_eras: ["春秋", "2022", "2026"]
+    applies_to_outfits: ["FANLI-OUTFIT-01", "FANLI-OUTFIT-02", "FANLI-OUTFIT-03", "FANLI-OUTFIT-04"]
+    spec:
+      anatomical_side: left_eyebrow_outer_tail
+      screen_side_frontal: viewer_right
+      length_cm: "1.2-1.5"
+      appearance: "陳年癒合淡膚色微斜舊痕，輕微切斷眉尾毛流；嚴禁紅腫新鮮傷或跨臉頰刀疤"
+    visibility_by_scale:
+      required_visible: ["CU", "ECU", "MCU"]
+      clean_opposite_required: ["CU", "ECU", "MCU"]
+      optional_in: ["MS", "LS", "ELS", "2S", "OTS"]
+    qc_gate_key: scar_side
+    prompt_en_positive: "faint 1.5cm old healed diagonal scar at the outer tail of his anatomical left eyebrow (viewer's right), anatomical right eyebrow completely clean"
+
+  - anchor_id: ANC-FANLI-02
+    name: 時代條件髮型剪影
+    category: era_conditioned_silhouette
+    variants:
+      modern:
+        applies_to_eras: ["2022", "2026"]
+        applies_to_outfits: ["FANLI-OUTFIT-01"]
+        spec: "自然黑長髮後收露額、前額／右鬢留 1-2 縷細軟垂絲、頸後低於耳垂線啞光黑繩低束 5-8cm 短小髮尾"
+        forbidden_in_variant: ["古裝束髻", "緇布冠", "高冠", "木笄", "玉簪", "高馬尾", "厚齊劉海"]
+        prompt_en_positive: "black hair swept back exposing forehead, one or two fine loose strands by the right temple, tied low at the nape into a neat 6cm short low tail"
+      ancient_outfit02:
+        applies_to_eras: ["春秋"]
+        applies_to_outfits: ["FANLI-OUTFIT-02"]
+        spec: "全髮上收緊貼束髻頭頂，戴素面啞光黑緇布冠、貫素木笄、垂黑布組纓；零額前碎髮與低馬尾"
+        forbidden_in_variant: ["現代低馬尾", "額前垂絲", "朝服高冠", "玉簪", "明清辮子"]
+        prompt_en_positive: "hair gathered cleanly into a topknot under a matte black cloth cap secured by a plain wooden hairpin with hanging black cloth ties"
+      ancient_outfit03:
+        applies_to_eras: ["春秋"]
+        applies_to_outfits: ["FANLI-OUTFIT-03"]
+        spec: "全髮上收束髻，戴挺括立體摺紋黑色正式高冠、貫淡青白玉簪、垂黑絲冠纓"
+        forbidden_in_variant: ["現代低馬尾", "額前碎髮", "素木笄", "布衣緇布冠"]
+        prompt_en_positive: "hair gathered into a topknot under a structured pleated black formal court cap secured by a pale jade hairpin"
+    qc_gate_key: costume_4pt
+
+  - anchor_id: ANC-FANLI-03
+    name: 古銅方孔錢（現代限定信物）
+    category: era_conditioned_prop
+    allowed_eras: ["2022", "2026"]
+    allowed_outfits: ["FANLI-OUTFIT-01"]
+    forbidden_eras: ["春秋"]
+    forbidden_outfits: ["FANLI-OUTFIT-02", "FANLI-OUTFIT-03", "FANLI-OUTFIT-04"]
+    spec:
+      handedness: "anatomical_right_hand（或平壓於桌面紙本合約角）"
+      diameter_cm: "3.8-4.5"
+      surface_rule: "暗褐古銅包漿、圓廓厚邊、方孔清晰、錢面字跡磨淡至完全不可辨讀（覆寫角色卡特寫格擬古字樣，嚴守 V9）"
+      presence_rule: "現代戲僅於劇本指定思考／決斷／收尾鏡入鏡，非每鏡強制出現；春秋古裝戲 100% 硬禁（春秋晚期尚未出現方孔圓錢）"
+    qc_gate_key: costume_4pt
+    prompt_en_positive: "substantial 4cm antique dark aged-bronze round coin with crisp square center hole and heavily worn unreadable surface"
+
+  - anchor_id: ANC-FANLI-04
+    name: 舊銅殼極簡腕錶（現代限定・左腕）
+    category: era_conditioned_accessory
+    allowed_eras: ["2022", "2026"]
+    allowed_outfits: ["FANLI-OUTFIT-01"]
+    forbidden_eras: ["春秋"]
+    forbidden_outfits: ["FANLI-OUTFIT-02", "FANLI-OUTFIT-03", "FANLI-OUTFIT-04"]
+    spec:
+      anatomical_side: "anatomical_left_wrist（正面視角畫面右側手腕）"
+      appearance: "氧化舊銅圓殼、極簡素面米白錶盤（無可讀品牌標誌）、深棕皮錶帶"
+      presence_rule: "現代戲凡左腕露框時必在位且不得換到右腕；春秋古裝戲 100% 硬禁"
+    qc_gate_key: costume_4pt
+    prompt_en_positive: "minimalist oxidized aged-bronze wristwatch with plain unbranded cream dial and dark brown leather strap on his anatomical left wrist"

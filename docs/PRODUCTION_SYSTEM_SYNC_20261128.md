@@ -28,3 +28,25 @@ Synced by Muse at the Creator's direction (option B: finalized documents now; ba
 ## Not in this batch (by design)
 - Binary assets (casting masters incl. the patched `fanli-master-ancient-45R.jpg` and the Creator's Doubao modern character card, demo clips, strips) live on the production VM `~/drama-line/` and Muse's workspace, not in git.
 - Batch 2 (after the mandate): integrated spec v2.3, DEMO02_v2 repaired cut documentation + FULL_RUN_REPORT.
+
+---
+
+# Batch 2 + Repo HQ upgrade (2026-11-28, same branch)
+
+Executed after the agy full-process mandate completed and Muse's receipt verification (frame-level spot-check against the six original QC-D failure classes: verified).
+
+**Version note (honest bookkeeping)**
+- `docs/STORYBOARD_SPEC_V2.md` and the `tools/` scripts were already at **v2.3** in batch 1: the mandate's Phase 1 integration landed (~15:24 Taipei) before the batch-1 snapshot was taken (~15:47), so batch 1's "v2.2" label in the section above was stale — the file content was v2.3 all along (Seedance-borrowing items 1–7, SM-7A 3 conditions, clay-test 4 conditions; preflight selftest 32/32). Batch 2 re-copied them and git confirms no content diff.
+
+**New production records (`docs/memos/`)**
+- `DEMO02_V2_FULL_RUN_REPORT.md` — the mandate's full run report (per-shot routes/takes/costs, gate JSONs, honest residual defects, EP-01 readiness).
+- `DEMO02_V2_SCRIPT_PACK.json`, `DEMO02_V2_QC1_GATE.json`, `DEMO02_V2_QC2_GATE.json` — the production contract and signed gate records (SHA256-chained).
+
+**New bible files**
+- `bible/anchors/FANLI.yaml` — cross-shot identity anchor checklist; `bible/performance/MICRO_EXPRESSIONS.yaml` — micro-expression lexicon with intensity grades.
+
+**Repo HQ upgrade (Creator-approved plan A)**
+- `docs/PROJECT_STATUS.md` — the single current-state page: locked decisions, proven pipeline facts, pending Creator decisions, next steps.
+- `docs/DECISIONS.md` — ADR backfill ADR-005…ADR-012 (face lock, voice lock, independent-account channel, H3 routing ruling, Omni default, Seedance borrow-only, 2022-entry canon, SYS-01 composite + demo boundary).
+- `docs/ROADMAP.md` — two stale checkboxes corrected to reality (character look & voice Creator-confirmed 2026-11-27).
+- `docs/ASSETS_MANIFEST.yaml` — asset registry (IDs, status, storage locations; binaries stay out of git).

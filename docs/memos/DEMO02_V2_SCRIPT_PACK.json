@@ -1,0 +1,559 @@
+{
+  "schema_version": "2.3",
+  "episode_id": "DEMO-02-V2",
+  "production_mode": "demo",
+  "accelerator": "L4",
+  "director_card": {
+    "emotion_curve": "Disoriented arrival (S1) -> guarded standoff with witness (S2) -> uncanny cyan light cue (S3a) -> SYS-01 popup confrontation (S3b) -> witness puzzled retreat seeing empty air (S2R) -> composed sharp counter-question (S4)",
+    "light_lock_id": "LK-ALLEY-NIGHT",
+    "world_reaction_default": "semi_private_alley_single_witness"
+  },
+  "segments": [
+    {
+      "segment_id": "SEG-01",
+      "scene_id": "LOC-ALLEY-NIGHT",
+      "time_layer": "2022",
+      "lighting_base": "Overhead cool blue twilight sky with warm sodium alley streetlamp from far back and subtle wet-pavement reflections (LK-ALLEY-NIGHT)",
+      "light_lock_id": "LK-ALLEY-NIGHT",
+      "atmosphere": "Humid dark Taipei narrow alley, muted cool blue twilight and dark charcoal matte palette, subtle natural film grain",
+      "ambience": {
+        "source": "library_roomtone",
+        "asset_id": "alley_night_wet_48k",
+        "target_db": -24.0,
+        "note": "Continuous humid Taipei night alley room tone with faint distant traffic hum, normalized to -24 dBFS, -6 dB duck during TTS, -38 dBFS during S3a->S3b sound_drop"
+      },
+      "bgm_cue": "none",
+      "world_reaction_default": "single_witness_filming_unaware_of_sys01",
+      "public_exposure": "semi",
+      "anomaly_level": "high"
+    }
+  ],
+  "shots": [
+    {
+      "shot_id": "S1",
+      "segment_id": "SEG-01",
+      "beat_id": "B01",
+      "beat_function": "HOOK",
+      "priority": "standard",
+      "shot_intent": "Make the audience feel Fan Li's sudden disoriented drop into a damp 2022 Taipei night alley.",
+      "shot_size": "MS",
+      "angle_v": "eye",
+      "angle_h": "three-quarter",
+      "subject_facing": "left",
+      "face_visible": true,
+      "outfit_id": "FANLI-OUTFIT-02",
+      "engine_route": "flow",
+      "gen_mode": "i2v_first",
+      "control_method": "L1_prompt",
+      "camera_psychology": "handheld_anxiety",
+      "face_lock_level": "standard",
+      "lip_sensitive": false,
+      "voice_mode": "none",
+      "ambient_source": "post_roomtone",
+      "target_net_sec": 4.0,
+      "trim_policy": "standard_0.5s",
+      "duration_from_audio": false,
+      "transition_out": {
+        "type": "cut",
+        "trigger": "action"
+      },
+      "first_frame": {
+        "source": "generated",
+        "path": "/home/hatch/drama-line/demo02_v2/frames/S1_first.jpg"
+      },
+      "asset_refs": [
+        {
+          "asset_id": "LOC-ALLEY-NIGHT",
+          "role": "scene"
+        },
+        {
+          "asset_id": "FANLI-OUTFIT-02-45",
+          "role": "character"
+        }
+      ],
+      "movement": {
+        "type": "handheld",
+        "speed": "slow",
+        "amplitude": "small",
+        "end_shot_size": "MS"
+      },
+      "start_pose": "Right palm braced on the damp left alley wall, torso leaning forward, panting, facing screen-left in OUTFIT-02.",
+      "action": "Fanli keeps his right palm braced firmly on the damp left alley wall at constant medium-shot distance, chest and shoulders heaving with ragged breathing as he steadies his footing and glances alertly down the wet alley.",
+      "microexpression": "Tense furrowed brow and rapid shallow breaths settling into guarded alertness, lips closed.",
+      "performance_beat": {
+        "from": "off-balance wall brace panting",
+        "trigger": "distant modern alley sounds and subtle lamp flicker",
+        "to": "steadied braced alert stance with right hand still on damp left wall",
+        "deliberate_hold": false,
+        "intensity": "L3",
+        "lexicon_ids": [
+          "z4_heavy_heave",
+          "z3_closed_still_lips"
+        ]
+      },
+      "end_state": "Fanli stands braced against the damp left alley wall with his right palm still resting on the wall, left hand near his waist, scanning guardedly toward the alley entrance.",
+      "vfx_beats": [
+        {
+          "type": "env_reaction",
+          "exec_layer": "post_ffmpeg"
+        }
+      ],
+      "sfx": [
+        {
+          "cue": "heavy_palm_wall_and_breath",
+          "timing_sec": 0.4,
+          "level_class": "subtle_foley",
+          "source": "library"
+        },
+        {
+          "cue": "distant_scooter_alarm_chirp",
+          "timing_sec": 2.4,
+          "level_class": "accent_sfx",
+          "source": "library"
+        }
+      ],
+      "image_prompt": "9:16 vertical live-action frame. Overhead cool blue twilight sky and steady warm sodium streetlamp far down the alley reflecting softly on wet asphalt. Medium shot at eye level of late-30s East Asian man Fanli wearing matte black coarse linen Spring-Autumn cross-collar robe (y-shaped right-lapping collar with dark brown geometric trim), matte black cloth cap with plain wooden hairpin, dark gray waist sash with a single pale jade disc; right palm braced on damp concrete left alley wall, facing screen-left with faint healed scar on anatomical left eyebrow tail. Muted cool blue and dark charcoal palette, authentic skin pores, natural film grain. Avoid: readable text, lens flare explosion, blown-out streetlights.",
+      "video_prompt": "Live-action, 5s 9:16 single shot. Overhead cool blue twilight sky and steady warm sodium streetlamp far down the wet Taipei narrow alley keeping constant dim night exposure. Eye-level medium shot holding constant camera distance with subtle uneven anxious handheld camera sway. Fanli keeps his right palm braced steadily against the damp concrete left alley wall while his chest and shoulders heave visibly with ragged breathing in his matte black coarse linen robe, y-right collar, matte black cloth cap with horizontal wooden hairpin, gray waist sash, and pale jade disc; he steadies his stance beside the left wall, left hand guarding near his waist, turning his head slightly toward the alley mouth with alert eyes and lips resting completely closed. Muted cool blue and dark charcoal palette, authentic natural skin texture and film grain. Sound: damp Taipei night alley ambience, faint distant traffic hum, subtle breathing. Avoid: zooming into close-up, changing headdress shape, cheek scratches, blinding light flare, blown-out white flash, plastic airbrushed skin, readable text."
+    },
+    {
+      "shot_id": "S2",
+      "segment_id": "SEG-01",
+      "beat_id": "B02",
+      "beat_function": "ESCALATION",
+      "priority": "standard",
+      "shot_intent": "Establish that Fan Li is an anomaly in 2022 Taipei through the eyes of a startled local witness.",
+      "shot_size": "2S",
+      "angle_v": "eye",
+      "angle_h": "front",
+      "subject_facing": "front",
+      "face_visible": true,
+      "outfit_id": "FANLI-OUTFIT-02",
+      "engine_route": "flow",
+      "gen_mode": "i2v_first",
+      "control_method": "L1_prompt",
+      "camera_psychology": "handheld_anxiety",
+      "face_lock_level": "standard",
+      "lip_sensitive": false,
+      "voice_mode": "none",
+      "ambient_source": "post_roomtone",
+      "target_net_sec": 4.0,
+      "trim_policy": "standard_0.5s",
+      "duration_from_audio": false,
+      "transition_out": {
+        "type": "cut",
+        "trigger": "eyeline"
+      },
+      "first_frame": {
+        "source": "derived_shot",
+        "ref_shot_id": "S1",
+        "path": "/home/hatch/drama-line/demo02_v2/frames/S2_first.jpg"
+      },
+      "asset_refs": [
+        {
+          "asset_id": "S1-ANCHOR",
+          "role": "first_frame"
+        },
+        {
+          "asset_id": "FANLI-OUTFIT-02-45",
+          "role": "character"
+        },
+        {
+          "asset_id": "WITNESS-WOMAN-01",
+          "role": "character"
+        }
+      ],
+      "movement": {
+        "type": "handheld",
+        "speed": "slow",
+        "amplitude": "small",
+        "end_shot_size": "2S"
+      },
+      "start_pose": "Fanli braced along the left damp alley wall in full OUTFIT-02 (black cap + wooden pin + y-right robe + jade disc), right hand resting near the wall, left hand guarded near waist; Taiwanese woman in beige short jacket carrying red-white striped plastic bag stands on screen-right facing left holding smartphone.",
+      "action": "Witness woman takes a cautious half-step back on screen-right while raising her smartphone to record; Fanli shifts weight subtly against the damp left wall, chest rising with measured breathing as he watches her guardedly.",
+      "microexpression": "Woman blinks nervously with startled tension; Fanli keeps guarded steady eyes and calm breathing with closed lips.",
+      "performance_beat": {
+        "from": "braced wall stance spotting witness",
+        "trigger": "witness raises smartphone on screen-right",
+        "to": "tense mutual standoff with subtle weight shift and steady breathing",
+        "deliberate_hold": false,
+        "intensity": "L1",
+        "lexicon_ids": [
+          "z4_weight_shift",
+          "z4_calm_breath",
+          "z3_closed_still_lips"
+        ]
+      },
+      "end_state": "Fanli braced against left alley wall facing toward screen-right; witness woman stands on screen-right holding smartphone pointed left toward him.",
+      "world_reaction": "double_take_and_filming",
+      "sfx": [
+        {
+          "cue": "wet_footstep_half_step_back",
+          "timing_sec": 0.8,
+          "level_class": "subtle_foley",
+          "source": "library"
+        }
+      ],
+      "image_prompt": "9:16 vertical live-action two-shot derived from S1 in the exact same wet Taipei narrow night alley. Overhead cool blue twilight sky and steady warm sodium streetlamp far behind reflecting on wet pavement. On the left damp alley wall stands late-30s East Asian man Fanli wearing complete OUTFIT-02: matte black cloth cap secured by horizontal plain wooden hairpin on topknot, matte black coarse linen robe with y-shaped right-lapping cross-collar (left lapel crossing over right lapel) and dark brown geometric trim, matte gray waist sash with single pale jade disc; his right hand rests lightly near the damp concrete wall while his left hand guards near his waist, looking warily toward screen-right. On screen-right in the closer foreground stands a 50s Taiwanese woman in a beige short zip jacket and dark trousers carrying a red-and-white striped plastic market bag in her left hand, facing screen-left toward Fanli while raising a dark smartphone in her right hand to film him. Muted cool blue and dark charcoal palette, natural film grain. Avoid: readable text, extra crates, modern hair on Fanli, missing black cap or wooden pin.",
+      "video_prompt": "Live-action, 5s 9:16 single shot. Overhead cool blue twilight sky and steady warm sodium streetlamp far behind on wet Taipei alley asphalt. Eye-level two-shot with subtle handheld camera breathing. On screen-right, the Taiwanese woman in the beige jacket carrying the red-white striped bag shifts her stance half a step back and steadies her raised smartphone, blinking nervously with visible breathing. On the left damp wall, Fanli in his matte black cloth cap with wooden hairpin and dark coarse linen robe shifts weight slightly along the wall, his chest and shoulders rising with calm measured breathing, blinking slowly as his eyes track her phone while his lips remain completely closed. Muted dark charcoal and cool blue night palette. Sound: quiet damp alley ambience and a soft shoe scuff on wet asphalt. Avoid: wax-figure stiffness, plastic airbrushed skin, sudden light spike, readable text."
+    },
+    {
+      "shot_id": "S3a",
+      "segment_id": "SEG-01",
+      "beat_id": "B03",
+      "beat_function": "JOLT",
+      "priority": "hero",
+      "shot_intent": "Cue an unseen anomalous cyan light off-frame right that pulls Fan Li's attention away from the street witness.",
+      "shot_size": "MS",
+      "angle_v": "eye",
+      "angle_h": "three-quarter",
+      "subject_facing": "left",
+      "face_visible": true,
+      "outfit_id": "FANLI-OUTFIT-02",
+      "engine_route": "h3",
+      "gen_mode": "ref2v",
+      "control_method": "L1_prompt",
+      "camera_psychology": "intimate_drift",
+      "face_lock_level": "strict",
+      "lip_sensitive": false,
+      "voice_mode": "none",
+      "ambient_source": "post_roomtone",
+      "target_net_sec": 3.0,
+      "trim_policy": "standard_0.5s",
+      "duration_from_audio": false,
+      "transition_out": {
+        "type": "hard-cut",
+        "trigger": "sound"
+      },
+      "first_frame": {
+        "source": "derived_shot",
+        "ref_shot_id": "S2",
+        "path": "/home/hatch/drama-line/demo02_v2/frames/S3a_first.jpg"
+      },
+      "asset_refs": [
+        {
+          "asset_id": "S3A-FIRST-FRAME",
+          "role": "first_frame"
+        },
+        {
+          "asset_id": "FANLI-OUTFIT-02-CU",
+          "role": "character"
+        },
+        {
+          "asset_id": "FANLI-OUTFIT-02-45",
+          "role": "character"
+        },
+        {
+          "asset_id": "FANLI-OUTFIT-02-45R",
+          "role": "character"
+        }
+      ],
+      "movement": {
+        "type": "static",
+        "speed": "slow",
+        "amplitude": "small",
+        "end_shot_size": "MS"
+      },
+      "start_pose": "Fanli stands along the left damp concrete alley wall beside parked scooter and potted plants, looking cautiously toward screen-left, wearing complete OUTFIT-02.",
+      "action": "Fanli watches the alley entrance then turns his head cleanly within twenty-five degrees toward screen-right as a subtle cool cyan glow illuminates the right side of his face, shoulders tensing against the wall.",
+      "microexpression": "Alert guarded eyes turning briskly toward the sudden cyan glow off-frame right, lips closed, taut breathing.",
+      "performance_beat": {
+        "from": "watching alley entrance against left wall",
+        "trigger": "subtle cool cyan glow rising from off-frame right",
+        "to": "head turned right within 25 degrees, braced tautly against wall",
+        "deliberate_hold": false,
+        "intensity": "L3",
+        "lexicon_ids": [
+          "z1_startled_snap",
+          "z4_back_brace",
+          "z3_closed_still_lips"
+        ]
+      },
+      "end_state": "Fanli braced against the damp left alley wall with head turned toward screen-right and soft cyan light kissing his cheek.",
+      "vfx_beats": [
+        {
+          "type": "light_shift",
+          "exec_layer": "gen_prompt"
+        },
+        {
+          "type": "sound_drop",
+          "exec_layer": "assembly"
+        }
+      ],
+      "sfx": [
+        {
+          "cue": "subtle_electric_hum_buildup",
+          "timing_sec": 2.2,
+          "level_class": "subtle_foley",
+          "source": "library"
+        }
+      ],
+      "image_prompt": "9:16 vertical live-action medium shot derived from S2 in the wet Taipei night alley. Overhead cool blue twilight sky and warm distant streetlamp behind. Late-30s East Asian man Fanli stands against the damp left alley wall in complete OUTFIT-02 (matte black cloth cap with wooden hairpin, y-right dark coarse linen robe with brown geometric trim, gray sash and pale jade disc), looking alertly toward screen-left with faint healed scar on his anatomical left eyebrow tail. Muted cool blue and dark charcoal palette. Avoid: readable text, UI panels, hologram.",
+      "video_prompt": "subject_definitions:\n<Picture 1> is the opening medium-shot frame of [Shot 1], defining ONLY the wet Taipei narrow night alley environment, damp left concrete wall, parked scooter, overhead cool blue twilight sky, distant warm streetlamp (LK-ALLEY-NIGHT), medium-shot framing, and starting stance.\n<Subject 1> is the late-30s East Asian man Fanli defined EXCLUSIVELY by <Picture 2>, <Picture 3>, and <Picture 4> for facial identity, 38-40 age appearance, authentic natural skin texture, scar anatomy, hairstyle, and OUTFIT-02: <Picture 2> defines his frontal likeness and faint healed scar at his anatomical left eyebrow tail; <Picture 3> defines his left 45-degree profile, matte black cloth cap with plain wooden hairpin, right-lapping y-shaped dark coarse linen cross-collar robe with dark brown geometric woven trim, gray waist sash, and pale jade disc; <Picture 4> defines his right 45-degree view with completely smooth unblemished anatomical right eyebrow and consistent y-right collar.\n\nsummary:\n[reference generation] Maintaining the exact medium-shot alley framing of <Picture 1> and keeping <Subject 1>'s 38-40 age likeness and OUTFIT-02 strictly locked to <Picture 2>, <Picture 3>, and <Picture 4>, <Subject 1> senses a soft cool cyan light rising off-frame to the right and turns his head guardedly toward screen-right while holding his medium-shot scale.\n\nretention_analysis:\n<Subject 1> (from <Picture 2>, <Picture 3>, <Picture 4>): fully_preserved - exact 38-40 year old facial bone structure, authentic natural skin texture, smooth unblemished anatomical right brow (<Picture 4>), faint left eyebrow-tail scar (<Picture 2>, <Picture 3>), matte black cloth cap with wooden hairpin, right-lapping y-shaped dark linen cross-collar robe with brown geometric trim, waist sash, and pale jade disc remain consistent across every frame.\n<Picture 1> ([Shot 1] opening frame): partially_preserved - preserve the wet Taipei alley environment, medium-shot scale, left-wall placement, and cool-blue twilight lighting while allowing natural breathing, a clean 25-degree head turn toward screen-right, and a subtle soft cool cyan light edge appearing on the right side of his cheek.\n\ndetailed_description:\nUnder overhead cool blue twilight sky and steady distant warm sodium alley streetlamps (LK-ALLEY-NIGHT), a locked medium shot frames <Subject 1> standing along the damp left alley wall in his matte black cloth cap with wooden hairpin and right-lapping y-shaped dark coarse linen robe with brown geometric trim. Keeping the exact medium-shot camera distance steady with only gentle handheld breath, <Subject 1> watches left for a beat with taut breathing, then a soft cool cyan light glow gently rises from off-frame right onto the right side of his face and shoulder. He turns his head briskly within twenty-five degrees toward screen-right with alert guarded eyes and shoulders bracing firmly back against the concrete wall, his lips resting naturally and completely closed throughout. Muted cool blue and charcoal night palette with authentic natural skin texture and subtle restrained movement, holding his guarded rightward gaze at the end of the shot.\n\noverall_soundscape:\nQuiet damp Taipei night alley ambience with faint distant city hum and low subtle electric static.\n\nnon_diegetic_music:\nN/A"
+    },
+    {
+      "shot_id": "S3b",
+      "segment_id": "SEG-01",
+      "beat_id": "B04",
+      "beat_function": "TURN",
+      "priority": "hero",
+      "shot_intent": "Clean actor plate for SYS-01 popup confrontation: Fan Li braces against the damp wall staring intently into the right landing zone where SYS-01 will be composited.",
+      "shot_size": "MCU",
+      "angle_v": "eye",
+      "angle_h": "three-quarter",
+      "subject_facing": "right",
+      "face_visible": true,
+      "outfit_id": "FANLI-OUTFIT-02",
+      "engine_route": "h3",
+      "gen_mode": "ref2v",
+      "control_method": "L1_prompt",
+      "camera_psychology": "intimate_drift",
+      "face_lock_level": "strict",
+      "lip_sensitive": false,
+      "voice_mode": "none",
+      "ambient_source": "post_roomtone",
+      "target_net_sec": 5.0,
+      "trim_policy": "tail_only",
+      "duration_from_audio": true,
+      "transition_out": {
+        "type": "cut",
+        "trigger": "sound"
+      },
+      "first_frame": {
+        "source": "derived_shot",
+        "ref_shot_id": "S3a",
+        "path": "/home/hatch/drama-line/demo02_v2/frames/S3b_first.jpg"
+      },
+      "asset_refs": [
+        {
+          "asset_id": "S3B-FIRST-FRAME",
+          "role": "first_frame"
+        },
+        {
+          "asset_id": "FANLI-OUTFIT-02-CU",
+          "role": "character"
+        },
+        {
+          "asset_id": "FANLI-OUTFIT-02-45",
+          "role": "character"
+        },
+        {
+          "asset_id": "FANLI-OUTFIT-02-45R",
+          "role": "character"
+        }
+      ],
+      "movement": {
+        "type": "static",
+        "speed": "slow",
+        "amplitude": "small",
+        "end_shot_size": "MCU"
+      },
+      "start_pose": "Clean plate: Fanli occupies left 45% of frame braced against damp left alley wall in complete OUTFIT-02 facing three-quarter screen-right with clean scar-free anatomical right brow, staring steadily into empty dark wet alley landing zone on right 55%.",
+      "action": "Fanli stays braced against the damp left wall strictly on the left 45% of the frame at constant camera distance, chest rising with taut controlled breathing as his eyes hold steadily on the empty dark right space, lips resting closed.",
+      "microexpression": "Guarded tense brow and focused watchful eyes locked on the empty dark space to screen-right, subtle measured breathing, lips resting calmly closed.",
+      "performance_beat": {
+        "from": "startled brace against left wall",
+        "trigger": "invisible presence speaking from right space (SYS-01 composited in assembly)",
+        "to": "taut guarded focus assessing the voice",
+        "deliberate_hold": false,
+        "intensity": "L3",
+        "lexicon_ids": [
+          "z2_alert_tension",
+          "z3_closed_still_lips",
+          "z4_back_brace"
+        ]
+      },
+      "end_state": "Fanli braced against left wall on left 45% facing screen-right with focused guarded expression, empty dark alley space preserved on right 55%.",
+      "continuity_notes": "Clean actor plate for SYS-01 assembly composite (tools/sys01_composite.py). SYS-01 dialogue audio (sys.mp3 5.41s) plays over composited S3b and L-cuts final ~0.5s into S2R per §B.7 #1.",
+      "vfx_beats": [
+        {
+          "type": "glitch_in",
+          "exec_layer": "assembly"
+        },
+        {
+          "type": "composite_ui",
+          "exec_layer": "assembly"
+        }
+      ],
+      "sfx": [
+        {
+          "cue": "sys01_glitch_ignition_pulse",
+          "timing_sec": 0.25,
+          "level_class": "accent_sfx",
+          "source": "library"
+        }
+      ],
+      "image_prompt": "9:16 vertical live-action medium close-up clean actor plate derived from S3a in the wet Taipei night alley. Overhead cool blue twilight sky and dim warm sodium streetlamp far down the empty alley behind. Late-30s East Asian man Fanli stands positioned strictly on the left 45 percent of the frame with his back braced against the damp concrete left wall, head and shoulders angled three-quarter toward screen-right so his completely smooth, clean, scar-free anatomical right eyebrow and right cheek face the camera; wearing complete OUTFIT-02: matte black cloth cap with horizontal plain wooden hairpin, matte black coarse linen cross-collar robe with right-lapping y-shaped collar (left lapel crossing over right lapel) and dark brown geometric trim. He stares intently into the completely empty dark wet Taipei alley space occupying the right 55 percent of the frame. Muted cool blue and charcoal dark night palette, authentic skin pores, natural film grain. Avoid: readable text, UI panels, glowing screens, graphics, avatars, wrong-side brow scar, reversed collar.",
+      "video_prompt": "subject_definitions:\n<Picture 1> is the opening medium close-up clean actor plate of [Shot 1], defining ONLY the wet Taipei narrow night alley background, empty dark alley space on the right 55 percent of the frame, cool-blue twilight lighting (LK-ALLEY-NIGHT), left-45-percent subject placement, constant medium close-up camera distance, and three-quarter right-facing pose.\n<Subject 1> is the late-30s East Asian man Fanli defined EXCLUSIVELY by <Picture 2>, <Picture 3>, and <Picture 4> for facial identity, 38-40 age appearance, authentic skin texture with subtle pores, scar anatomy, hairstyle, and OUTFIT-02: <Picture 2> defines his frontal likeness; <Picture 3> defines his left profile, matte black cloth cap with wooden hairpin, and right-lapping y-shaped dark coarse linen robe with brown geometric trim; <Picture 4> defines his three-quarter right-facing view with completely smooth, clean, unblemished skin along his anatomical right eyebrow and right temple and consistent y-right collar.\n\nsummary:\n[reference generation] Holding the exact constant medium close-up framing, left-45-percent subject placement, and completely unobstructed dark right 55-percent alley space of <Picture 1> while locking <Subject 1>'s 38-40 likeness, unblemished anatomical right eyebrow, and OUTFIT-02 exclusively to <Picture 2>, <Picture 3>, and <Picture 4>, <Subject 1> listens intently against the damp wall with taut breathing, watchful alert eyes, and naturally closed lips on a locked static camera.\n\nretention_analysis:\n<Subject 1> (from <Picture 2>, <Picture 3>, <Picture 4>): fully_preserved - exact 38-40 year old facial bone structure, realistic skin pores, smooth unblemished anatomical right eyebrow (<Picture 4>), matte black cloth cap with horizontal plain wooden hairpin, and right-lapping y-shaped dark coarse linen cross-collar robe (left lapel crossing over right lapel) with dark brown geometric trim stay locked across every frame.\n<Picture 1> ([Shot 1] opening clean plate): fully_preserved - maintain constant camera distance and exact left-45-percent subject framing so the unobstructed dark wet Taipei alley background occupies the entire right 55 percent of the frame throughout every frame under cool-blue night alley lighting while allowing subtle natural breathing, slight watchful eye blinks, and tense shoulder bracing.\n\ndetailed_description:\nUnder overhead cool blue twilight sky and dim distant warm sodium alley lights (LK-ALLEY-NIGHT), a locked static medium close-up camera holds constant framing and constant subject scale throughout the entire shot, keeping <Subject 1> positioned strictly on the left 45 percent of the 9:16 vertical frame against the damp concrete alley wall while the right 55 percent remains completely open dark wet alley background. Carrying his smooth unblemished anatomical right eyebrow (<Picture 4>), matte black cloth cap with wooden pin, and right-lapping y-shaped dark coarse linen robe with brown geometric trim, <Subject 1> braces his shoulders tautly against the wall, chest rising with controlled tense breathing, blinking subtly once as his focused guarded eyes stay locked on the empty space to the right while his lips rest naturally and completely closed. Muted charcoal and cool blue night palette with authentic natural skin texture and restrained understated composure until the end of the shot.\n\noverall_soundscape:\nQuiet damp Taipei night alley ambience with faint distant city hum.\n\nnon_diegetic_music:\nN/A"
+    },
+    {
+      "shot_id": "S2R",
+      "segment_id": "SEG-01",
+      "beat_id": "B05",
+      "beat_function": "BRIDGE",
+      "priority": "standard",
+      "shot_intent": "Reveal the world-reaction hook: the witness woman sees only empty air beside Fan Li and retreats uneasily, proving SYS-01 is visible only to him.",
+      "shot_size": "MCU",
+      "angle_v": "eye",
+      "angle_h": "reverse",
+      "subject_facing": "left",
+      "face_visible": true,
+      "outfit_id": "WITNESS-CASUAL",
+      "engine_route": "flow",
+      "gen_mode": "i2v_first",
+      "control_method": "L1_prompt",
+      "camera_psychology": "handheld_anxiety",
+      "face_lock_level": "standard",
+      "lip_sensitive": false,
+      "voice_mode": "none",
+      "ambient_source": "post_roomtone",
+      "target_net_sec": 2.2,
+      "trim_policy": "standard_0.5s",
+      "duration_from_audio": false,
+      "transition_out": {
+        "type": "cut",
+        "trigger": "eyeline"
+      },
+      "first_frame": {
+        "source": "derived_shot",
+        "ref_shot_id": "S2",
+        "path": "/home/hatch/drama-line/demo02_v2/frames/S2R_first.jpg"
+      },
+      "asset_refs": [
+        {
+          "asset_id": "S2-ANCHOR",
+          "role": "first_frame"
+        },
+        {
+          "asset_id": "WITNESS-WOMAN-01",
+          "role": "character"
+        }
+      ],
+      "movement": {
+        "type": "handheld",
+        "speed": "slow",
+        "amplitude": "small",
+        "end_shot_size": "MCU"
+      },
+      "start_pose": "Derived from S2: exact same 50s Taiwanese woman in beige short zip jacket holding smartphone and red-white striped plastic bag positioned on screen-right facing screen-left into the damp alley, preserving screen-right axis with zero invented street crates.",
+      "action": "The witness woman squints skeptically into the dim alley toward screen-left, lowers her smartphone slowly, gives a small uneasy headshake, and begins turning away toward the alley exit.",
+      "microexpression": "Confused narrowed eyes, rapid nervous blink, uneasy mouth press before turning away.",
+      "performance_beat": {
+        "from": "cautious filming toward screen-left",
+        "trigger": "sees Fan Li staring at empty dark air",
+        "to": "puzzled uneasy retreat lowering smartphone",
+        "deliberate_hold": false,
+        "intensity": "L4",
+        "lexicon_ids": [
+          "z_sup_double_take_retreat"
+        ]
+      },
+      "end_state": "Woman lowers phone and pivots away toward the alley exit on screen-right.",
+      "continuity_notes": "Reverse reaction shot derived from approved S2 anchor (AMD-04 Path A). Must preserve witness woman on screen-RIGHT facing screen-LEFT with identical beige jacket + red-white striped bag and zero invented vegetable crates.",
+      "world_reaction": "witness_unaware_of_sys01_retreats",
+      "image_prompt": "9:16 vertical live-action medium close-up reverse angle derived from S2 in the exact same wet Taipei narrow night alley. Overhead cool blue twilight sky and steady warm sodium streetlamp glow matching S2 (LK-ALLEY-NIGHT). Positioned on the right half of the frame facing toward screen-left is the exact same 50s Taiwanese woman from S2 with chin-length dark hair, beige short zip jacket, dark trousers, holding her dark smartphone up in her right hand and the red-and-white striped plastic bag on her left arm; behind her and to the left are only the damp concrete alley walls, metal roll-up shutters, and wet asphalt matching S2. Muted cool blue and dark charcoal palette, authentic skin texture, natural film grain. Avoid: readable text, stacked vegetable crates, cardboard boxes, flipping her to screen-left, artificial cyan glare.",
+      "video_prompt": "Live-action, 4s 9:16 single shot. Overhead cool blue twilight sky and steady warm sodium streetlamp glow in the wet Taipei narrow alley matching S2. Eye-level medium close-up with gentle handheld camera sway. Positioned on screen-right facing screen-left, the Taiwanese woman in the beige short jacket holding her smartphone and red-white striped plastic bag squints with puzzled unease toward screen-left, blinks nervously, lowers her smartphone slowly, gives a small skeptical headshake, and turns her shoulders away toward the alley exit. Muted cool blue and charcoal night palette, authentic natural skin texture. Sound: quiet damp Taipei alley ambience and faint nylon bag rustle. Avoid: invented crates, glowing cyan lights, exaggerated theatrical expression, readable text."
+    },
+    {
+      "shot_id": "S4",
+      "segment_id": "SEG-01",
+      "beat_id": "B06",
+      "beat_function": "PAYOFF",
+      "priority": "hero",
+      "shot_intent": "Fan Li compresses his shock into cold composure and delivers his sharp counter-question to SYS-01.",
+      "shot_size": "CU",
+      "angle_v": "eye",
+      "angle_h": "three-quarter",
+      "subject_facing": "right",
+      "face_visible": true,
+      "outfit_id": "FANLI-OUTFIT-02",
+      "engine_route": "h3",
+      "gen_mode": "ref2v",
+      "control_method": "L1_prompt",
+      "camera_psychology": "stable_control",
+      "face_lock_level": "strict",
+      "lip_sensitive": true,
+      "voice_mode": "tts",
+      "ambient_source": "post_roomtone",
+      "target_net_sec": 4.2,
+      "trim_policy": "standard_0.5s",
+      "duration_from_audio": true,
+      "transition_out": {
+        "type": "hard-cut",
+        "trigger": "eyeline"
+      },
+      "first_frame": {
+        "source": "derived_shot",
+        "ref_shot_id": "S3b",
+        "path": "/home/hatch/drama-line/demo02_v2/frames/S4_first.jpg"
+      },
+      "asset_refs": [
+        {
+          "asset_id": "S4-FIRST-FRAME",
+          "role": "first_frame"
+        },
+        {
+          "asset_id": "FANLI-OUTFIT-02-CU",
+          "role": "character"
+        },
+        {
+          "asset_id": "FANLI-OUTFIT-02-45",
+          "role": "character"
+        },
+        {
+          "asset_id": "FANLI-OUTFIT-02-45R",
+          "role": "character"
+        }
+      ],
+      "dialogue": [
+        {
+          "line_id": "L01",
+          "speaker": "FANLI",
+          "line": "……你，怎知我名？",
+          "tts_emotion_tags": [
+            "calm",
+            "low",
+            "guarded"
+          ],
+          "delivery_mode": "on_camera",
+          "pause_after_sec": 0.6,
+          "delivery": {
+            "pre_pause_sec": 0.5,
+            "pace": "measured",
+            "volume": "low"
+          }
+        }
+      ],
+      "movement": {
+        "type": "push-in",
+        "speed": "slow",
+        "amplitude": "small",
+        "end_shot_size": "CU"
+      },
+      "start_pose": "Tight CU derived from S3b: Fanli faces three-quarter screen-right with completely smooth scar-free anatomical right eyebrow (screen-left), matte black cap with wooden pin, y-right collar, soft cool cyan bounce light from off-frame right across his cheek and collar.",
+      "action": "Fanli exhales quietly to steady himself, dips his chin slightly inward, speaks one low guarded Mandarin line with restrained lip articulation, and holds an unwavering gaze toward screen-right.",
+      "microexpression": "Inner brows gather subtly with analytical suspicion, chin tucks half an inch before restrained quiet speech, steady sharp gaze afterward.",
+      "performance_beat": {
+        "from": "guarded silence hearing his own name",
+        "trigger": "SYS-01 finishes naming him",
+        "to": "composed sharp low-voiced counter-question",
+        "deliberate_hold": false,
+        "intensity": "L2",
+        "lexicon_ids": [
+          "z3_chin_tuck",
+          "z3_quiet_part_speak",
+          "z1_sharp_lock"
+        ]
+      },
+      "end_state": "Fanli holds a sharp unwavering gaze toward screen-right with lips closed and steady cool cyan bounce light remaining on his right cheek and brow.",
+      "world_reaction": "none_witness_exited_alley",
+      "vfx_beats": [
+        {
+          "type": "light_shift",
+          "exec_layer": "gen_prompt"
+        }
+      ],
+      "image_prompt": "9:16 vertical live-action tight close-up derived from S3b in the wet Taipei night alley. Overhead cool blue twilight sky behind in shallow dark bokeh, plus consistent soft cool cyan bounce light (#22D3EE) from off-frame screen-right illuminating the right side of his cheek, nose bridge, brow bone, and collar rim. Eye-level tight close-up of late-30s East Asian man Fanli facing three-quarter toward screen-right: his anatomical right eyebrow and right temple (on screen-left) are 100 percent smooth, clean, and scar-free; realistic 38-40 year old skin pores and faint stubble; matte black cloth cap secured by horizontal plain wooden hairpin on topknot; right-lapping y-shaped dark coarse linen cross-collar robe (left lapel crossing over right lapel) with dark brown geometric woven trim. Muted dark charcoal and cool blue-cyan night palette, natural film grain. Avoid: readable text, scar on anatomical right eyebrow, reversed left-over-right collar, plastic airbrushed skin, glowing UI overlays.",
+      "video_prompt": "subject_definitions:\n<Picture 1> is the opening tight close-up frame of [Shot 1], defining ONLY the wet Taipei night alley dark shallow-bokeh background, cold-blue twilight ambience (LK-ALLEY-NIGHT), consistent soft cool cyan bounce light from off-frame screen-right onto the cheek and collar rim, tight close-up framing, and three-quarter right-facing head angle.\n<Subject 1> is the composed late-30s East Asian man Fanli defined EXCLUSIVELY by <Picture 2>, <Picture 3>, and <Picture 4> for facial identity, bone structure, 38-40 age appearance, authentic skin texture with subtle pores, scar anatomy, hairstyle, and OUTFIT-02: <Picture 2> defines his frontal close-up likeness, realistic pores, and faint oblique old scar at his anatomical left eyebrow tail; <Picture 3> defines his anatomical left profile, matte black cloth cap with horizontal plain wooden hairpin, and right-lapping y-shaped dark coarse linen cross-collar robe with dark brown geometric woven trim; <Picture 4> defines his anatomical right three-quarter view with completely smooth, clean, unblemished skin along his anatomical right eyebrow and right temple and consistent right-lapping y-shaped collar.\n\nsummary:\n[reference generation] Preserving the wet dark alley background, tight close-up framing, and persistent soft cool cyan bounce light from screen-right of <Picture 1> while carrying <Subject 1>'s exact 38-40 identity, completely smooth unblemished anatomical right eyebrow, and OUTFIT-02 exclusively from <Picture 2>, <Picture 3>, and <Picture 4>, <Subject 1> steadies his breath, dips his chin slightly, and quietly asks his guarded question in Mandarin as the camera pushes in slowly with stable control.\n\nretention_analysis:\n<Subject 1> (from <Picture 2>, <Picture 3>, <Picture 4>): fully_preserved - exact 38-40 year old facial bone structure, authentic natural skin texture with subtle pores, completely smooth unblemished anatomical right eyebrow (<Picture 4>), faint oblique scar residing solely on his anatomical left eyebrow tail (<Picture 2>, <Picture 3>), matte black cloth cap with horizontal plain wooden hairpin, and right-lapping y-shaped dark coarse linen cross-collar robe (left lapel crossing over right lapel) with dark brown geometric woven trim remain locked across every frame.\n<Picture 1> ([Shot 1] opening frame): partially_preserved - preserve the opening tight close-up framing, three-quarter right-facing head pose, dark damp Taipei night alley bokeh background, cold-blue twilight ambience, and persistent soft cool cyan bounce light from screen-right illuminating his cheek and collar rim throughout every frame while allowing calm breathing, subtle micro-expressions, natural restrained Mandarin lip motion, and a slow steady camera push-in.\n\ndetailed_description:\nUnder cold-blue Taipei night alley twilight bokeh behind and persistent soft cool cyan bounce light casting steadily from off-frame screen-right onto his cheek, nose bridge, and collar rim, a stable tight close-up camera pushes in slowly with small amplitude toward <Subject 1>'s eyes. Carrying his completely smooth unblemished anatomical right eyebrow (<Picture 4>), matte black cloth cap with horizontal wooden hairpin, and right-lapping y-shaped dark coarse linen robe with brown geometric trim, <Subject 1> keeps his lips gently closed for the first second as his breathing settles and his chin dips slightly inward with composed restraint. Then <Subject 1>, a deep, calm, low-voiced late-30s Taiwanese Mandarin man, speaks softly and deliberately with restrained minimal lip articulation: <d>[Chinese] ……你，怎知我名？</d> After finishing the line, he holds a sharp, unwavering gaze toward screen-right with his lips closed, measured breathing, and the soft cool cyan rim light continuously resting on his face in muted dark charcoal and cool blue-cyan night tones until the end of the shot.\n\noverall_soundscape:\nQuiet damp Taipei night alley room tone with faint distant city hum and soft low-voiced Mandarin speech.\n\nnon_diegetic_music:\nN/A"
+    }
+  ]
+}
