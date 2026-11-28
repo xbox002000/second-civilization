@@ -18,9 +18,10 @@ characters:
     status: LOCKED
     location: VM ~/drama-line/casting/master/fanli-modern-charactercard-main.png / -expressions.png
   - id: SYS-01
-    desc: 系統人像（半透明彈窗 AI 助理，豆包式年輕女性形象）
-    status: PENDING_DESIGN  # DEMO02_v2 使用幾何佔位圖；定妝為 EP-01 開拍前 Gate，專屬聲線亦未定版
-    location: 參考圖 ~/workspace/ep001-script/system-avatar-ref.png (Muse 工作區)
+    desc: 系統人像定妝基準（Creator 以豆包生成的角色卡兩張：四視圖＋表情細節列，2026-11-28 拍板採用為基準）
+    status: LOCKED
+    location: VM ~/drama-line/casting/master/sys01-charactercard-main.png / sys01-charactercard-expressions.png
+    note: 簽名造型——黑色短鮑伯頭、黑大衣、紅色針織圍巾。彈窗呈現走 AMD-05 後製合成＋半透明青藍 UI 處理；表情表一格有生成贅物（手持海綿）棄用。專屬聲線仍未定版（見 voices/SYS01-VOICE）。agy 的 A 方向首幀（sys01_candidates/dirA_warm_1.jpg）降為備案。
 
 outfits:
   - id: FANLI-OUTFIT-01
