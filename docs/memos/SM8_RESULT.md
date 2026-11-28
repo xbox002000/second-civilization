@@ -1,8 +1,12 @@
 # SM-8 冒煙測試結果報告（AMD-05 v3 `SYS-01` 全息投影生成主導驗證）
 
 > **執行時間**：2026-11-28（agy on `workhorse-90d`）  
-> **最終裁決**：**GO — FULL PASS（6/6 硬性門檻全過，Take 1 一次達標）**  
+> **最終裁決**：**CARRIER PASS（6/6 技術門檻全過，Take 1 一次達標）｜COMPOSITION SUPERSEDED（2026-11-28 Creator 顯現定調取代構圖）**  
 > **實際消耗**：Flow 影片點數 **`12 pts`**（`786 → 774`，硬上限 `24 pts`）、`nano2` 首幀 `1` 張（**`0 pts`**）、Colab **`0.00 CU`**、ElevenLabs **`0` 字**。
+>
+> > **2026-11-28 21:18 Creator 覆核註記（見 `SYS01-MANIFESTATION-DIRECTION.md` 與 Spec v2.4.1 §C.4）**：
+> > - **載體與質感裁決維持 PASS**：本測試已實證 Carrier (a)（`nano2` 0 點首幀 → Flow Omni `i2v_first`，12 pts）與 v3 半透明全息質感（自然膚色、冷青輪廓光、粒子消散、V9 零文字零面板 0/5）完全成立，技術路線不受影響。
+> > - **首幀構圖與尺度已被取代（Superseded Composition）**：Creator 判讀 SM-8 實片認為半空懸浮＋仰視英雄尺度（1.25–1.45×）讀來仍偏詭異且過度仰視。本測試首幀構圖與仰視尺度正式退役（含 2022 初現）；後續所有新拍改採 **平視（0.90–1.00×）、站位范蠡面前同一地平面（下身粒子消散點落於地面附近）、前鏡三要素預告＋剪輯硬切入已成場**，首幀以 `nano2`（0 點）重組。
 
 ## 1. 測試配置（完全對齊 `AMD05_V3_AGY_MEMO.md` §6）
 
@@ -43,3 +47,5 @@
 
 ## 3. 後續解鎖決策
 因 SM-8 以 **6/6 PASS** 達標，依授權於 Phase C 正式合併完整 **Spec v2.4（含 §C.4 AMD-05 v3 生成主導路線）**、啟用 `preflight_gate.py` `SYS01_TEXT_PANEL_BAN`＋`SYS01_PROJECTION_ANCHOR_REQ` 雙閘與 `diff_sheet_gen.py` 多角色錨點支援，並將 `ASSETS_MANIFEST.yaml` 之 `SYS-01` 備註同步切換為 AMD-05 v3 路線。
+
+**2026-11-28 21:18 續訂（Spec v2.4.1）**：Creator 覆核 SM-8 實片後維持 **Carrier PASS**（v3 技術載體與半透明投影質感不變），但將 SM-8 採用的「右上半空懸浮＋仰視 1.25–1.45×」構圖標註為 **Superseded Composition**；所有後續新拍（含 DEMO-03 與 EP-01 `S03/S04a/S08/S10/S19`）改依 `SYS01-MANIFESTATION-DIRECTION.md` 與 Spec v2.4.1 §C.4 執行平視面前同地平面站位與剪輯硬切顯現語法（首幀 `nano2` 0 點重組）。

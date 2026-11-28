@@ -102,7 +102,13 @@ SYS01_OPTICS_TERMS = [
     "全息投影", "掃描線", "扫描线", "粒子消散", "半透明", "藍色輪廓光", "蓝色轮廓光", "冰藍色輪廓光", "下身光塵化", "下身光尘化",
     "holographic", "scanline", "particles", "translucent", "rim glow", "dissolv",
 ]
-SYS01_SCALE_MODES = {"manifestation_hero", "conversation_eyeline", "solo_cu"}
+# v2.4.1 SYS-01 manifestation direction (2026-11-28 Creator ruling)
+SYS01_DEFAULT_SCALE_MODES = {"eye_level_in_front", "conversation_eyeline", "solo_cu"}
+SYS01_RETIRED_SCALE_MODES = {"manifestation_hero"}
+SYS01_SCALE_MODES = SYS01_DEFAULT_SCALE_MODES | SYS01_RETIRED_SCALE_MODES
+SYS01_APPARITION_MODES = {"editorial_cut_in", "in_shot_materialize", "already_present"}
+SYS01_DEFAULT_APPARITION_MODES = {"editorial_cut_in", "already_present"}
+SYS01_GARNISH_JUST_RE = re.compile(r"garnish|點綴|点缀|特例|special\s+beat", re.IGNORECASE)
 SYS01_AVOID_REQUIRED_RE = re.compile(r"文字|漢字|面板|光環|HUD|text|panel|hud", re.IGNORECASE)
 
 # v2.4 ZH Anti-AI-face taboo terms
@@ -1141,7 +1147,7 @@ def validate_script_pack(
                     vid_opt = _count_sys01_optics(vid_prompt) if vid_prompt else 2
                     ok_cs_img, miss_cs_img = _has_sys01_costume_and_skin(img_prompt)
                     ok_cs_vid, miss_cs_vid = _has_sys01_costume_and_skin(vid_prompt) if vid_prompt else (True, [])
-                    scale_mode = _norm_str(shot.get("sys01_scale_mode"))
+                    scale_mode = _norm_str(shot.get("sys01_scale_mode") or shot.get("manifestation_scale"))
                     errs: List[str] = []
                     if img_opt < 2:
                         errs.append(f"image_prompt optics terms={img_opt} (<2)")
@@ -1152,7 +1158,9 @@ def validate_script_pack(
                     if vid_prompt and not ok_cs_vid:
                         errs.append(f"video_prompt missing {miss_cs_vid}")
                     if scale_mode not in SYS01_SCALE_MODES:
-                        errs.append(f"invalid sys01_scale_mode='{scale_mode}' (required one of {sorted(SYS01_SCALE_MODES)})")
+                        errs.append(
+                            f"invalid sys01_scale_mode='{scale_mode}' (default-legal: {sorted(SYS01_DEFAULT_SCALE_MODES)})"
+                        )
                     if errs:
                         findings.append(
                             Finding(
@@ -1160,6 +1168,58 @@ def validate_script_pack(
                                 rule="SYS01_PROJECTION_ANCHOR_REQ",
                                 shot_id=sid,
                                 message="AMD-05 v3 SYS-01 projection anchor check failed: " + "; ".join(errs),
+                            )
+                        )
+
+                    # v2.4.1 Advisory: SYS01_MANIFESTATION_DIRECTION (2026-11-28 Creator ruling)
+                    dir_warns: List[str] = []
+                    angle_v = _norm_str(shot.get("angle_v")).lower()
+                    app_mode = _norm_str(shot.get("sys01_apparition_mode") or shot.get("apparition_mode"))
+                    if scale_mode in SYS01_RETIRED_SCALE_MODES:
+                        dir_warns.append(
+                            f"sys01_scale_mode='{scale_mode}' is retired per 2026-11-28 Creator direction "
+                            "(Spec v2.4.1 §C.4); use default eye-level 'eye_level_in_front' (0.90-1.00x, "
+                            "in front of Fan Li on his ground plane) or 'solo_cu'"
+                        )
+                    if angle_v in {"low", "worm"}:
+                        dir_warns.append(
+                            f"angle_v='{angle_v}' on SYS-01 shot violates eye-level manifestation default "
+                            "(worshipful low angle retired per 2026-11-28 direction; use angle_v='eye')"
+                        )
+                    if app_mode:
+                        if app_mode not in SYS01_APPARITION_MODES:
+                            dir_warns.append(
+                                f"unknown sys01_apparition_mode='{app_mode}' "
+                                f"(default-legal: {sorted(SYS01_DEFAULT_APPARITION_MODES)}; garnish: 'in_shot_materialize')"
+                            )
+                        elif app_mode == "in_shot_materialize":
+                            just_txt = " ".join(
+                                [
+                                    _norm_str(shot.get("sys01_apparition_justification")),
+                                    _norm_str(shot.get("apparition_justification")),
+                                    _norm_str(shot.get("hold_justification")),
+                                ]
+                            ).strip()
+                            notes_txt = " ".join(
+                                [
+                                    _norm_str(shot.get("director_notes")),
+                                    _norm_str(shot.get("continuity_notes")),
+                                ]
+                            )
+                            if not just_txt and not SYS01_GARNISH_JUST_RE.search(notes_txt):
+                                dir_warns.append(
+                                    "sys01_apparition_mode='in_shot_materialize' is demoted to occasional garnish "
+                                    "per 2026-11-28 direction; default is 'editorial_cut_in' (pre-shot light cue + "
+                                    "eyeline shift + sound_drop -> hard cut in on SYS-01 already present), "
+                                    "or add sys01_apparition_justification"
+                                )
+                    if dir_warns:
+                        findings.append(
+                            Finding(
+                                level="WARN",
+                                rule="SYS01_MANIFESTATION_DIRECTION",
+                                shot_id=sid,
+                                message="SYS-01 v2.4.1 manifestation direction advisory: " + "; ".join(dir_warns),
                             )
                         )
 
@@ -2669,7 +2729,7 @@ def _build_compliant_pack() -> Dict[str, Any]:
 
 
 def run_selftest() -> int:
-    print("=== RUNNING preflight_gate.py v2.4 SELFTEST ===")
+    print("=== RUNNING preflight_gate.py v2.4.1 SELFTEST ===")
     base = _build_compliant_pack()
     all_ok = True
 
@@ -3185,12 +3245,14 @@ def run_selftest() -> int:
         all_ok = False
     print(f"  [{'OK' if ok46 else 'ASSERT_FAIL'}] T46_v24_short_ecu_no_v1_warn: v1_warns={t46_v1_warns}")
 
-    # T47-T49: AMD-05 v3 SYS-01 gates (v2.4)
+    # T47-T49: AMD-05 v3 SYS-01 gates (v2.4 / v2.4.1)
     p47 = copy.deepcopy(v24_base)
     p47["shots"][2]["sys01_in_frame"] = True
-    p47["shots"][2]["sys01_scale_mode"] = "manifestation_hero"
-    p47["shots"][2]["image_prompt"] = "9:16 實拍冷藍夜巷，右側半透明全息投影、藍色輪廓光、細密掃描線，自然膚色，素面黑色羊毛大衣與深紅圍巾，暗炭色調。避免：任何文字、浮動面板、圓形光環。"
-    p47["shots"][2]["video_prompt"] = "寫實電影實拍，3.4秒。冷藍夜巷，半透明全息投影、藍色輪廓光、粒子消散，自然膚色，黑大衣與紅圍巾，范蠡重心微移眨眼呼吸，暗炭色調。避免：任何文字、浮動面板、圓形HUD光環。"
+    p47["shots"][2]["sys01_scale_mode"] = "eye_level_in_front"
+    p47["shots"][2]["sys01_apparition_mode"] = "editorial_cut_in"
+    p47["shots"][2]["angle_v"] = "eye"
+    p47["shots"][2]["image_prompt"] = "9:16 實拍冷藍夜巷，平視站位主角面前同一地平面，半透明全息投影、藍色輪廓光、細密掃描線，自然膚色，素面黑色羊毛大衣與深紅圍巾，下身於地面附近粒子消散，暗炭色調。避免：任何文字、浮動面板、圓形光環。"
+    p47["shots"][2]["video_prompt"] = "寫實電影實拍，3.4秒。冷藍夜巷，平視半透明全息投影、藍色輪廓光、粒子消散，自然膚色，黑大衣與紅圍巾，范蠡重心微移眨眼呼吸，暗炭色調。避免：任何文字、浮動面板、圓形HUD光環。"
     assert_case("T47_v24_amd05_v3_valid_projection_pass", p47, expect_pass=True)
 
     p48 = copy.deepcopy(p47)
@@ -3231,13 +3293,42 @@ def run_selftest() -> int:
         all_ok = False
     print(f"  [{'OK' if ok54 else 'ASSERT_FAIL'}] T54_insert_ecu_justified_no_warn: warns={t54_warns}")
 
+    # T55-T59: v2.4.1 SYS01_MANIFESTATION_DIRECTION Advisory (2026-11-28 Creator ruling)
+    p55 = copy.deepcopy(p47)
+    p55["shots"][2]["sys01_scale_mode"] = "manifestation_hero"
+    assert_case("T55_sys01_retired_hero_scale_warn", p55, expect_pass=True, expect_warn="SYS01_MANIFESTATION_DIRECTION")
+
+    p56 = copy.deepcopy(p47)
+    p56["shots"][2]["angle_v"] = "low"
+    assert_case("T56_sys01_low_angle_warn", p56, expect_pass=True, expect_warn="SYS01_MANIFESTATION_DIRECTION")
+
+    p57 = copy.deepcopy(p47)
+    p57["shots"][2]["sys01_apparition_mode"] = "in_shot_materialize"
+    assert_case("T57_sys01_in_shot_materialize_no_just_warn", p57, expect_pass=True, expect_warn="SYS01_MANIFESTATION_DIRECTION")
+
+    p58 = copy.deepcopy(p57)
+    p58["shots"][2]["sys01_apparition_justification"] = "occasional garnish beat approved in director statement"
+    p58_findings, _ = validate_script_pack(p58)
+    t58_warns = [f for f in p58_findings if f.rule == "SYS01_MANIFESTATION_DIRECTION"]
+    ok58 = len(t58_warns) == 0
+    if not ok58:
+        all_ok = False
+    print(f"  [{'OK' if ok58 else 'ASSERT_FAIL'}] T58_sys01_in_shot_materialize_justified_no_warn: warns={t58_warns}")
+
+    p59_findings, _ = validate_script_pack(copy.deepcopy(p47))
+    t59_warns = [f for f in p59_findings if f.rule == "SYS01_MANIFESTATION_DIRECTION"]
+    ok59 = len(t59_warns) == 0
+    if not ok59:
+        all_ok = False
+    print(f"  [{'OK' if ok59 else 'ASSERT_FAIL'}] T59_sys01_eye_level_cut_in_clean_no_warn: warns={t59_warns}")
+
     print(f"=== SELFTEST {'PASSED' if all_ok else 'FAILED'} ===")
     return 0 if all_ok else 1
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Workflow V2.4 Preflight Validation Gate (QC-0)"
+        description="Workflow V2.4.1 Preflight Validation Gate (QC-0)"
     )
     parser.add_argument("script_pack", nargs="?", help="Path to script_pack.json (schema 2.0–2.4)")
     parser.add_argument("--mode", choices=["normal", "demo"], default=None, help="Override production_mode")

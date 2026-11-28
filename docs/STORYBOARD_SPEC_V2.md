@@ -1,23 +1,24 @@
-# 分鏡規格 v2.4（整合定版）
+# 分鏡規格 v2.4.1（整合定版）
 
-> **版本**：**v2.4 FINAL**（2026-11-28 整合定版）。  
+> **版本**：**v2.4.1 FINAL**（2026-11-28 整合定版；含 Creator 2026-11-28 21:18 `SYS-01` 顯現導演定調修訂）。  
 > **版本沿革**：
 > - **v2.0**：Muse 起草 → agy 工程討論（`STORYBOARD_SPEC_V2_AGY_MEMO.md`）→ Creator 拍板雙檔原子鏡契約（schema 2.0）。
 > - **v2.0 + 附錄 A**：運鏡控制四級分層與 H3／Flow／Wan 方言（`CAMERA_WORKFLOW_AGY_MEMO.md`）。
 > - **v2.1 + 附錄 B**：導演層、V12 護欄與 QC-D 閘（`DIRECTOR_LAYER_AGY_MEMO.md`、DEMO-02 QC-D 常規五條）。
 > - **v2.2 + 附錄 C + §九**：工作流修訂 AMD-01～07 與 Demo 邊界條款（`WORKFLOW_V2_AMENDMENT_AGY_MEMO.md`）。
 > - **v2.3**：整合 SM-7A（4 槽 H3 Ref2VA 實測三條件）、Clay Test（L3 白膜實測四條件）與 Seedance 生態方法／電影提示詞工藝收斂案（Items 1–7）。
-> - **v2.4（本版）**：整合 **附錄 D（導演鏡頭覆蓋與豎屏短劇節奏 V14 閘門，含 Creator `INSERT_ECU_DURATION` 插鏡時長紀律）**、**§C.4 AMD-05 v3（`SYS-01` 生成主導＋後製精修，經 `SM-8` 6/6 GO 實證放行）**、以及 **H3 官方規格對賬修訂**（`H3_MODE_EXCLUSION`、`H3_MIN_DURATION ≥4.0s` 墊幀、`5+17k` 實長進位檢核、產線品質帽措辭校準）。
+> - **v2.4**：整合 **附錄 D（導演鏡頭覆蓋與豎屏短劇節奏 V14 閘門，含 Creator `INSERT_ECU_DURATION` 插鏡時長紀律）**、**§C.4 AMD-05 v3（`SYS-01` 生成主導＋後製精修，經 `SM-8` 6/6 GO 實證放行）**、以及 **H3 官方規格對賬修訂**（`H3_MODE_EXCLUSION`、`H3_MIN_DURATION ≥4.0s` 墊幀、`5+17k` 實長進位檢核、產線品質帽措辭校準）。
+> - **v2.4.1（本版）**：整合 **Creator 2026-11-28 21:18 `SYS-01` 顯現導演定調**（`SYS01-MANIFESTATION-DIRECTION.md`）：① **§C.4 尺度表收斂為平視單一預設**（`eye_level_in_front`，`0.90–1.00×`、站位主角面前同一地平面、下身消散點落地面附近；退役仰視英雄尺度 `manifestation_hero` `1.25–1.45×`，含 2022 初現）；② **顯現語法改「剪輯硬切入為主（`editorial_cut_in`）／鏡內光凝成形降為偶爾點綴（`in_shot_materialize`）」**，明訂**前鏡三要素預告組（冷青光 cue＋范蠡視線轉向＋`sound_drop`）**為標準入場鋪墊；③ **§A.9 `SM-8`** 改註載體技術 PASS、構圖已被本定調取代（superseded composition）；④ `preflight_gate.py` 新增非阻斷 Advisory **`SYS01_MANIFESTATION_DIRECTION`**。
 >
 > **定位**：定義「一集分鏡包」的資訊結構與驗證契約（`script_pack.json` schema **2.4**，向下相容 2.0–2.3；對齊 `edit_manifest.json` v1.1 與 DESIGN v1.4／待同步 v1.5）。  
 > **不可動搖紅線**：一切可讀文字後製合成（V9）；事實分層由 beat 繼承（V10）；seed 不入鏡級欄位；H3 端正向編譯／零裸否定靜止詞；全面 ElevenLabs TTS 對白路線。
 
-## 零、受控聖經檔案索引（Bible Index｜v2.4 更新）
+## 零、受控聖經檔案索引（Bible Index｜v2.4.1 更新）
 
 | 檔案路徑 | 狀態 | 職責 |
 |---|---|---|
 | `bible/anchors/FANLI.yaml` | **LOCKED (v2.3)** | 范蠡跨鏡身分與時代條件錨點唯一準據（眉疤、時代髮型、現代方孔錢、左腕舊銅錶）與 QC 鍵位映射 |
-| `bible/anchors/SYS01.yaml` | **LOCKED (v2.4)** | `SYS-01` 跨鏡身分、黑大衣＋紅圍巾、全息光學五要素、V9 禁面板紅線與 `sys01_scale_mode` 錨點（AMD-05 v3） |
+| `bible/anchors/SYS01.yaml` | **LOCKED (v2.4.1)** | `SYS-01` 跨鏡身分、黑大衣＋紅圍巾、全息光學五要素、V9 禁面板紅線、平視面前單一預設尺度（`eye_level_in_front`）與剪輯切入顯現語法（AMD-05 v3 ＋ 2026-11-28 定調） |
 | `bible/performance/micro_expressions.yaml` | **LOCKED (v2.3)** | 4 分區 × 21 核心微表情有界詞表、L1–L4 強度標尺與反 AI 假臉衛生清單 |
 | `bible/camera/named_shots.yaml` | **LOCKED (v2.4)** | 18 個高頻 9:16 受控鏡型庫與 `verified_9x16_status` |
 | `voices/FANLI.yaml`（repo 對齊 `voices/FANLI.yaml`） | **LOCKED** | 范蠡 ElevenLabs 聲線單點鎖定（`FANLI-CAND-F`，`eleven_v4`），嚴禁鏡級覆寫 |
@@ -125,7 +126,8 @@ episodes/EP{NNN}/
 | `dialogue_mode` | ●（v2.4） | `none`／`on_camera`／`off_camera`／`voiceover`／`l_cut_carry` |
 | `screen_side` / `axis_turn_trigger` | ◐ / ○（v2.4） | `left`／`center`／`right`（人物鏡必填）；同角翻向觸發詞（選填，配 R9） |
 | `internal_event_sec` / `hold_justification` | ○ / ◐（v2.4） | `float[]`（鏡內可觀察事件時碼，配 No-Dead-Air）；`hold_justification`（`dread`/`peak_emotion`/`held_reaction`/`performance_hold`/`voiceover_density`/`final_image`，長鏡與 `>2.0s` 插鏡說明） |
-| `sys01_in_frame` / `sys01_scale_mode` | ◐（v2.4） | 凡 `SYS-01` 入鏡必填：`sys01_in_frame: true`＋`sys01_scale_mode`（`manifestation_hero`／`conversation_eyeline`／`solo_cu`），詳見 §C.4 |
+| `sys01_in_frame` / `sys01_scale_mode` | ◐（v2.4.1） | 凡 `SYS-01` 入鏡必填：`sys01_in_frame: true`＋`sys01_scale_mode`（預設合法值僅 **`eye_level_in_front`**〔向下相容別名 `conversation_eyeline`，皆為 `0.90–1.00×` 平視面前同地平面〕與 **`solo_cu`**；舊 `manifestation_hero` 仰視懸空已退役，填寫觸發 Advisory `SYS01_MANIFESTATION_DIRECTION`），詳見 §C.4 |
+| `sys01_apparition_mode` | ○（v2.4.1） | `SYS-01` 入鏡選填（別名 `apparition_mode`）：**`editorial_cut_in`**（入場唯一預設，前鏡三要素預告後硬切入已成場）｜`already_present`（同場延續鏡已在場）｜`in_shot_materialize`（降為偶爾點綴，未附理由觸發 Advisory `SYS01_MANIFESTATION_DIRECTION`） |
 | `camera_notes` | ○ | 焦段感等僅入 prompt 文字的備註 |
 | `previs_brief` | ◐ | 僅 L3 必填，1–2 句走位與起迄機位要點 |
 
@@ -281,7 +283,7 @@ episodes/EP{NNN}/
   2. `CRAFT_OBSERVABLE_ACTION`：`action`/`microexpression` 含純抽象情緒詞而缺身體動作，或含空泛詞 `epic`/`masterpiece`/`8K`/`stunning`。
   3. `CRAFT_PALETTE_NO_FLUFF`：缺克制色盤／材質線索，或含空泛詞 `cinematic color grade`。
   4. `CRAFT_SOUND_DESIGNED`：非 `cpu_card` 鏡既無段級 `ambience`、亦無 `sfx`，且 H3 `overall_soundscape` 空或 `N/A`。
-- **范蠡 `L4` 強度警戒**（`PERF_INTENSITY_CEILING`）、**L4 H3 `max` >4 圖或 >5.5s 生成提示**、**`H3_MIN_DURATION` 短鏡自動墊至 ≥4.0s (107f) 提示**、**`COVERAGE_PACE_ENVELOPE` 場段 ASL／反節拍器 CV 提示**、**`INSERT_ECU_DURATION`（v2.4 Creator 裁示：任何 `INSERT`/`ECU` 尺幅淨長 `> 2.0s` 且無 `hold_justification`〔如 `performance_hold`/`voiceover_density`/`final_image`〕者發 `WARN`）**、**帶道具母圖未標 `baked_prop` 提示**。
+- **范蠡 `L4` 強度警戒**（`PERF_INTENSITY_CEILING`）、**L4 H3 `max` >4 圖或 >5.5s 生成提示**、**`H3_MIN_DURATION` 短鏡自動墊至 ≥4.0s (107f) 提示**、**`COVERAGE_PACE_ENVELOPE` 場段 ASL／反節拍器 CV 提示**、**`INSERT_ECU_DURATION`（v2.4 Creator 裁示：任何 `INSERT`/`ECU` 尺幅淨長 `> 2.0s` 且無 `hold_justification`〔如 `performance_hold`/`voiceover_density`/`final_image`〕者發 `WARN`）**、**`SYS01_MANIFESTATION_DIRECTION`（v2.4.1 Creator 顯現定調：凡 `SYS-01` 入鏡仍用已退役 `manifestation_hero`、`angle_v ∈ {low, worm}`、或未附點綴理由使用 `in_shot_materialize` 者發 `WARN`）**、**帶道具母圖未標 `baked_prop` 提示**。
 
 ---
 
@@ -415,7 +417,7 @@ episodes/EP{NNN}/
 | **SM-6 VM 上 CozyClay 無頭出片可行性** | **DONE — BLOCKED (VM Runtime)** | 非登入牆；卡 `node v18.20.4 < 22.19` 且無 `npm`/`npx`。過渡期走瀏覽器版或 Python 3D 算圖器 |
 | **SM-7A H3 原生 4 槽 Ref2VA（DEMO-02 S4）** | **DONE — ADOPT WITH CONDITIONS** | `sm7a/SM7A_RESULT.md`：4 槽 `max` `0.5 MP` L4 `4.67m` 0 OOM；採納為對白 CU 基線（三條件見 §C.1） |
 | **SM-7B RefMod（`ComfyUI-MiniMaxH3Mod`）** | **WATCH（不升階）** | 僅在乾淨首幀 `>30°` 大角度轉頭 CU 仍漂移時觸發 |
-| **SM-8 AMD-05 v3 `SYS-01` 全息投影 Carrier A** | **DONE — GO PASS（6/6 達標）** | `sm8/SM8_t1.mp4`（`LOC-ALLEY-NIGHT`＋`OUTFIT-02`＋`sys01-ref-34L-smile/front`）：首幀 `nano2` 1 抽過 QC-1（0 pts）、4s Omni `i2v` 1 抽過 5 幀 QC-2（**12 pts / 0 CU**、`dL*` 跨度 `2.70`、爆光 `0.19%`、V9 零字零面板 `0/5`），正式解鎖 §C.4 v3 併入 v2.4 |
+| **SM-8 AMD-05 v3 `SYS-01` 全息投影 Carrier A** | **DONE — CARRIER PASS（6/6 技術達標；構圖已於 2026-11-28 取代）** | `sm8/SM8_t1.mp4`（`LOC-ALLEY-NIGHT`＋`OUTFIT-02`＋`sys01-ref-34L-smile/front`）：首幀 `nano2` 1 抽過 QC-1（0 pts）、4s Omni `i2v` 1 抽過 5 幀 QC-2（**12 pts / 0 CU**、`dL*` 跨度 `2.70`、爆光 `0.19%`、V9 零字零面板 `0/5`）。**載體與質感裁決維持 PASS**（正式解鎖 §C.4 v3 技術路線）；**惟 SM-8 首幀之半空懸浮仰視構圖已被 2026-11-28 Creator 顯現定調取代（composition superseded）**，後續新拍改採平視面前同地平面站位（`nano2` 0 點重組首幀），詳見 `sm8/SM8_RESULT.md` 與 §C.4 |
 
 ---
 
@@ -489,26 +491,48 @@ Flow 引擎預設為 **Omni 1.2 Flash**（取代舊 Veo Fast/Quality，後者 20
 ## C.3 AMD-04 同場景衍生規則
 同段非首鏡、反打／過肩、共用配角鏡頭，首幀來源僅三合法路徑：**Path A** 錨鏡衍生（`derived_shot`＋`ref_shot_id`）／**Path B** 反打空景＋錨鏡雙鎖（`generated_dual_lock`＋`LOC_rev`＋`ref_shot_id`）／**Path C** CozyClay 共用場地（`l3_clay_frame0`）。僅餵單一 `LOC-*` 空景重生人物者 preflight 硬駁回。
 
-## C.4 AMD-05 `SYS-01` 全息投影生成主導＋後製精修化（v3 定案｜SM-8 GO 實證）
+## C.4 AMD-05 `SYS-01` 全息投影生成主導＋後製精修化（v3 載體定案｜v2.4.1 顯現導演定調修訂）
 
-`SYS-01` 虛擬真人投影由舊版貼片合成轉為**「生成端主導（Generation-Primary）＋後製精修（Post-Polish）」**，確保全息掃描線、冰藍輪廓光、下身粒子光塵化與現場霧氣／人物光影回打達成原生體積光整合。
+`SYS-01` 虛擬真人投影採**「生成端主導（Generation-Primary）＋後製精修（Post-Polish）」**（載體與質感經 `SM-8` 6/6 技術 PASS 驗證），確保自然膚色、冰藍輪廓光、半透明軀幹、粒子消散與現場光影回打達成原生整合；**構圖尺度與顯現語法依 Creator 2026-11-28 21:18 導演定調（`SYS01-MANIFESTATION-DIRECTION.md`）全面收斂為「平視面前同地平面單一預設＋剪輯硬切入為主」**。
 
-1. **核心生成路由（預設 Carrier A）**：
-   - **雙人顯影與中景對話鏡（`MS`/`2S`/`OTS`，`lip_sensitive=false`）**：於 Stage 3 以 `nano2 i2i`（0 點）結合場景／前鏡錨點（AMD-04）、主角母圖與**裁切後單視角 `SYS-01` 參考圖**（`casting/master/sys01-ref-*.png`，嚴守 §3.C.1 禁餵原始多格卡與 `expressions` R2C5 異常格）生成含全息投影之首幀，通過 **QC-1 雙臉＋投影外觀＋零文字門** 後，送 Flow Omni 1.2 Flash（`i2v_first`）生成動態。
-   - **范蠡特寫開口鏡（如 `S04b`）**：嚴禁將 `SYS-01` 塞入范蠡 4 槽 H3 Ref2VA；維持純范蠡 4 槽 H3 CU（臉側承接冷青回打光），`SYS-01` 採畫外 TTS 接聲。
-   - **`SYS-01` 獨鏡微表情特寫（如 `S19`）**：以鎖定表情單格（如 R1C1 微笑 → R1C5 收斂，並配高解析 `sys01-ref-front.png`）於 Stage 3 產出像素對齊之全息首幀（與可選尾幀），經 Flow Omni `i2v_first` / `i2v_first_last` 生成；若逾 2 抽仍過演，改以該兩張已過 QC-1 之全息靜幀於組裝端執行 0.5s 微過渡保底。
+1. **核心生成路由（預設 Carrier A — SM-8 載體 PASS 維持有效）**：
+   - **雙人顯現與中景對話鏡（`MS`/`2S`/`OTS`，`lip_sensitive=false`）**：於 Stage 3 以 `nano2 i2i`（0 點）結合場景／前鏡錨點（AMD-04）、主角母圖與**裁切後單視角 `SYS-01` 參考圖**（`casting/master/sys01-ref-*.png`，嚴守 §3.C.1 禁餵原始多格卡與 `expressions` R2C5 異常格）生成**平視、站位主角面前、同一地平面、半透明**之全息投影首幀，通過 **QC-1 雙臉＋投影外觀＋平視地平面構圖＋零文字門** 後，送 Flow Omni 1.2 Flash（`i2v_first`）生成動態。
+   - **范蠡特寫開口鏡（如 `S04b`）**：嚴禁將 `SYS-01` 塞入范蠡 4 槽 H3 Ref2VA；維持純范蠡平視 4 槽 H3 CU（臉側承接前方眼平冷青回打光，非仰視半空），`SYS-01` 採畫外 TTS 接聲。
+   - **`SYS-01` 獨鏡微表情特寫（如 `S19`）**：以鎖定表情單格（如 R1C1 微笑 → R1C5 收斂，並配高解析 `sys01-ref-front.png`）於 Stage 3 產出像素對齊之平視全息首幀（與可選尾幀），經 Flow Omni `i2v_first` / `i2v_first_last` 生成；若逾 2 抽仍過演，改以該兩張已過 QC-1 之全息靜幀於組裝端執行 0.5s 微過渡保底。
    - **`SYS-01` 獨鏡對嘴特寫（`lip_sensitive=true` 選配）**：僅限 `SYS-01` 獨佔 3–4 槽 H3 Ref2VA（`<Pic 1>` 全息首幀＋`<Pic 2..3>` 單視角臉／圍巾錨點），嚴禁與范蠡混槽。
-2. **強制視覺錨點與 V9 禁字紅線**：
-   - 凡 `SYS-01` 入鏡，生成提示詞（中文房規）**必須**包含：① 至少 2 項全息光學錨詞（`全息投影`／`掃描線`／`粒子消散`／`半透明`／`藍色輪廓光`／`下身光塵化`）；② 臉部自然膚色保護與鎖定服裝錨點（`黑色羊毛大衣`＋`深紅色粗針織圍巾`）；③ 明確尺度模式（`sys01_scale_mode`: `manifestation_hero` | `conversation_eyeline` | `solo_cu`）。
-   - **V9 零文字／零面板鐵律升級**：生成端**100% 嚴禁**任何可讀文字、偽文字、浮動小面板、數據視窗、圓形 HUD 光環、品牌標誌與音訊波形條（`preflight_gate.py` 以 `SYS01_TEXT_PANEL_BAN` 硬封殺，QC-1/QC-2 出現單幀即一票否決）。
-3. **後製精修層（`tools/sys01_composite.py` 保留職責）**：
-   - 不再承擔常態人像去背貼片，轉為提供輕量確定性後製：① 必要時以緊縮羽化遮罩（`ry=0.21`）微補范蠡臉側冷青光平衡；② 依 `SYS01.yaml` TTS 音訊 RMS 驅動投影區 `+4–6%` 輝光微脈；③ 獨立無框資料／新聞側卡疊加（如 `S08` `--mode datacard`）與 2 幀篆字「蠡」閃現（`S03`/`S19`）；④ `sound_drop`（`-38 dBFS` `0.35s`）＋啟動音效；⑤ 保留舊 `--mode panel` 僅供歷史回放與極端故障降級。
-4. **歷史祖父條款（Grandfathering）**：
-   - `DEMO02_v2`（`demo02_v2/DEMO02_v2.mp4`，採 AMD-05 v1 幾何四層合成，QC-0/1/2 全簽核）視為已驗收之管線里程碑，**豁免追溯重製**；自 **SM-8 通過日（2026-11-28）起**，所有新拍（含 DEMO-03 與 EP-01）全面適用 AMD-05 v3。
 
-## C.5 AMD-06＋07 入口契約與 `preflight_gate.py` 強制力（v2.4）
+2. **顯現尺度表 — 平視單一預設（v2.4.1 取代 AMD-05 v3 舊尺度草案與 SM-8 首幀構圖）**：
+
+| 尺度模式（`sys01_scale_mode`） | 構圖、站位與地平面規格 | 適用鏡型 | 狀態 |
+| :--- | :--- | :--- | :---: |
+| **`eye_level_in_front`**<br>*(向下相容別名：`conversation_eyeline`)* | **平視構圖**（`angle_v: eye`，眼平 ±5°）、尺度 **`0.90–1.00×`**（與范蠡同高）；站位於范蠡**面前**、與他**同一地平面**；半透明軀幹，下身可粒子消散但**消散點必落於地面附近**（絕非半空懸浮漂浮、絕非仰視壓頂） | **全線雙人顯現與對話鏡唯一預設**（含 **2022 初現 `S03`/`S04a`**、DEMO-03 `S3b`、EP-01 `S08`/`S10`；`S08` 預留暗區給後製無框側卡） | **唯一預設（v2.4.1）** |
+| **`solo_cu`** | 85mm 平視正面胸上特寫，保障 360px 手機縮圖微表情可讀性（如 `S19` R1C1→R1C5 微笑收斂 0.5 秒遲疑） | `SYS-01` 獨鏡特寫（`S19`） | **獨鏡特寫專用** |
+| ~~`manifestation_hero`~~ | ~~右上半空懸浮半身投影、尺度 1.25–1.45×、范蠡左下仰視 20–35°~~ | ~~原 AMD-05 v3 2022 初現草案與 SM-8 首幀~~ | **RETIRED（2026-11-28 退役，含 2022 初現）** |
+
+3. **顯現語法 — 剪輯切入為主／鏡內凝聚為偶爾點綴（v2.4.1）**：
+   - **主語法 — 剪輯硬切入已成場（`sys01_apparition_mode: "editorial_cut_in"`，唯一入場預設）**：「忽然彈現在主角面前」的驚嚇／突現體感**靠分鏡硬切實現，不靠鏡內特效凝聚**。
+   - **標準前鏡鋪墊 — 前鏡三要素預告組（Pre-Shot Cue Triple）**：凡 `SYS-01` 進入場景之鏡頭（如 EP-01 `S03`、`S08`、DEMO-03 `S3b`），其**前一鏡尾段**（如 `S02`、`S07`、`S3a`）必設置以下三要素作為標準起手式：
+     1. **冷青光 cue（Light Cue）**：范蠡臉側／衣領閃過一道冷青微光（物理空間異常觸發）；
+     2. **環境聲抽空（`sound_drop`）**：環境底噪驟降至 `-38 dBFS`（約 `0.35s`），瞬間抽空現場音場；
+     3. **范蠡視線轉向（Eyeline Shift）**：范蠡警覺轉眼望向他**正前方眼平預定位**（非仰頭看半空）；
+     → **隨即硬切入下一鏡**：硬切進場瞬間，`SYS-01` **已經完整在場**（半透明、平視 `0.90–1.00×`、站位於他面前同一地平面、下身消散點落於地面附近）。
+   - **輔語法 — 鏡內光凝成形（`sys01_apparition_mode: "in_shot_materialize"`，降級為偶爾點綴）**：不再作主要顯現表達，僅於劇本或導演闡述明確指定之極少數特殊節點作為偶爾點綴（須填理由，否則 `preflight_gate.py` 發 Advisory `WARN [SYS01_MANIFESTATION_DIRECTION]`）。
+   - **同場延續鏡（`sys01_apparition_mode: "already_present"`）**：用於同場段她已出現後的續接對話／反打／獨鏡（如 `S04a`、`S10`、`S19`）。
+
+4. **強制視覺錨點與 V9 禁字紅線**：
+   - 凡 `SYS-01` 入鏡，生成提示詞（中文房規）**必須**包含：① 至少 2 項全息光學錨詞（`全息投影`／`掃描線`／`粒子消散`／`半透明`／`藍色輪廓光`／`下身光塵化`）；② 臉部自然膚色保護與鎖定服裝錨點（`黑色羊毛大衣`＋`深紅色粗針織圍巾`）；③ 明確預設尺度模式（`sys01_scale_mode`: `eye_level_in_front`〔或相容別名 `conversation_eyeline`〕｜`solo_cu`；若仍標 `manifestation_hero` 或 `angle_v ∈ {low, worm}`，preflight 發 Advisory `WARN [SYS01_MANIFESTATION_DIRECTION]`），並寫明平視、站位主角面前同一地平面、下身粒子消散點落地面附近（禁半空懸浮）。
+   - **V9 零文字／零面板鐵律維持不變**：生成端**100% 嚴禁**任何可讀文字、偽文字、浮動小面板、數據視窗、圓形 HUD 光環、品牌標誌與音訊波形條（`preflight_gate.py` 以 `SYS01_TEXT_PANEL_BAN` 硬封殺，QC-1/QC-2 出現單幀即一票否決）。
+
+5. **後製精修層（`tools/sys01_composite.py` 保留職責）**：
+   - 不再承擔常態人像去背貼片，轉為提供輕量確定性後製：① 前鏡三要素預告之冷青光 cue 與 `sound_drop`（`-38 dBFS` `0.35s`）＋啟動音效；② 必要時以緊縮羽化遮罩（`ry=0.21`）微補范蠡臉側眼平冷青回光平衡；③ 依 `SYS01.yaml` TTS 音訊 RMS 驅動投影區 `+4–6%` 輝光微脈；④ 獨立無框資料／新聞側卡疊加（如 `S08` `--mode datacard`）與 2 幀篆字「蠡」閃現（`S03`/`S19`）；⑤ 鏡內光凝特效降為偶爾點綴工具；保留舊 `--mode panel` 僅供歷史回放與極端故障降級。
+
+6. **歷史祖父條款與 SM-8 分拆裁決（Grandfathering）**：
+   - `DEMO02_v2`（`demo02_v2/DEMO02_v2.mp4`，採 AMD-05 v1 幾何四層合成，QC-0/1/2 全簽核）視為已驗收之管線里程碑，**豁免追溯重製**。
+   - `SM-8`（`sm8/SM8_t1.mp4`，2026-11-28）之 **載體與質感裁決維持 PASS**（6/6 達標、12 pts / 0 CU），但其半空懸浮仰視構圖已於同日被 Creator 定調取代（**composition superseded**）；自 **2026-11-28 定調起**，所有新拍（含 DEMO-03 與 EP-01）全面適用 **AMD-05 v3 載體 ＋ v2.4.1 平視面前同地平面＋剪輯硬切顯現規格**（首幀以 `nano2` 0 點重組）。
+
+## C.5 AMD-06＋07 入口契約與 `preflight_gate.py` 強制力（v2.4.1）
 - 一切生成（含 demo）只能由 `script_pack.json` 經引擎方言編譯產出 prompt；手寫 bash 散文 prompt 全面禁止。
-- `tools/preflight_gate.py` 執行全部硬閘（AMD-01/04/05 v3/07 ＋ v2.3 增量 ＋ **v2.4 增量**：V14 鏡頭覆蓋 12 條、`H3_MODE_EXCLUSION`、`H3_MIN_DURATION`、17-frame `5+17k` 實長檢核、`SYS01_TEXT_PANEL_BAN`、`SYS01_PROJECTION_ANCHOR_REQ`）與非阻斷 Advisory 提示（4 項電影工藝＋`COVERAGE_PACE_ENVELOPE`＋**`INSERT_ECU_DURATION`**）。
+- `tools/preflight_gate.py` 執行全部硬閘（AMD-01/04/05 v3/07 ＋ v2.3 增量 ＋ **v2.4 增量**：V14 鏡頭覆蓋 12 條、`H3_MODE_EXCLUSION`、`H3_MIN_DURATION`、17-frame `5+17k` 實長檢核、`SYS01_TEXT_PANEL_BAN`、`SYS01_PROJECTION_ANCHOR_REQ`）與非阻斷 Advisory 提示（4 項電影工藝＋`COVERAGE_PACE_ENVELOPE`＋`INSERT_ECU_DURATION`＋**v2.4.1 `SYS01_MANIFESTATION_DIRECTION`**）。
 - Demo 邊界條款全文見 §九，零豁免生效。
 
 ---

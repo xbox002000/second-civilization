@@ -1,4 +1,4 @@
-# bible/anchors/SYS01.yaml — SYS-01 跨鏡身分與全息投影錨點唯一準據（v2.4 / AMD-05 v3）
+# bible/anchors/SYS01.yaml — SYS-01 跨鏡身分與全息投影錨點唯一準據（v2.4.1 / AMD-05 v3 ＋ 2026-11-28 顯現導演定調）
 char_id: SYS01
 aliases: ["SYS-01"]
 status: LOCKED
@@ -60,11 +60,11 @@ anchors:
         - "半透明軀幹（非實心肉身站立）"
         - "水平細密藍色掃描線集中於肩衣與軀幹（臉部極淡豁免）"
         - "柔和冰藍色輪廓光包覆髮絲與肩線"
-        - "胸腹／腰下自然半透明下身光塵化，化作漂浮藍色光塵融於霧氣／暗景"
-        - "對現場霧氣與范蠡臉側／衣領自然回打柔和冷青微光（爆光 <5%）"
-    forbidden_in_anchor: ["實心真人站立", "粗糙白邊去背貼紙", "矩形軟體視窗外框", "音訊波形條", "過曝閃白"]
+        - "下身可自然粒子消散，但消散點必落於地面附近（與范蠡同一地平面，嚴禁半空懸浮漂浮）"
+        - "對現場地面／霧氣與范蠡臉側／衣領自然回打柔和冷青微光（爆光 <5%）"
+    forbidden_in_anchor: ["實心真人站立", "半空懸浮漂浮", "粗糙白邊去背貼紙", "矩形軟體視窗外框", "音訊波形條", "過曝閃白"]
     qc_gate_key: light_lock
-    prompt_zh_positive: "半透明全息投影，冰藍色輪廓光，水平細密藍色掃描線覆於肩衣（臉部極淡），胸腹以下下身光塵化為漂浮藍色粒子消散，柔和冷青光映照范蠡臉側"
+    prompt_zh_positive: "半透明全息投影，平視站位於范蠡面前同一地平面，冰藍色輪廓光，水平細密藍色掃描線覆於肩衣（臉部極淡），下身於地面附近自然粒子消散（非半空懸浮），柔和冷青光映照范蠡臉側"
 
   - anchor_id: ANC-SYS01-04
     name: V9 零文字／零浮動面板／零圓形 HUD 光環（一票否決）
@@ -80,19 +80,22 @@ anchors:
     prompt_zh_avoid: "任何文字、漢字、英文字母、數字、浮動小面板、懸浮數據視窗、圓形雷達光環、HUD介面框、品牌標誌、浮水印、音訊波形條"
 
   - anchor_id: ANC-SYS01-05
-    name: 尺度調度與微表情可讀性（sys01_scale_mode）
+    name: 平視面前單一預設尺度、剪輯切入顯現語法與微表情可讀性（sys01_scale_mode / sys01_apparition_mode）
     category: scale_and_expression
+    default_scale_mode: eye_level_in_front
+    default_apparition_mode: editorial_cut_in
+    retired_scale_modes: ["manifestation_hero"]
+    pre_shot_cue_triple:
+      - "范蠡臉側冷青光閃（light cue）"
+      - "環境聲抽空（sound_drop -38 dBFS / 0.35s）"
+      - "范蠡眼平視線轉向正前方預定位（eyeline shift）"
     variants:
-      manifestation_hero:
-        applies_to_scale_modes: ["manifestation_hero"]
-        spec: "右上懸浮半身投影，頭肩約范蠡 1.25–1.45×，胸腹以下光塵化；范蠡居左下仰角 20–35° 注視（S03/S04a）"
-        forbidden_in_variant: ["等高硬擠窄框", "同場無故縮放 >±10%"]
-      conversation_eyeline:
-        applies_to_scale_modes: ["conversation_eyeline"]
-        spec: "並肩或前後景深錯位，頭高約范蠡 0.90–1.00×、眼平 ±5°（S08/S10；S08 預留暗區給後製無框側卡）"
-        forbidden_in_variant: ["巨人懸浮壓頂", "同場無故縮放 >±10%"]
+      eye_level_in_front:
+        applies_to_scale_modes: ["eye_level_in_front", "conversation_eyeline"]
+        spec: "平視構圖（眼平 ±5°）、尺度 0.90–1.00×（與范蠡同高）；站位在范蠡面前、與他同一地平面；半透明、下身粒子消散點落於地面附近（絕非懸空漂浮）；入場採前鏡三要素預告後剪輯硬切入已成場（editorial_cut_in），鏡內光凝僅作偶爾點綴。適用全線雙人顯現與對話鏡，含 2022 初現 S03/S04a、DEMO-03 S3b、EP-01 S08/S10（S08 預留暗區給後製無框側卡）"
+        forbidden_in_variant: ["半空懸浮漂浮", "仰視英雄尺度(1.25-1.45x)", "巨人壓頂", "同場無故縮放 >±10%"]
       solo_cu:
         applies_to_scale_modes: ["solo_cu"]
-        spec: "85mm 正面胸上特寫；S19 必於 360px 手機縮圖下清晰辨識 R1C1 禮貌微笑 → R1C5 半秒嘴角微收 1–2mm 凝滯遲疑"
-        forbidden_in_variant: ["掃描線遮蓋眼唇", "過度悲傷皺眉流淚", "大轉頭"]
+        spec: "85mm 平視正面胸上特寫；S19 必於 360px 手機縮圖下清晰辨識 R1C1 禮貌微笑 → R1C5 半秒嘴角微收 1–2mm 凝滯遲疑"
+        forbidden_in_variant: ["掃描線遮蓋眼唇", "過度悲傷皺眉流淚", "大轉頭", "仰視低角度"]
     qc_gate_key: expression_lip

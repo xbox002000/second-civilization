@@ -2,7 +2,8 @@
 
 > **文件狀態**：DISCUSSION & DESIGN DRAFT（2026-11-28，**無開拍、零影片生成、零 TTS 消耗**）  
 > **基準劇本**：`DRYRUN-EP01-arrival-v0.3.2.md`（Gate A3 終判版，20 鏡／98.5 秒／三時間層：`春秋`・`2022`・`2026`；本文不改動劇本一字）  
-> **規格準據**：`STORYBOARD-SPEC-V2.md`（v2.3 FINAL）＋ `DESIGN.md`（v1.4）＋ `demo02_v2/FULL_RUN_REPORT.md`（實測成本與路由基準）  
+> **規格準據**：`STORYBOARD-SPEC-V2.md`（v2.4.1 FINAL）＋ `DESIGN.md`（v1.4）＋ `demo02_v2/FULL_RUN_REPORT.md`（實測成本與路由基準）  
+> **2026-11-28 構圖註記同步（Spec v2.4.1 §C.4｜`SYS01-MANIFESTATION-DIRECTION.md`）**：本輪**僅更新 `SYS-01` 出現鏡（`S03`/`S04a`/`S04b`/`S08`/`S10`/`S19`）與其前導預告鏡（`S02`/`S07`/`S18b`）之構圖與剪輯入場註記**——平視 `0.90–1.00×`、站位主角面前同一地平面、半透明且下身消散落地面附近、前鏡三要素預告＋剪輯硬切入已成場（退役仰視英雄尺度，含 2022 初現）；全表時長、對白與引擎路由維持原樣不動。  
 > **生產模式**：`production_mode: "normal"`（Phase 3 半自動端到端執行，零豁免全部 v2.3 硬閘）
 
 ---
@@ -64,17 +65,17 @@ EP-01 為本系列第一支完整常線集數，將 DESIGN v1.4 的 8 階段流�
 | 原子鏡 | 原鏡／時段 | 淨秒數(估) | 景別／時代／服裝 | 主載體與後製層 | 首幀路徑（AMD-04） | 對白話者＆V2 密度檢核 | `lip_sensitive` | 控制級＆工程備註 |
 | :--- | :--- | :---: | :--- | :--- | :--- | :--- | :---: | :--- |
 | **S01** | S01 (0–4s) | 4.0s | LS→MS / 春秋 / `OUTFIT-02` | **L3-Clay** *(備援 Flow-Omni)* | `l3_clay_frame0`（Path C，`LOC-TAIHU-DAWN` 作 `<Pic 1>`） | 無對白（PASS） | `false` | **L3 候選 #1**（Spec §A.8）；首幀為 `S16b` 呼應基準 |
-| **S02** | S02 (4–9s) | 5.0s | MS / 2022 / `OUTFIT-02` | **Flow-Omni** ＋ L4 字卡 | `generated`（`LOC-TAIPEI-STREET-2022` 段首錨鏡） | 無對白（PASS） | `false` | L1；後製疊 `2022.11.30 ChatGPT 誕生`；簽名動作 1（驚・按空腰間） |
-| **S03** | S03 (9–15s) | 5.5s | MS / 2022 / `OUTFIT-02` | **Flow-Omni**（底板）＋ **AMD-05** | `derived_shot`（Path A，承 `S02`） | SYS-01：18字/5.5s = **3.27**（3.82）PASS | `false` | L1；范蠡不開口；簽名動作 2（懼・退半步再按空）；後製「蠡」閃 2 幀 |
-| **S04a** | S04 拆 1 | 3.0s | MCU / 2022 / `OUTFIT-02` | **Flow-Omni**（底板）＋ **AMD-05** | `derived_shot`（Path A，承 `S03`） | SYS-01：12字/3.0s = **4.00**（5.00）PASS | `false` | L1；范蠡沉默聆聽；SYS-01 說「有問題…免費的」 |
-| **S04b** | S04 拆 2 | 3.8s | CU / 2022 / `OUTFIT-02` | **H3-4Ref**（底板）＋ **AMD-05** | `derived_shot`（Path A，承 `S04a`＋修補版 `45R`/`cu`） | 范蠡2字＋SYS12字（1換人-0.35s）→ 14/3.45 = **4.06**（5.51*） | **`true`** | L1；*TTS 實測若 >3.8s 則放至 4.0s（含標點降至 5.21 PASS） |
+| **S02** | S02 (4–9s) | 5.0s | MS / 2022 / `OUTFIT-02` | **Flow-Omni** ＋ L4 字卡 | `generated`（`LOC-TAIPEI-STREET-2022` 段首錨鏡） | 無對白（PASS） | `false` | L1；後製疊 `2022.11.30 ChatGPT 誕生`；簽名動作 1（驚・按空腰間）；**〔v2.4.1 前導構圖〕尾段設前鏡三要素預告組（范蠡臉側冷青光閃＋`sound_drop`＋眼平視線轉向正前方長椅側預定位，非仰視半空），硬切導入 `S03`** |
+| **S03** | S03 (9–15s) | 5.5s | MS / 2022 / `OUTFIT-02` | **Flow-Omni**（底板）＋ **AMD-05** | `derived_shot`（Path A，承 `S02`） | SYS-01：18字/5.5s = **3.27**（3.82）PASS | `false` | L1；范蠡不開口；簽名動作 2（懼・退半步再按空）；後製「蠡」閃 2 幀；**〔v2.4.1 構圖定調〕退役 2022 仰視英雄尺度，採剪輯硬切入已成場（`editorial_cut_in`）——硬切瞬間 `SYS-01` 已半透明、平視（`0.90–1.00×`、`eye_level_in_front`）站位於范蠡面前同一地平面、下身粒子消散點落於地面附近（絕非懸空漂浮）；首幀以 `nano2`（0 點）重組** |
+| **S04a** | S04 拆 1 | 3.0s | MCU / 2022 / `OUTFIT-02` | **Flow-Omni**（底板）＋ **AMD-05** | `derived_shot`（Path A，承 `S03`） | SYS-01：12字/3.0s = **4.00**（5.00）PASS | `false` | L1；范蠡沉默聆聽；SYS-01 說「有問題…免費的」；**〔v2.4.1 構圖定調〕`already_present` 延續 `S03`——`SYS-01` 半透明、平視（`0.90–1.00×`、`eye_level_in_front`）站位於范蠡面前同一地平面、下身消散落地面附近（嚴禁仰視懸浮），首幀 `nano2` 對齊 `S03`** |
+| **S04b** | S04 拆 2 | 3.8s | CU / 2022 / `OUTFIT-02` | **H3-4Ref**（底板）＋ **AMD-05** | `derived_shot`（Path A，承 `S04a`＋修補版 `45R`/`cu`） | 范蠡2字＋SYS12字（1換人-0.35s）→ 14/3.45 = **4.06**（5.51*） | **`true`** | L1；*TTS 實測若 >3.8s 則放至 4.0s（含標點降至 5.21 PASS）；**〔v2.4.1 構圖定調〕范蠡平視 CU 視線對向正前方同高之 `SYS-01`（非仰視半空），臉側承接前方眼平冷青回光** |
 | **S04c** | S04 拆 3 | 1.8s | CU / 2022 / `OUTFIT-02` | **H3-4Ref**（閉唇反應鎖） | `derived_shot`（Path A，承 `S04b`） | 無對白（反應拍 1.8s，PASS） | `false` | L1；僵住→銳利盯視→轉身離去（H3 生成端依 `H3_MIN_DURATION` 自動墊至 `4.0s / 107f` 再於 Stage 6A 裁切） |
 | **S05** | S05 (21.5–24.5s) | 3.0s | CARD / 2026 / — | **`cpu_card`**（Pillow＋ffmpeg） | `none_cpu_card` | 無對白（PASS） | `false` | L4（0 GPU / 0 點）；`2026.11.23`＋輝達三連新聞卡（綁 F1–F3 FACT） |
 | **S06** | S06 (24.5–28s) | 3.5s | MS / 2026 / `OUTFIT-01` | **Flow-Omni** ＋ 後製待機字幕層 | `generated`（`LOC-FANLI-STUDIO-26` 段首錨鏡） | 無對白（PASS） | `false` | L1；毛筆紙本鈔票＋窗外巨幕；桌上小屏待機字樣 `1,454 天` **後製疊入**（V9） |
-| **S07** | S07 (28–34s) | 5.2s | MCU / 2026 / `OUTFIT-01` | **H3-4Ref** | `derived_shot`（Path A，承 `S06`＋`OUTFIT-01` 單視圖） | 范蠡：19字/5.2s = **3.65**（4.42）PASS | **`true`** | L1；注意 17-frame 進位：生成 `6.2s` 實進位 `158f = 6.583s`（跨出已測 `141f / 5.88s` 桶），Stage 1 應以 `tail_only` 壓至 `≤5.8s` 或依 v2.4 覆蓋拆為 `S07a (3.7s) + S07b (1.5s ECU)` |
-| **S08** | S08 (34–39s) | 5.0s | MS / 2026 / `OUTFIT-01` | **Flow-Omni**（底板）＋ **AMD-05** | `derived_shot`（Path A，承 `S07`） | SYS-01：19字/5.0s = **3.80**（4.60）PASS | `false` | L1；側欄圖解由後製合成進彈窗右／側區（V9 禁 AI 畫圖表） |
+| **S07** | S07 (28–34s) | 5.2s | MCU / 2026 / `OUTFIT-01` | **H3-4Ref** | `derived_shot`（Path A，承 `S06`＋`OUTFIT-01` 單視圖） | 范蠡：19字/5.2s = **3.65**（4.42）PASS | **`true`** | L1；注意 17-frame 進位：生成 `6.2s` 實進位 `158f = 6.583s`（跨出已測 `141f / 5.88s` 桶），Stage 1 應以 `tail_only` 壓至 `≤5.8s` 或依 v2.4 覆蓋拆為 `S07a (3.7s) + S07b (1.5s ECU)`；**〔v2.4.1 前導構圖〕尾段設前鏡三要素預告組（臉側冷青光閃＋`sound_drop`＋眼平視線轉向書桌正前方預定位），硬切導入 `S08`** |
+| **S08** | S08 (34–39s) | 5.0s | MS / 2026 / `OUTFIT-01` | **Flow-Omni**（底板）＋ **AMD-05** | `derived_shot`（Path A，承 `S07`） | SYS-01：19字/5.0s = **3.80**（4.60）PASS | `false` | L1；側欄圖解由後製合成進預留暗區（V9 禁 AI 畫圖表）；**〔v2.4.1 構圖定調〕承 `S07` 三要素預告剪輯硬切入已成場（`editorial_cut_in`）——`SYS-01` 半透明、平視（`0.90–1.00×`、`eye_level_in_front`）站位於范蠡書桌面前同一地平面、下身粒子消散點落於地面附近（絕非懸空漂浮）；首幀 `nano2` 0 點重組** |
 | **S09** | S09 (39–44s) | 4.8s | CU / 2026 / `OUTFIT-01` | **H3-4Ref** | `derived_shot`（Path A，承 `S07`/`S08`） | 范蠡：14字/4.8s = **2.92**（3.75）PASS | **`true`** | L1；「會死多少人？」慢推壓迫（`slow-push-verdict`） |
-| **S10** | S10 (44–49s) | 5.0s | MS / 2026 / `OUTFIT-01` | **Flow-Omni**（底板）＋ **AMD-05** | `derived_shot`（Path A，承 `S08`） | SYS-01：20字/5.0s = **4.00**（4.80）PASS | `false` | L1；系統平靜回覆，范蠡低頭不語（`z4_calm_breath`） |
+| **S10** | S10 (44–49s) | 5.0s | MS / 2026 / `OUTFIT-01` | **Flow-Omni**（底板）＋ **AMD-05** | `derived_shot`（Path A，承 `S08`） | SYS-01：20字/5.0s = **4.00**（4.80）PASS | `false` | L1；系統平靜回覆，范蠡低頭不語（`z4_calm_breath`）；**〔v2.4.1 構圖定調〕`already_present` 承 `S08`——`SYS-01` 半透明、平視（`0.90–1.00×`、`eye_level_in_front`）站位於范蠡面前同一地平面、下身消散落地面附近（非懸空）** |
 | **S11a** | S11 拆 1 | 2.6s | MCU / 2026 / `OUTFIT-01` | **H3-4Ref** | `derived_shot`（Path A，承 `S09`） | 范蠡：10字/2.6s = **3.85**（4.62）PASS | **`true`** | L1；起身：「這齣戲，三年前演過一次。」（H3 生成端自動墊至 `4.0s / 107f` 再裁切） |
 | **S11b** | S11 拆 2 | 2.2s | CARD / 2023痕跡 / — | **`cpu_card`**（Pillow＋ffmpeg） | `none_cpu_card` | 無對白（PASS） | `false` | L4（0 GPU / 0 點）；2023 Altman 新聞卡（綁 F5 FACT 角標） |
 | **S11c** | S11 拆 3 | 2.0s | CU / 2026 / `OUTFIT-01` | **H3-4Ref** | `derived_shot`（Path A，承 `S11a`） | 范蠡：8字/2.0s = **4.00**（5.00）PASS | **`true`** | L1；「演員不同。開關一樣。」（H3 生成端依 `H3_MIN_DURATION` 自動墊至 `4.0s / 107f` 再於 Stage 6A 裁切） |
@@ -89,8 +90,8 @@ EP-01 為本系列第一支完整常線集數，將 DESIGN v1.4 的 8 階段流�
 | **S17a** | S17 拆 1 | 1.5s | MS背側 / 2026 / `OUTFIT-01` | **Flow-Omni** | `derived_shot`（Path A，承 `S06` 窗前機位） | 范蠡（J-cut 起音 10字跨至 S17b） | `false` | L1；切回 2026 窗外巨幕，為 S17b 減壓至 L4 H3 安全秒數 |
 | **S17b** | S17 拆 2 | 4.5s | CU / 2026 / `OUTFIT-01` | **H3-4Ref** | `derived_shot`（Path A，承 `S09`/`S11c`） | 范蠡：14–18字/4.5s = **3.11–4.00**（4.67）PASS | **`true`** | L1（Spec §A.8 定案 H3 六段式 4-ref）；全集核心判讀句 |
 | **S18a** | S18 拆 1 | 1.8s | MCU / 2026 / `OUTFIT-01` | **Flow-Omni** | `derived_shot`（Path A，承 `S17b` 轉向桌面） | 無對白（靜拍 1.8s，PASS） | `false` | L1；簽名動作 3（手抬起又放下、不按腰間）——獨立成鏡確保動作清晰 |
-| **S18b** | S18 拆 2 | 4.5s | CU / 2026 / `OUTFIT-01` | **H3-4Ref** | `derived_shot`（Path A，承 `S18a`） | 范蠡：21字/4.5s = **4.67**（5.78*→給 4.8s 降為 5.42 PASS） | **`true`** | L1；全集最高張力質問句；*Stage 1.5 依 TTS 實長鎖 4.8–5.0s |
-| **S19** | S19 (92–95s) | 3.0s | CU / 2026 / SYS-01 | **Flow-Omni**（`i2v_first` 實景原生全息）＋ **AMD-05 v3 後製精修** *(備援：雙全息靜幀微過渡)* | 核准之 `SYS-01` 全息正面特寫（R1C1→R1C5 雙鎖；**零 UI／零文字**） | 無對白（PASS） | `false` | L1＋後製；**微笑首次遲疑 0.5 秒**→後製邊緣「蠡」閃 2 幀→硬切黑（`hold_justification`: **final image / hesitation beat** — 終鏡季線反轉定格，保留 3.0s） |
+| **S18b** | S18 拆 2 | 4.5s | CU / 2026 / `OUTFIT-01` | **H3-4Ref** | `derived_shot`（Path A，承 `S18a`） | 范蠡：21字/4.5s = **4.67**（5.78*→給 4.8s 降為 5.42 PASS） | **`true`** | L1；全集最高張力質問句；*Stage 1.5 依 TTS 實長鎖 4.8–5.0s；**〔v2.4.1 前導構圖〕尾段范蠡眼平盯向正前方桌面側＋冷青光微回打＋環境聲抽空收束，硬切導入 `S19`** |
+| **S19** | S19 (92–95s) | 3.0s | CU / 2026 / SYS-01 | **Flow-Omni**（`i2v_first` 實景原生全息）＋ **AMD-05 v3 後製精修** *(備援：雙全息靜幀微過渡)* | 核准之 `SYS-01` 全息正面特寫（R1C1→R1C5 雙鎖；**零 UI／零文字**） | 無對白（PASS） | `false` | L1＋後製；**微笑首次遲疑 0.5 秒**→後製邊緣「蠡」閃 2 幀→硬切黑（`hold_justification`: **final image / hesitation beat** — 終鏡季線反轉定格，保留 3.0s）；**〔v2.4.1 構圖定調〕`solo_cu` 平視 85mm 正面胸上特寫（承 `S18b` 硬切入已成場 `editorial_cut_in`，眼平對齊范蠡面前同地平面站位、半透明、絕非仰視懸浮）** |
 | **S20** | S20 (95–98.5s) | 3.5s | CARD / 片尾 / — | **`cpu_card`**（Pillow＋ffmpeg） | `none_cpu_card` | 無對白（PASS） | `false` | L4（0 GPU / 0 點）；下集預告字卡＋完整 Truth Ledger 聲明卡 |
 
 **路由彙總（29 原子鏡，總淨長約 ~100–102s，Stage 1.5 TTS 定長後收束至 98.5–101s）**：
