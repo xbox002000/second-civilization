@@ -1,0 +1,37 @@
+# Brief: `<SM_ID>` Smoke Test — `<Hypothesis Title>`
+
+> Template grounded in `~/drama-line/AGY-BRIEF-SM7A.md`, `AGY-BRIEF-CLAY-TEST.md`, and `AGY-ASSET-PROD-MANDATE.md` Phase B (2026-11-28).
+
+## Context & Spec Basis
+- **Smoke ID**: `<SM_ID>` (registered in `STORYBOARD-SPEC-V2.md` §A.9)
+- **Hypothesis**: `<what carrier, workflow JSON, or mode is being verified>`
+- **Spec Reference**: `~/drama-line/<SPEC_OR_MEMO.md>` §`<section>`
+
+## Test Shot & Inputs
+- **Test Shot**: `<episode/shot ID, scale, era, outfit, line if any>`
+- **Fixed Assets**:
+  - `<Pic 1 / initial frame>`: `<path>`
+  - `<Character / Prop / Video refs>`: `<paths — V3 order, zero multi-grid cards, zero banned assets>`
+- **Test Matrix (`N = 1–2`, fixed seed `<SEED>`)**:
+  - *(Optional Control)* **Group A**: `<baseline config>`
+  - **Candidate (Group B / Test)**: `<candidate carrier, workflow, prompt dialect>`
+
+## Hard Spend Caps & Execution Guardrails
+- **Flow Video Cap**: `≤ <N> pts` (`--max-credits <N>`; zero deprecated `veo_3_1_*` models; call via `tools/run_gflow_helper.py` stopping on WAF exit `10`).
+- **Colab CU Cap**: `≤ <N> CU` (`try...finally` auto-stop via `/_gate/stop`, `360s` wake timeout; verify gateway `sleeping` after run).
+- **Pre-Check**: Probe live `gflow` / ComfyUI `/object_info/` before spending; if an external tool hits a runtime/login blocker, STOP that path honestly without creating accounts or bypassing access controls.
+- **No repo push** during smoke test; report problems honestly rather than brute-forcing retries.
+
+## Measurement Rubric (5-Frame Method + 2.5× Zoom + Telemetry)
+Sample 5 evenly spaced frames across each output clip, build side-by-side strip + `2.5×` detail zoom strip, compute Lab `bg_L`/`bg_b`/`dL*`/`db*`/`blowout_pct` + SHA256, and score:
+1. `<Criterion 1 + pass threshold>`
+2. `<Criterion 2 + pass threshold>`
+3. `<Criterion 3 + pass threshold>`
+4. `<Criterion 4 + pass threshold>`
+5. `<Criterion 5 — V9 zero text / anti-leak / hardware headroom>`
+6. `<Criterion 6 — cost & retry efficiency>`
+
+## Deliverables (in `~/drama-line/<sm_id>/`)
+- Output video(s) + reusable API workflow JSON (`~/drama-line/<sm_id>/workflows/<name>.json`)
+- Inspection strips (`<sm_id>_strip.jpg`, `<sm_id>_zoom_strip.jpg`)
+- `~/drama-line/<sm_id>/<SM_ID>_RESULT.md` with telemetry, honest scores, split **Carrier/Tech vs Creative/Composition** verdict (`ADOPT` / `ADOPT WITH CONDITIONS` / `HOLD` / `FAIL`), exact adoption conditions, and reusable workflow usage guide.

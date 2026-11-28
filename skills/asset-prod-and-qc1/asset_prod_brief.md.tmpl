@@ -1,0 +1,33 @@
+# Mandate: `<EPISODE_ID>` Asset Production & QC-1
+
+> Template grounded in `~/drama-line/AGY-ASSET-PROD-MANDATE.md` (2026-11-28).
+
+You are agy on `workhorse-90d`, engineering hand for the Second Civilization drama line. Execute this asset-production mandate end-to-end, logging each completed batch to `~/drama-line/<TASK>_PROGRESS.log`.
+
+## Hard Spend Caps & Guardrails
+- **Flow video points**: `0 pts` *(all asset stills use 0-point `nano2`; if a smoke test is bundled, state explicit cap `≤ <N> pts`)*.
+- **Colab GPU**: `0.00 CU`.
+- **ElevenLabs TTS**: `0 characters` *(unless Pre-1 audition is explicitly authorized)*.
+- **Hygiene & Repo**: Move-only (`0 rm`, log SHA256 in `casting/archive/ARCHIVE_MANIFEST.txt`); never push `main` (`agy/*` branch only); zero binaries in git; no publishing.
+
+## Authoritative Inputs (READ FIRST)
+- `~/drama-line/<ASSET_GAP_REVIEW_MEMO.md>` (schemas, QC-1 thresholds, WAF batching discipline)
+- `~/drama-line/ASSETS_MANIFEST.yaml`
+- `~/drama-line/docs/PROP_REGISTRY.md`, `~/drama-line/docs/LOCATION_REGISTRY.md`, `~/drama-line/COSTUME_REGISTRY.md`
+- `~/drama-line/bible/anchors/*.yaml`
+
+## Phase A — Asset Production (Produce → QC-1 → LOCK ONLY on Pass)
+Report failures honestly; never force a FAIL into `LOCKED`.
+1. **CPU-first derivations (`0` API calls)**:
+   - Lossless RGB rectangular single-view crops (NO BiRefNet matting; exclude banned/defect cells).
+   - 48 kHz 16-bit stereo PCM roomtones & Foley via `tools/make_ep01_audio_lib.py`.
+   - Move-only `casting/master/` cleanup (`mv -n` → `casting/archive/`, log SHA256, verify `0` broken refs).
+2. **WAF-batched `nano2` stills via `tools/run_gflow_helper.py`** (strictly follow `waf_batch_policy.md`: `≤ 3–4` images/batch, `≥ 55–85s` cooldown, `≥ 30–45m` inter-batch break, STOP immediately on exit `10` / HTTP 403):
+   - Character missing angle(s) *(never horizontal-flip asymmetric refs)*.
+   - Props (`PROP-*`) → grade **PROP-QC-1 (6/6)** → update `docs/PROP_REGISTRY.md`.
+   - Locations (`LOC-*`, multi-angle anchored via `i2i`) → grade **LOC-QC-1 (7/7)** → update `docs/LOCATION_REGISTRY.md`.
+3. **Manifest Update**: Bump `~/drama-line/ASSETS_MANIFEST.yaml` with LOCKED paths, `light_lock_id`s, and SHA256s.
+
+## Phase B — Repo Sync & Deliverable
+1. Sync updated registries, YAML anchors, manifest, and scripts via `repo-sync-and-hygiene` on a NEW `agy/<topic>-YYYYMMDD` branch (0 binaries, in-clone selftests PASS).
+2. Write `~/drama-line/<TASK>_REPORT.md`: spend ledger (actuals vs caps), per-item QC-1 verdicts + paths + Lab/blowout/SHA256 telemetry, hygiene log (`0 rm`), repo branch + commit SHA, and any pending/failed items stated plainly.

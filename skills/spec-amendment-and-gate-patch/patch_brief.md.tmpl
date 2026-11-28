@@ -1,0 +1,21 @@
+# Brief: patch `<TOPIC>` into spec + tools + staging docs (docs/tools only)
+
+> Template grounded in `~/drama-line/AGY-SYS01-DIRECTION-PATCH-BRIEF.md` & `AGY-ASSET-PROD-MANDATE.md` Phase C (2026-11-28).
+
+You are agy on `workhorse-90d`, engineering hand for the Second Civilization drama line. Documentation + gate-tool patch ONLY — **NO generation, NO spend, NEVER push `main`.**
+
+## Authoritative Source (READ FIRST)
+- `<SOURCE_RULING_OR_MEMO_PATH>` — summary of Creator ruling / postmortem / GO smoke conditions:
+  - `<key delta 1>`
+  - `<key delta 2>`
+
+## Scope of Patch
+1. **Spec (`~/drama-line/STORYBOARD-SPEC-V2.md`)**: Update `<section(s)>`; bump version (`v2.X` or `v2.X.Y`) and add `版本沿革` + Bible Index entry.
+2. **Bible YAML(s)** *(if affected)*: Update `<bible/anchors/*.yaml | bible/camera/*.yaml>` preserving backward-compatible aliases.
+3. **Smoke / Historical Register** *(if applicable)*: Annotate superseded results with split verdicts (`CARRIER PASS | COMPOSITION SUPERSEDED`) rather than deleting history.
+4. **Staging Docs** *(ONLY if authorized)*: Update `<EP01_PRODUCTION_WORKFLOW.md | DEMO03_TREATMENT.md>` strictly on `<allowed column/section>` — **do NOT change locked durations, dialogue, or routing**.
+5. **Preflight / Diff-Sheet Gate (`tools/preflight_gate.py`, `tools/diff_sheet_gen.py`)**:
+   - Classify each machine-checkable delta as **HARD `FAIL`** (zero false-positive invariant, Creator-approved) or **ADVISORY `WARN`** (with justification escape hatch).
+   - Add positive + negative `--selftest` cases (`Txx`) and verify 100% pass.
+   - If a check would require invasive schema surgery, do NOT hack it — state so plainly and leave a spec note.
+6. **Sync & Report**: Sync all changes to a NEW `agy/<topic>-YYYYMMDD` branch via `repo-sync-and-hygiene` (re-run selftests inside `~/repos/sc-sync`; never `main`) and write `~/drama-line/<TOPIC>_PATCH_REPORT.md` including a mandatory **"Deliberately NOT Changed (and Why)"** section.

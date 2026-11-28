@@ -1,0 +1,76 @@
+# `<SM_ID>` Smoke Test Result — `<Title>`
+
+> Template grounded in `~/drama-line/sm7a/SM7A_RESULT.md`, `claytest/CLAY_TEST_RESULT.md`, and `sm8/SM8_RESULT.md` (2026-11-28).
+
+- **Date**: `YYYY-MM-DD` (`agy` on `workhorse-90d`)
+- **Test Shot**: `<shot ID, scale, outfit, light_lock_id>`
+- **Spec Basis**: `~/drama-line/<SPEC_OR_MEMO.md>` §`<section>`
+- **Carrier / Gateway**: `<Flow omni-1.2-flash | comfy-colab-kit -> profile on Colab L4>`
+- **Carrier / Tech Verdict**: **`ADOPT` | `ADOPT WITH CONDITIONS` | `HOLD` | `FAIL`**
+- **Creative / Composition Status**: **`PENDING CREATOR REVIEW` | `APPROVED` | `COMPOSITION SUPERSEDED (YYYY-MM-DD)`**
+- **Actual Spend**: Flow **`<X> / <CAP> pts`** (`<before> → <after>`), `nano2` **`<N>` stills (`0 pts`)**, Colab **`<Y> / <CAP> CU`**, ElevenLabs **`0` chars**.
+
+---
+
+## 1. Experimental Setup & Reusable Workflow Paths
+
+- **Reusable Workflow JSON**: `~/drama-line/<sm_id>/workflows/<workflow>.json` *(verified live via `/object_info/` or `gflow` CLI)*
+- **Fixed Seed / Resolution / FPS / Length**: seed `<SEED>`, `<W×H>`, `<24 fps>`, `<L frames / S.SSs>`
+- **Inputs (V3 Order)**:
+  1. `<slot 1>`: `<path + role>`
+  2. `<slot 2>`: `<path + role>`
+- **Artifacts (with SHA256)**:
+  - Video: `~/drama-line/<sm_id>/<clip>.mp4` (`<bytes>`, sha256 `<16-hex...>`)
+  - Strips: `~/drama-line/<sm_id>/<strip>.jpg`, `~/drama-line/<sm_id>/<zoom_strip>.jpg`
+
+---
+
+## 2. Five-Frame Telemetry & Criterion Scoring
+
+| Sample Point | `bg_L` | `bg_b` | `Blowout (>245)` | Visual Observation |
+| :--- | :---: | :---: | :---: | :--- |
+| `f0 @ 0.50s` | `0.00` | `0.00` | `0.00%` | `<notes>` |
+| `f1 @ ...` | `0.00` | `0.00` | `0.00%` | `<notes>` |
+| `f2 @ ...` | `0.00` | `0.00` | `0.00%` | `<notes>` |
+| `f3 @ ...` | `0.00` | `0.00` | `0.00%` | `<notes>` |
+| `f4 @ ...` | `0.00` | `0.00` | `0.00%` | `<notes>` |
+
+- **Intra-Clip Stability**: `dL* span = <X>` (`≤ 12`), `db* span = <Y>`, `max blowout = <Z>%` (`< 5%`).
+
+| Criterion | Pass Threshold | Measured / Score | Verdict | Honest Evidence & Defects |
+| :--- | :--- | :---: | :---: | :--- |
+| **1. `<Criterion 1>`** | `<threshold>` | `<score>` | `PASS/FAIL` | `<evidence>` |
+| **2. `<Criterion 2>`** | `<threshold>` | `<score>` | `PASS/FAIL` | `<evidence>` |
+| **3. `<Criterion 3>`** | `<threshold>` | `<score>` | `PASS/FAIL` | `<evidence>` |
+| **4. `<Criterion 4>`** | `<threshold>` | `<score>` | `PASS/FAIL` | `<evidence>` |
+| **5. `<Criterion 5>`** | `<threshold>` | `<score>` | `PASS/FAIL` | `<evidence>` |
+| **6. Cost & Efficiency** | `≤ cap` | `<spend>` | `PASS/FAIL` | `<actuals vs cap>` |
+
+---
+
+## 3. Critical Forensic Discoveries
+
+1. `<Non-obvious failure or architectural constraint discovered during testing — candidate for spec-amendment-and-gate-patch flywheel>`
+
+---
+
+## 4. Resource & Hardware Telemetry
+
+| Metric | Measured Value |
+| :--- | :--- |
+| **Accelerator / Carrier** | `<NVIDIA L4 (22.03 GiB VRAM) | Google Flow>` |
+| **Cold Start / Inference Time** | `<Xs / Ys (≤ 10 min)>` |
+| **Peak VRAM / Min Free RAM** | `<X GiB / Y GiB free>` *(or N/A for Flow)* |
+| **OOM / Retries / WAF 403** | `0 OOM, 0 retries, 0 WAF 403` |
+| **Total Spend vs Cap** | `<actual vs cap>` |
+| **Gateway Post-Run State** | `sleeping` *(verified)* |
+
+---
+
+## 5. Final Verdict, Adoption Conditions & Reusable Usage Guide
+
+- **Verdict**: **`<ADOPT | ADOPT WITH CONDITIONS | HOLD | FAIL>`**
+- **Required Conditions for Production Adoption**:
+  1. `<Condition 1 -> target rule/YAML in spec-amendment-and-gate-patch>`
+- **How to Reuse `<workflow>.json`**:
+  1. `<node IDs / CLI flags to swap for next shot>`

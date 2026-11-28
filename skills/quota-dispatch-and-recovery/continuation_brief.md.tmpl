@@ -1,0 +1,17 @@
+# Brief: finish `<MANDATE_NAME>` (continuation after `<429 | CLI timeout>` interruption)
+
+> Template grounded in `~/drama-line/AGY-ASSET-PROD-CONTINUATION-BRIEF.md` (2026-11-28).
+
+You are agy on `workhorse-90d`. The mandate in `~/drama-line/<ORIGINAL_BRIEF.md>` was interrupted by `<RESOURCE_EXHAUSTED 429 | CLI --print-timeout>` after its earlier phases. `~/drama-line/<TASK>_PROGRESS.log` is the authoritative ledger of what is DONE:
+- `<PHASE_1>`: DONE (`<artifact paths / verdicts / spend delta>`)
+- `<PHASE_2>`: DONE (`<artifact paths / verdicts / spend delta>`)
+
+**Guardrails**: Same hard spend caps and guardrails as the original mandate (`Flow ≤ <N> pts`, `Colab ≤ <N> CU`, `ElevenLabs ≤ <N> chars`, `0 main push`, `0 publish`). **Do NOT redo anything the progress ledger marks DONE or already verified on disk.** *(If a Colab job was interrupted mid-flight, inspect `http://localhost:8080/history/` first to rescue any finished output before spending additional CU.)*
+
+## Remaining Work
+
+1. **`<REMAINING_PHASE_A>`**: `<exact remaining items, QC gates, and manifest updates>`.
+2. **Repo sync verification & completion** *(if applicable)*: Inspect `~/repos/sc-sync` and remote `agy/*` branches to see what earlier phases already pushed; sync any remaining deliverables on a new `agy/<topic>-YYYYMMDD` branch (never `main`, `0` binaries, re-run selftests in clone).
+3. **Write `~/drama-line/<FINAL_REPORT.md>`** covering the WHOLE mandate (all completed phases from `<TASK>_PROGRESS.log` + this continuation): per-item verdicts with paths, exact spend ledger (actuals vs hard caps), gate/selftest results, repo branch + commit SHA, and anything still failed or blocked, stated plainly.
+
+No generation beyond the remaining items listed above; no TTS; no publishing; never push `main`.

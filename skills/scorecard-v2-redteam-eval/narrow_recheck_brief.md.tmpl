@@ -1,0 +1,16 @@
+# 任務：`<EPISODE_ID>` `<VERSION>` 窄幅複檢（只查受影響／修補項，不重評全卡）
+
+> Template grounded in `~/drama-line/RECHECK_BRIEF.md`, `V03_REVIEW_BRIEF.md`, and `V031_RECHECK_BRIEF.md` (2026-11-27).
+
+## 背景（只給事實與上次缺陷，不給主撰新分數）
+- 前次審查報告：`~/drama-line/<PRIOR_REPORT.md>`（原指出之硬閘 FAIL 或維度缺陷：`<list exact defects>`）。
+- 本輪修補盲本：`~/drama-line/<SCRIPT_PATCHED_BLIND.md>`（已抽掉主撰自評分數）。
+
+## 只驗以下項目（其他維度不重評）
+1. **`<Hard Gate / D2 Cap Item>`**：驗證原指出之缺陷（日期／口徑／來源綁定／視角矛盾）是否已徹底消除、硬閘／封頂警告可否解除？給 `PASS`／`FAIL` ＋ 原文證據。
+2. **`<Affected Dimension 1 (e.g., 維度 2 因果連貫，滿分 22)>`**：只驗原斷層或重構受影響處是否補至「冷讀者不需自補」；給新分 ＋ 原文證據。
+3. **`<Affected Dimension 2 (e.g., 維度 4 集尾迴路，滿分 16)>`** *(if applicable)*：給新分 ＋ 原文證據。
+4. **可拍性與算術抽查**：獨立重算所有新增／修改鏡號之單鏡長度（`≤ 6.5s`）、對白速率（`≤ 5.0` 純字／`≤ 5.5` 含標點字/秒）與日期／天數算術（只報超標或錯誤處，無則寫全數合格）。
+
+## 交付
+複檢結論寫 `~/drama-line/<EPISODE_ID>_<VERSION>_RECHECK.md`（逐項結論 ＋ 原文證據 ＋ 受影響維度新分 ＋ 必改清單若有最多 3 條）。**不要改劇本本體、不要 push。**完成後回報：硬閘／警告結論一行、各複檢維度新分各一行。

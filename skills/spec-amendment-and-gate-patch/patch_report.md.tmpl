@@ -1,0 +1,53 @@
+# `<TOPIC>` Patch Report (`YYYY-MM-DD`)
+
+> Template grounded in `~/drama-line/SYS01_DIRECTION_PATCH_REPORT.md` (2026-11-28, commit `1bd6712`).
+
+> **Executor**: agy (`workhorse-90d`)  
+> **Source Ruling**: `~/drama-line/<SOURCE_DOC.md>`  
+> **Scope**: Documentation + gate-tool patch ONLY — **0 generation, 0 spend** (`0 Flow pts`, `0 nano2 images`, `0 Colab CU`, `0 ElevenLabs chars`).
+
+---
+
+## 1. Git Branch & Sync Summary (`~/repos/sc-sync`)
+
+- **New Branch**: `agy/<topic>-YYYYMMDD` (pushed to `origin`; `main` untouched)
+- **Base Branch / Commit**: `<base-branch>` (`<base-sha>`)
+- **Commit SHA**: `<new-sha>` (`<N> files changed`, `0` binaries)
+- **Synced Repo Paths**:
+  1. `<repo/path>` ← `~/drama-line/<vm/path>`
+
+---
+
+## 2. What Changed Where
+
+### 2.1 Storyboard Spec (`STORYBOARD-SPEC-V2.md` → `docs/STORYBOARD_SPEC_V2.md`)
+- **Version Bump**: `v2.X.Y` → `v2.X.Z` (`版本沿革` + §零 index updated).
+- `<section-by-section bullet list>`
+
+### 2.2 Bible YAML(s)
+- `<bible/anchors/... changes + backward-compatible aliases>`
+
+### 2.3 Gate Tools (`tools/preflight_gate.py` / `tools/diff_sheet_gen.py`)
+- **Rule Name & Level**: `<RULE_ID>` (`FAIL` | `WARN`)
+- **Conditions**: `<exact trigger conditions & justification fields>`
+- **New Selftests**: `<Txx–Tyy>` (positive + negative cases)
+
+### 2.4 Staging Docs / Smoke Notes *(only if in scope)*
+- `<exact scoped edits; confirm zero changes to locked dialogue/durations/routing>`
+
+---
+
+## 3. Verification Results
+
+- `python3 ~/drama-line/tools/preflight_gate.py --selftest` (and re-run inside `~/repos/sc-sync`): **`<N> / <N> PASS`**
+- `python3 ~/drama-line/tools/diff_sheet_gen.py --selftest` (and re-run inside `~/repos/sc-sync`): **`<M> / <M> PASS`**
+- Anchor / YAML load verification: `<command + result>`
+
+---
+
+## 4. Deliberately NOT Changed (and Why)
+
+1. **Zero media generation / zero spend**: `<confirm no generation ran>`.
+2. **Locked upstream artifacts & historical memos**: `<list untouched memos/scripts/grandfathered demos and why>`.
+3. **Deferred or non-blocking design choices**: `<explain why any check stayed WARN or deferred instead of HARD FAIL>`.
+4. **`main` branch**: Never touched; all edits live on `agy/<topic>-YYYYMMDD`.

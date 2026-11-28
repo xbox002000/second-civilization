@@ -1,0 +1,80 @@
+#!/bin/bash
+# Template: Resumable agy dispatcher with quota 429 handling & size-floor verification
+# Grounded in: ~/drama-line/run_recovery.sh, run_skillify_g.sh, run_skillbuild.sh, run_full.sh
+#
+# Usage: copy and substitute UPPERCASE placeholders before running.
+
+set -u
+cd ~/drama-line || exit 1
+
+AGY="/home/hatch/.local/bin/agy"
+TASK_NAME="<TASK_NAME>"                         # e.g. EP01_STAGE1
+BRIEF_FILE="<BRIEF_FILE.md>"                    # e.g. AGY-EP01-STAGE1-BRIEF.md
+DELIVERABLE="<DELIVERABLE.md>"                  # e.g. EP01_STAGE1_REPORT.md
+MIN_BYTES=3000                                  # e.g. 3000 for reports, 10000 for memos
+PROGRESS_LOG="${TASK_NAME}_PROGRESS.log"
+PRIMARY_MODEL=""                                # Empty = default Gemini pool; or e.g. "Claude Opus 5.5 (Medium)"
+FALLBACK_MODEL="Claude Opus 5.5 (Medium)"       # Cross-pool fallback on Gemini/individual 429
+TIMEOUT="3000s"
+MAX_ROUNDS=3
+
+ok() {
+  [ -f "$1" ] && [ "$(stat -c%s "$1" 2>/dev/null || echo 0)" -gt "$2" ]
+}
+
+probe_quota() {
+  for t in 1 2 3 4 5 6; do
+    OUT=$("$AGY" --print "Reply with exactly: PING_OK" --print-timeout 120s 2>&1)
+    if echo "$OUT" | grep -q "PING_OK"; then
+      echo "quota ok on try $t $(date -u +%FT%TZ)" >> "$PROGRESS_LOG"
+      return 0
+    fi
+    echo "probe try $t not ready $(date -u +%FT%TZ), sleeping 300s" >> "$PROGRESS_LOG"
+    sleep 300
+  done
+  return 1
+}
+
+echo "${TASK_NAME} starting $(date -u +%FT%TZ)" >> "$PROGRESS_LOG"
+ACTIVE_MODEL="$PRIMARY_MODEL"
+
+for i in $(seq 1 "$MAX_ROUNDS"); do
+  if ok "$DELIVERABLE" "$MIN_BYTES"; then
+    echo "round $i: deliverable ok ($DELIVERABLE) $(date -u +%FT%TZ)" >> "$PROGRESS_LOG"
+    break
+  fi
+
+  if [ "$i" -eq 1 ]; then
+    PROMPT=$(cat "$BRIEF_FILE")
+  else
+    PROMPT="Read ~/drama-line/${PROGRESS_LOG} and ~/drama-line/${BRIEF_FILE}. Do NOT redo any phase already marked DONE in the progress log or on disk (check ComfyUI /history/ if a Colab job was running). Continue and finish ${DELIVERABLE} under the exact same spend caps and guardrails."
+  fi
+
+  LOG_FILE="${TASK_NAME}_RUN_${i}.log"
+  if [ -n "$ACTIVE_MODEL" ]; then
+    "$AGY" --model "$ACTIVE_MODEL" --print "$PROMPT" --print-timeout "$TIMEOUT" > "$LOG_FILE" 2>&1
+  else
+    "$AGY" --print "$PROMPT" --print-timeout "$TIMEOUT" > "$LOG_FILE" 2>&1
+  fi
+  echo "round $i finished (model=${ACTIVE_MODEL:-default-gemini}) $(date -u +%FT%TZ)" >> "$PROGRESS_LOG"
+
+  if ! ok "$DELIVERABLE" "$MIN_BYTES" && grep -qE "RESOURCE_EXHAUSTED|code 429|429" "$LOG_FILE"; then
+    if grep -q "Third-party quota reached" "$LOG_FILE"; then
+      echo "round $i: third-party 429 -> switching to default Gemini pool" >> "$PROGRESS_LOG"
+      ACTIVE_MODEL=""
+    elif [ -z "$ACTIVE_MODEL" ] && [ -n "$FALLBACK_MODEL" ]; then
+      echo "round $i: 429 -> re-dispatching with --model \"$FALLBACK_MODEL\"" >> "$PROGRESS_LOG"
+      ACTIVE_MODEL="$FALLBACK_MODEL"
+    else
+      echo "round $i: 429 on both/active pool -> running PING_OK backoff probe" >> "$PROGRESS_LOG"
+      probe_quota || { echo "BLOCKED_429 $(date -u +%FT%TZ)" >> "$PROGRESS_LOG"; exit 42; }
+    fi
+  fi
+done
+
+if ok "$DELIVERABLE" "$MIN_BYTES"; then
+  echo "DONE $(date -u +%FT%TZ)" >> "$PROGRESS_LOG"
+else
+  echo "INCOMPLETE $(date -u +%FT%TZ)" >> "$PROGRESS_LOG"
+  exit 1
+fi
